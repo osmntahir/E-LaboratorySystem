@@ -46,7 +46,7 @@ export const updateTest = async (guideId, testId, test) => {
 
 export const deleteTest = async (guideId, testId) => {
     const testRef = doc(db, 'guides', guideId, 'tests', testId);
-    return await deleteDoc(testRef);
+    await deleteDoc(testRef);
 };
 
 export const getTests = async (guideId) => {

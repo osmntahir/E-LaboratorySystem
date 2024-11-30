@@ -5,7 +5,12 @@ import { deleteAgeGroup } from '../services/firebaseService';
 
 const AgeGroupItem = ({ guideId, testId, ageGroup, navigation }) => {
     const handleDeleteAgeGroup = async () => {
-        await deleteAgeGroup(guideId, testId, ageGroup.id);
+        try {
+            await deleteAgeGroup(guideId, testId, ageGroup.id);
+            console.log(`${ageGroup.ageRange} yaş grubu silindi`);
+        } catch (error) {
+            console.error('Yaş grubu silme işlemi başarısız:', error);
+        }
     };
 
     return (
