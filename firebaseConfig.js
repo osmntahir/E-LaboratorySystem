@@ -1,6 +1,6 @@
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getFirestore, serverTimestamp } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 // Firebase yapılandırma bilgilerinizi buraya ekleyin
 const firebaseConfig = {
@@ -16,6 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Firestore bağlantısını al
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 
-export { firestore, serverTimestamp };
+export { db };
