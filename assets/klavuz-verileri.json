@@ -1,0 +1,37 @@
+{
+  "guides": [
+    {
+      "name": "IgG Reference",
+      "description": "IgG levels for healthy donors.",
+      "testTypes": [
+        {
+          "name": "IgG1",
+          "unit": "g/L",
+          "ageGroups": [
+            {
+              "ageRange": "0-5",
+              "minValue": 1.0,
+              "maxValue": 1.34
+            },
+            {
+              "ageRange": "5-<9 months",
+              "minValue": 1.64,
+              "maxValue": 5.88
+            }
+          ]
+        },
+        {
+          "name": "IgG2",
+          "unit": "g/L",
+          "ageGroups": [
+            {
+              "ageRange": "0-<5 months",
+              "minValue": 0.56,
+              "maxValue": 2.15
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
