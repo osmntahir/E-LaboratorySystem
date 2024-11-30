@@ -1,9 +1,9 @@
-// src/components/GuideItem.js
 import React, { useState, useEffect } from 'react';
 import { List, Button } from 'react-native-paper';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import TestItem from './TestItem';
+import { Alert } from 'react-native'; // Import Alert from react-native
 
 const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
     const [expanded, setExpanded] = useState(false);
@@ -25,6 +25,21 @@ const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
         }
     }, [expanded]);
 
+    const handleDeleteGuide = () => {
+        Alert.alert(
+            'Kılavuz Sil',
+            `${guide.name} kılavuzunu silmek istediğinize emin misiniz?`,
+            [
+                { text: 'İptal', style: 'cancel' },
+                {
+                    text: 'Sil',
+                    style: 'destructive',
+                    onPress: onDelete,
+                },
+            ]
+        );
+    };
+
     return (
         <List.Accordion
             title={guide.name}
@@ -34,7 +49,7 @@ const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
             left={(props) => <List.Icon {...props} icon="folder" />}
         >
             <Button onPress={onEdit}>Düzenle</Button>
-            <Button onPress={onDelete}>Sil</Button>
+            <Button onPress={handleDeleteGuide}>Sil</Button>
             <Button
                 onPress={() =>
                     navigation.navigate('AddTest', { guideId: guide.id })

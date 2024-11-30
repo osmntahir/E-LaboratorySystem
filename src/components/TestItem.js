@@ -1,22 +1,38 @@
 // src/components/TestItem.js
 import React, { useState, useEffect } from 'react';
-import { List, Button } from 'react-native-paper';
+import { List, Button, Alert } from 'react-native-paper';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { deleteTest } from '../services/firebaseService';
 import AgeGroupItem from './AgeGroupItem';
+import { Alert as RNAlert } from 'react-native'; // Import Alert from react-native
 
 const TestItem = ({ guideId, test, navigation }) => {
     const [expanded, setExpanded] = useState(false);
     const [ageGroups, setAgeGroups] = useState([]);
 
     const handleDeleteTest = async () => {
-        try {
-            await deleteTest(guideId, test.id);
-            console.log(`${test.name} başarıyla silindi`);
-        } catch (error) {
-            console.error('Tetkik silme işlemi başarısız:', error);
-        }
+        console.log('Silme işlemi başlatıldı');
+        RNAlert.alert(
+            'Tetkik Sil',
+            `${test.name} tetkikini silmek istediğinize emin misiniz?`,
+            [
+                { text: 'İptal', style: 'cancel' },
+                {
+                    text: 'Sil',
+                    style: 'destructive',
+                    onPress: async () => {
+                        console.log('Silme işlemi onaylandı');
+                        try {
+                            await deleteTest(guideId, test.id);
+                            console.log('Tetkik başarıyla silindi');
+                        } catch (error) {
+                            console.error('Tetkik silinirken hata oluştu:', error);
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     useEffect(() => {
@@ -28,7 +44,7 @@ const TestItem = ({ guideId, test, navigation }) => {
                     id: doc.id,
                     ...doc.data(),
                 }));
-                setAgeGroups(ageGroupList);
+                setAgeGroups(ageGroupList); // Ekranı otomatik günceller
             });
 
             return () => unsubscribe();
