@@ -22,6 +22,10 @@ export const updateGuide = async (id, guide) => {
 
 export const deleteGuide = async (id) => {
     const guideRef = doc(db, 'guides', id);
+    const testsSnapshot = await getDocs(collection(db, 'guides', id, 'tests'));
+    for (const testDoc of testsSnapshot.docs) {
+        await deleteTest(id, testDoc.id);
+    }
     return await deleteDoc(guideRef);
 };
 
@@ -46,7 +50,11 @@ export const updateTest = async (guideId, testId, test) => {
 
 export const deleteTest = async (guideId, testId) => {
     const testRef = doc(db, 'guides', guideId, 'tests', testId);
-    await deleteDoc(testRef);
+    const ageGroupsSnapshot = await getDocs(collection(db, 'guides', guideId, 'tests', testId, 'ageGroups'));
+    for (const ageGroupDoc of ageGroupsSnapshot.docs) {
+        await deleteAgeGroup(guideId, testId, ageGroupDoc.id);
+    }
+    return await deleteDoc(testRef);
 };
 
 export const getTests = async (guideId) => {

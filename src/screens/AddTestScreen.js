@@ -14,6 +14,11 @@ const AddTestScreen = ({ route, navigation }) => {
         { label: 'IgA', value: 'IgA' },
         { label: 'IgM', value: 'IgM' },
         { label: 'IgG', value: 'IgG' },
+        { label: 'IgG1', value: 'IgG1' },
+        { label: 'IgG2', value: 'IgG2' },
+        { label: 'IgG3', value: 'IgG3' },
+        { label: 'IgG4', value: 'IgG4' },
+
     ]);
 
     useEffect(() => {
