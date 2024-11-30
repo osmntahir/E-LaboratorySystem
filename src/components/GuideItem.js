@@ -1,7 +1,8 @@
 // src/components/GuideItem.js
 import React, { useState, useEffect } from 'react';
 import { List, Button } from 'react-native-paper';
-import { getTests } from '../services/firebaseService';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 import TestItem from './TestItem';
 
 const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
@@ -10,14 +11,19 @@ const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
 
     useEffect(() => {
         if (expanded) {
-            fetchTests();
+            const unsubscribe = onSnapshot(
+                collection(db, 'guides', guide.id, 'tests'),
+                (snapshot) => {
+                    const testList = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setTests(testList);
+                }
+            );
+            return () => unsubscribe();
         }
     }, [expanded]);
-
-    const fetchTests = async () => {
-        const testList = await getTests(guide.id);
-        setTests(testList);
-    };
 
     return (
         <List.Accordion

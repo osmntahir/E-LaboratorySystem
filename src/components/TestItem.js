@@ -1,7 +1,8 @@
 // src/components/TestItem.js
 import React, { useState, useEffect } from 'react';
 import { List, Button } from 'react-native-paper';
-import { getAgeGroups, deleteTest } from '../services/firebaseService';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 import AgeGroupItem from './AgeGroupItem';
 
 const TestItem = ({ guideId, test, navigation }) => {
@@ -10,20 +11,19 @@ const TestItem = ({ guideId, test, navigation }) => {
 
     useEffect(() => {
         if (expanded) {
-            fetchAgeGroups();
+            const unsubscribe = onSnapshot(
+                collection(db, 'guides', guideId, 'tests', test.id, 'ageGroups'),
+                (snapshot) => {
+                    const ageGroupList = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setAgeGroups(ageGroupList);
+                }
+            );
+            return () => unsubscribe();
         }
     }, [expanded]);
-
-    const fetchAgeGroups = async () => {
-        const ageGroupList = await getAgeGroups(guideId, test.id);
-        setAgeGroups(ageGroupList);
-    };
-
-    const handleDeleteTest = async () => {
-        await deleteTest(guideId, test.id);
-        // Tetkik silindikten sonra listeyi güncellemek için
-        setExpanded(false);
-    };
 
     return (
         <List.Accordion
@@ -42,7 +42,6 @@ const TestItem = ({ guideId, test, navigation }) => {
             >
                 Düzenle
             </Button>
-            <Button onPress={handleDeleteTest}>Sil</Button>
             <Button
                 onPress={() =>
                     navigation.navigate('AddAgeGroup', {
