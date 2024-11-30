@@ -3,10 +3,11 @@
     {
       "name": "klavuz-tjp",
       "description": "Age-related serum immunoglobulin levels for healthy children.",
+      "unit": "g/L",
       "testTypes": [
         {
           "name": "IgA",
-          "unit": "g/L",
+
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.005, "maxValue": 0.006 },
             { "ageRange": "1-5", "minValue": 0.006, "maxValue": 0.058 },
@@ -26,7 +27,6 @@
         },
         {
           "name": "IgM",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.0173, "maxValue": 0.0296 },
             { "ageRange": "2-5", "minValue": 0.0184, "maxValue": 0.145 },
@@ -46,7 +46,6 @@
         },
         {
           "name": "IgG",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.492, "maxValue": 1.19 },
             { "ageRange": "1-5", "minValue": 0.27, "maxValue": 0.792 },
@@ -66,7 +65,6 @@
         },
         {
           "name": "IgG1",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.43, "maxValue": 0.897 },
             { "ageRange": "1-5", "minValue": 0.16, "maxValue": 0.574 },
@@ -86,7 +84,6 @@
         },
         {
           "name": "IgG2",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.087, "maxValue": 0.263 },
             { "ageRange": "1-5", "minValue": 0.032, "maxValue": 0.108 },
@@ -106,7 +103,6 @@
         },
         {
           "name": "IgG3",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.018, "maxValue": 0.078 },
             { "ageRange": "1-5", "minValue": 0.013, "maxValue": 0.053 },
@@ -126,7 +122,6 @@
         },
         {
           "name": "IgG4",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.087, "maxValue": 0.263 },
             { "ageRange": "1-5", "minValue": 0.032, "maxValue": 0.108 },
@@ -149,10 +144,10 @@
     {
       "name": "klavuz-cilv",
       "description": "Reference Ranges for Serum Immunoglobulins and Specific Antibody Levels.",
+      "unit": "g/L",
       "testTypes": [
         {
           "name": "IgG",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.7, "maxValue": 1.3 },
             { "ageRange": "1-4", "minValue": 0.28, "maxValue": 0.75 },
@@ -165,7 +160,6 @@
         },
         {
           "name": "IgA",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.0, "maxValue": 0.011 },
             { "ageRange": "1-4", "minValue": 0.006, "maxValue": 0.05 },
@@ -178,7 +172,6 @@
         },
         {
           "name": "IgM",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "0-1", "minValue": 0.005, "maxValue": 0.03 },
             { "ageRange": "1-4", "minValue": 0.015, "maxValue": 0.07 },
@@ -191,7 +184,6 @@
         },
         {
           "name": "IgG1",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "Cord", "minValue": 0.435, "maxValue": 1.084 },
             { "ageRange": "0-3", "minValue": 0.218, "maxValue": 0.496 },
@@ -209,7 +201,6 @@
         },
         {
           "name": "IgG2",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "Cord", "minValue": 0.143, "maxValue": 0.453 },
             { "ageRange": "0-3", "minValue": 0.04, "maxValue": 0.167 },
@@ -227,7 +218,6 @@
         },
         {
           "name": "IgG3",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "Cord", "minValue": 0.027, "maxValue": 0.146 },
             { "ageRange": "0-3", "minValue": 0.004, "maxValue": 0.023 },
@@ -245,7 +235,6 @@
         },
         {
           "name": "IgG4",
-          "unit": "g/L",
           "ageGroups": [
             { "ageRange": "Cord", "minValue": 0.001, "maxValue": 0.047 },
             { "ageRange": "0-3", "minValue": 0.001, "maxValue": 0.12 },
@@ -371,7 +360,177 @@
           ]
         }
       ]
+    },
+    {
+      "name": "klavuz-ap",
+      "description": "Age-related serum immunoglobulin levels for healthy donors (g/L).",
+      "unit": "g/L",
+      "testTypes": [
+        {
+          "name": "IgA",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0.07, "maxValue": 0.37 },
+            { "ageRange": "6-9", "minValue": 0.16, "maxValue": 0.50 },
+            { "ageRange": "10-15", "minValue": 0.27, "maxValue": 0.66 },
+            { "ageRange": "16-24", "minValue": 0.36, "maxValue": 0.79 },
+            { "ageRange": "25-48", "minValue": 0.27, "maxValue": 2.46 },
+            { "ageRange": "49-84", "minValue": 0.29, "maxValue": 2.56 },
+            { "ageRange": "85-120", "minValue": 0.34, "maxValue": 2.74 },
+            { "ageRange": "121-156", "minValue": 0.42, "maxValue": 2.95 },
+            { "ageRange": "157-192", "minValue": 0.52, "maxValue": 3.19 },
+            { "ageRange": "193-216", "minValue": 0.60, "maxValue": 3.37 },
+            { "ageRange": "217+", "minValue": 0.61, "maxValue": 3.56 }
+          ]
+        },
+        {
+          "name": "IgM",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0.26, "maxValue": 1.22 },
+            { "ageRange": "6-9", "minValue": 0.32, "maxValue": 1.32 },
+            { "ageRange": "10-15", "minValue": 0.40, "maxValue": 1.43 },
+            { "ageRange": "16-24", "minValue": 0.46, "maxValue": 1.52 },
+            { "ageRange": "25-48", "minValue": 0.37, "maxValue": 1.84 },
+            { "ageRange": "49-84", "minValue": 0.37, "maxValue": 2.24 },
+            { "ageRange": "85-120", "minValue": 0.38, "maxValue": 2.51 },
+            { "ageRange": "121-156", "minValue": 0.41, "maxValue": 2.55 },
+            { "ageRange": "157-192", "minValue": 0.45, "maxValue": 2.44 },
+            { "ageRange": "193-216", "minValue": 0.49, "maxValue": 2.01 },
+            { "ageRange": "217+", "minValue": 0.37, "maxValue": 2.86 }
+          ]
+        },
+        {
+          "name": "IgG",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 1.0, "maxValue": 1.34 },
+            { "ageRange": "6-9", "minValue": 1.64, "maxValue": 5.88 },
+            { "ageRange": "10-15", "minValue": 2.46, "maxValue": 9.04 },
+            { "ageRange": "16-24", "minValue": 3.13, "maxValue": 11.7 },
+            { "ageRange": "25-48", "minValue": 2.95, "maxValue": 11.56 },
+            { "ageRange": "49-84", "minValue": 3.86, "maxValue": 14.7 },
+            { "ageRange": "85-120", "minValue": 4.62, "maxValue": 16.82 },
+            { "ageRange": "121-156", "minValue": 5.03, "maxValue": 15.8 },
+            { "ageRange": "157-192", "minValue": 5.09, "maxValue": 15.8 },
+            { "ageRange": "193-216", "minValue": 4.87, "maxValue": 13.27 },
+            { "ageRange": "217+", "minValue": 7.67, "maxValue": 15.9 }
+          ]
+        },
+        {
+          "name": "IgG1",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0.56, "maxValue": 2.15 },
+            { "ageRange": "6-9", "minValue": 1.02, "maxValue": 3.69 },
+            { "ageRange": "10-15", "minValue": 1.6, "maxValue": 5.62 },
+            { "ageRange": "16-24", "minValue": 2.09, "maxValue": 7.24 },
+            { "ageRange": "25-48", "minValue": 1.58, "maxValue": 7.21 },
+            { "ageRange": "49-84", "minValue": 2.09, "maxValue": 9.02 },
+            { "ageRange": "85-120", "minValue": 2.53, "maxValue": 10.19 },
+            { "ageRange": "121-156", "minValue": 2.8, "maxValue": 10.3 },
+            { "ageRange": "157-192", "minValue": 2.89, "maxValue": 9.34 },
+            { "ageRange": "193-216", "minValue": 2.83, "maxValue": 7.72 },
+            { "ageRange": "217+", "minValue": 3.41, "maxValue": 8.94 }
+          ]
+        },
+        {
+          "name": "IgG2",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0, "maxValue": 0.82 },
+            { "ageRange": "6-9", "minValue": 0, "maxValue": 0.89 },
+            { "ageRange": "10-15", "minValue": 0.24, "maxValue": 0.98 },
+            { "ageRange": "16-24", "minValue": 0.35, "maxValue": 1.05 },
+            { "ageRange": "25-48", "minValue": 0.39, "maxValue": 1.76 },
+            { "ageRange": "49-84", "minValue": 0.44, "maxValue": 3.16 },
+            { "ageRange": "85-120", "minValue": 0.54, "maxValue": 4.35 },
+            { "ageRange": "121-156", "minValue": 0.66, "maxValue": 5.02 },
+            { "ageRange": "157-192", "minValue": 0.82, "maxValue": 5.16 },
+            { "ageRange": "193-216", "minValue": 0.98, "maxValue": 4.86 },
+            { "ageRange": "217+", "minValue": 1.71, "maxValue": 6.32 }
+          ]
+        },
+        {
+          "name": "IgG3",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0.076, "maxValue": 0.823 },
+            { "ageRange": "6-9", "minValue": 0.119, "maxValue": 0.74 },
+            { "ageRange": "10-15", "minValue": 0.173, "maxValue": 0.637 },
+            { "ageRange": "16-24", "minValue": 0.219, "maxValue": 0.55 },
+            { "ageRange": "25-48", "minValue": 0.17, "maxValue": 0.847 },
+            { "ageRange": "49-84", "minValue": 0.108, "maxValue": 0.949 },
+            { "ageRange": "85-120", "minValue": 0.085, "maxValue": 1.05 },
+            { "ageRange": "121-156", "minValue": 0.115, "maxValue": 1.053 },
+            { "ageRange": "157-192", "minValue": 0.2, "maxValue": 1.302 },
+            { "ageRange": "193-216", "minValue": 0.313, "maxValue": 0.976 },
+            { "ageRange": "217+", "minValue": 0.184, "maxValue": 1.06 }
+          ]
+        },
+        {
+          "name": "IgG4",
+          "ageGroups": [
+            { "ageRange": "0-5", "minValue": 0, "maxValue": 0.198 },
+            { "ageRange": "6-9", "minValue": 0, "maxValue": 0.208 },
+            { "ageRange": "10-15", "minValue": 0, "maxValue": 0.22 },
+            { "ageRange": "16-24", "minValue": 0, "maxValue": 0.23 },
+            { "ageRange": "25-48", "minValue": 0.004, "maxValue": 0.491 },
+            { "ageRange": "49-84", "minValue": 0.008, "maxValue": 0.819 },
+            { "ageRange": "85-120", "minValue": 0.01, "maxValue": 1.087 },
+            { "ageRange": "121-156", "minValue": 0.010, "maxValue": 1.219 },
+            { "ageRange": "157-192", "minValue": 0.007, "maxValue": 1.217 },
+            { "ageRange": "193-216", "minValue": 0.003, "maxValue": 1.11 },
+            { "ageRange": "217+", "minValue": 0.024, "maxValue": 1.21 }
+          ]
+        }
+      ]
+    },{
+      "name": "Klavuz-os",
+      "description": "Distribution of serum immunoglobulin levels according to age groups in children between 1 month and 18 years of age.",
+      "unit": "mg/L",
+      "testTypes": [
+        {
+          "name": "IgG",
+          "ageGroups": [
+            { "ageRange": "1-3", "mean": 433.55, "stdDev": 137.11, "minValue": 227, "maxValue": 770, "lowerLimit": 45.72, "upperLimit": 677.11 },
+            { "ageRange": "4-6", "mean": 382.15, "stdDev": 173.18, "minValue": 141, "maxValue": 885, "lowerLimit": 141.42, "upperLimit": 825.52 },
+            { "ageRange": "7-12", "mean": 618.1, "stdDev": 200.78, "minValue": 350, "maxValue": 1010, "lowerLimit": 236.02, "upperLimit": 972.82 },
+            { "ageRange": "13-24", "mean": 671.1, "stdDev": 177.86, "minValue": 432, "maxValue": 990, "lowerLimit": 328.97, "upperLimit": 1118.46 },
+            { "ageRange": "25-36", "mean": 834.75, "stdDev": 193.52, "minValue": 437, "maxValue": 1320, "lowerLimit": 419.7, "upperLimit": 1261.89 },
+            { "ageRange": "37-60", "mean": 994.4, "stdDev": 236.68, "minValue": 524, "maxValue": 1400, "lowerLimit": 507.68, "upperLimit": 1402.57 },
+            { "ageRange": "61-96", "mean": 1162.75, "stdDev": 227.85, "minValue": 858, "maxValue": 1600, "lowerLimit": 592.34, "upperLimit": 1539.92 },
+            { "ageRange": "97-132", "mean": 1177.1, "stdDev": 248.22, "minValue": 645, "maxValue": 1520, "lowerLimit": 673.13, "upperLimit": 1673.42 },
+            { "ageRange": "133-192", "mean": 1213.95, "stdDev": 229.63, "minValue": 877, "maxValue": 1620, "lowerLimit": 749.51, "upperLimit": 1802.49 }
+          ]
+        },
+        {
+          "name": "IgA",
+          "ageGroups": [
+            { "ageRange": "1-3", "mean": 15.95, "stdDev": 12.02, "minValue": 6, "maxValue": 47, "lowerLimit": 0, "upperLimit": 36.36 },
+            { "ageRange": "4-6", "mean": 19.95, "stdDev": 12.7, "minValue": 7, "maxValue": 63, "lowerLimit": 0, "upperLimit": 53.39 },
+            { "ageRange": "7-12", "mean": 35.75, "stdDev": 23.29, "minValue": 12, "maxValue": 114, "lowerLimit": 0, "upperLimit": 72.26 },
+            { "ageRange": "13-24", "mean": 37.35, "stdDev": 10.95, "minValue": 15, "maxValue": 52, "lowerLimit": 0, "upperLimit": 93.9 },
+            { "ageRange": "25-36", "mean": 54.2, "stdDev": 16.04, "minValue": 24, "maxValue": 84, "lowerLimit": 2.29, "upperLimit": 119.23 },
+            { "ageRange": "37-60", "mean": 94.35, "stdDev": 20.9, "minValue": 55, "maxValue": 135, "lowerLimit": 13.24, "upperLimit": 149.16 },
+            { "ageRange": "61-96", "mean": 130.25, "stdDev": 47.41, "minValue": 81, "maxValue": 264, "lowerLimit": 29.73, "upperLimit": 184.63 },
+            { "ageRange": "97-132", "mean": 160.45, "stdDev": 70.56, "minValue": 78, "maxValue": 334, "lowerLimit": 52.67, "upperLimit": 226.55 },
+            { "ageRange": "133-192", "mean": 163.6, "stdDev": 49.58, "minValue": 87, "maxValue": 234, "lowerLimit": 82.99, "upperLimit": 275.84 }
+          ]
+        },
+        {
+          "name": "IgM",
+          "ageGroups": [
+            { "ageRange": "1-3", "mean": 34.7, "stdDev": 16.48, "minValue": 18, "maxValue": 87, "lowerLimit": 2.78, "upperLimit": 63.58 },
+            { "ageRange": "4-6", "mean": 50.15, "stdDev": 25.71, "minValue": 18, "maxValue": 136, "lowerLimit": 11.56, "upperLimit": 89.45 },
+            { "ageRange": "7-12", "mean": 57.95, "stdDev": 21.25, "minValue": 28, "maxValue": 115, "lowerLimit": 19.59, "upperLimit": 114.57 },
+            { "ageRange": "13-24", "mean": 85.4, "stdDev": 36.53, "minValue": 32, "maxValue": 148, "lowerLimit": 26.48, "upperLimit": 138.56 },
+            { "ageRange": "25-36", "mean": 100.45, "stdDev": 25.58, "minValue": 47, "maxValue": 144, "lowerLimit": 31.87, "upperLimit": 161.04 },
+            { "ageRange": "37-60", "mean": 121.1, "stdDev": 37.33, "minValue": 65, "maxValue": 205, "lowerLimit": 35.37, "upperLimit": 181.64 },
+            { "ageRange": "61-96", "mean": 118.15, "stdDev": 39.49, "minValue": 47, "maxValue": 198, "lowerLimit": 36.61, "upperLimit": 199.98 },
+            { "ageRange": "97-132", "mean": 102.2, "stdDev": 36.58, "minValue": 38, "maxValue": 163, "lowerLimit": 35.21, "upperLimit": 215.67 },
+            { "ageRange": "133-192", "mean": 143.6, "stdDev": 57.71, "minValue": 47, "maxValue": 285, "lowerLimit": 30.79, "upperLimit": 228.35 }
+          ]
+        }
+      ]
     }
+
+
+
 
   ]
 }

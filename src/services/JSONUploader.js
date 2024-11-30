@@ -14,6 +14,7 @@ class JSONUploader {
                 const guideRef = await addDoc(collection(db, 'guides'), {
                     name: guide.name,
                     description: guide.description,
+                    unit: guide.unit, // Unit alanını kılavuz düzeyine ekle
                 });
                 console.log(`Kılavuz eklendi: ${guide.name}`);
 
@@ -23,7 +24,6 @@ class JSONUploader {
                         collection(db, 'guides', guideRef.id, 'tests'),
                         {
                             name: test.name,
-                            unit: test.unit,
                         }
                     );
                     console.log(`Tetkik eklendi: ${test.name}`);
