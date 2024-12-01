@@ -1,8 +1,9 @@
-// firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Firebase yapılandırma bilgilerinizi buraya ekleyin
+// Firebase yapılandırması
 const firebaseConfig = {
   apiKey: "AIzaSyBAcraYzrYNtfHY4Sa7Qpr1uOJiABT85ps",
   authDomain: "e-lab-2a26f.firebaseapp.com",
@@ -18,4 +19,9 @@ const app = initializeApp(firebaseConfig);
 // Firestore bağlantısını al
 const db = getFirestore(app);
 
-export { db };
+// Auth'u AsyncStorage ile başlat
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+
+export { db, auth };

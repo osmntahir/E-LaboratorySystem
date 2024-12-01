@@ -1,12 +1,13 @@
-// App.js
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from './src/navigation/AppNavigator';
+import React from "react";
+import { AuthProvider } from "./src/context/AuthContext";
+import AppNavigator from "./src/navigation/AppNavigator";
 
-export default function App() {
+const App = () => {
     return (
-        <NavigationContainer>
+        <AuthProvider>
             <AppNavigator />
-        </NavigationContainer>
+        </AuthProvider>
     );
-}
+};
+
+export default App;
