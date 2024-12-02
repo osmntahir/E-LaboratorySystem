@@ -10,10 +10,6 @@ const AdminHomeScreen = ({ navigation }) => {
                 title="Kılavuz Yönetimine Git"
                 onPress={() => navigation.navigate("GuideManagement")}
             />
-            <Button
-                title="Hasta Yönetimine Git"
-                onPress={() => navigation.navigate("PatientManagement")}
-            />
             <Button title="Hasta Listesi" onPress={() => navigation.navigate('Patients')} />
             <LogoutButton />
         </View>
