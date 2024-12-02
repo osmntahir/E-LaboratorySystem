@@ -106,12 +106,19 @@ const AddTestResultScreen = ({ route, navigation }) => {
                     ageGroupsSnapshot.forEach(ageGroupDoc => {
                         const ageGroupData = ageGroupDoc.data();
                         if (isAgeInRange(ageInMonths, ageGroupData.ageRange)) {
+                            let adjustedTestValue = testValue;
+
+                            // Eğer birim mg/L ise değeri 1000 ile çarp
+                            if (guideData.unit === 'mg/L') {
+                                adjustedTestValue *= 1000;
+                            }
+
                             const minValue = ageGroupData.minValue;
                             const maxValue = ageGroupData.maxValue;
                             let status = 'Normal';
 
-                            if (testValue < minValue) status = 'Düşük';
-                            else if (testValue > maxValue) status = 'Yüksek';
+                            if (adjustedTestValue < minValue) status = 'Düşük';
+                            else if (adjustedTestValue > maxValue) status = 'Yüksek';
 
                             guideEvaluations.push({
                                 guideName: guideData.name,
