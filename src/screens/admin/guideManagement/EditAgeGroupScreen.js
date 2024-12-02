@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { updateAgeGroup } from '../services/firebaseService';
-import { db } from '../../firebaseConfig';
+import { updateAgeGroup } from '../../../services/firebaseService';
+import { db } from '../../../../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
-import styles from '../styles/styles';
+import styles from '../../../styles/styles';
 
 const EditAgeGroupScreen = ({ route, navigation }) => {
     const { guideId, testId, ageGroupId } = route.params;

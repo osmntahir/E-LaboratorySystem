@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import TestResultItem from '../components/TestResultItem';
+import { db } from '../../../firebaseConfig';
+import TestResultItem from '../../components/items/TestResultItem';
 
 const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;

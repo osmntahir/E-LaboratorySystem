@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { List, Button } from 'react-native-paper';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import TestItem from './TestItem';
+import { db } from '../../../firebaseConfig';
+import TestItem from '../items/TestItem';
 import { Alert } from 'react-native'; // Import Alert from react-native
 
 const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {

@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { register } from '../services/authService';
-import { AuthContext } from '../context/AuthContext';
+import { register } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 import { setDoc, doc, getDocs, query, where, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 
 const RegisterScreen = ({ navigation }) => {
     const { setUser } = useContext(AuthContext);

@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { AuthContext } from "../context/AuthContext";
-import AdminNavigator from "../navigation/AdminNavigator";
-import UserNavigator from "../navigation/UserNavigator";
+import { AuthContext } from "../../context/AuthContext";
+import AdminNavigator from "../../navigation/AdminNavigator";
+import UserNavigator from "../../navigation/UserNavigator";
 
 const RoleBasedScreen = () => {
     const { user } = useContext(AuthContext);

@@ -1,11 +1,11 @@
 // src/components/LogoutButton.js
-import React, { useContext } from 'react';
-import { Button } from 'react-native';
-import { logout } from '../services/authService';
-import { AuthContext } from '../context/AuthContext';
+import React, {useContext} from 'react';
+import {Button} from 'react-native';
+import {logout} from '../services/authService';
+import {AuthContext} from '../context/AuthContext';
 
 const LogoutButton = () => {
-    const { setUser } = useContext(AuthContext);
+    const {setUser} = useContext(AuthContext);
 
     const handleLogout = async () => {
         try {
@@ -16,7 +16,7 @@ const LogoutButton = () => {
         }
     };
 
-    return <Button title="Çıkış Yap" onPress={handleLogout} />;
+    return <Button title="Çıkış Yap" onPress={handleLogout}/>;
 };
 
 export default LogoutButton;

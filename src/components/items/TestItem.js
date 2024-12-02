@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { List, Button, Alert } from 'react-native-paper';
 import { collection, onSnapshot, query } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import { deleteTest } from '../services/firebaseService';
+import { db } from '../../../firebaseConfig';
+import { deleteTest } from '../../services/firebaseService';
 import AgeGroupItem from './AgeGroupItem';
 import { Alert as RNAlert } from 'react-native'; // Import Alert from react-native
 

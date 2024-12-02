@@ -1,12 +1,12 @@
-import React, { createContext, useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import React, {createContext, useEffect, useState} from "react";
+import {onAuthStateChanged} from "firebase/auth";
+import {auth, db} from "../../firebaseConfig";
+import {doc, getDoc} from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{user, setUser}}>
             {children}
         </AuthContext.Provider>
     );

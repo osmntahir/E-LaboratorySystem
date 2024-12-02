@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker'; // Picker bileşenini ekliyoruz
-import { updateGuide } from '../services/firebaseService';
-import { db } from '../../firebaseConfig';
+import { updateGuide } from '../../../services/firebaseService';
+import { db } from '../../../../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
-import styles from '../styles/styles';
+import styles from '../../../styles/styles';
 
 const EditGuideScreen = ({ route, navigation }) => {
     const { guideId } = route.params;

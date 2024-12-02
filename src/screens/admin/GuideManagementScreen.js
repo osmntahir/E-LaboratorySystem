@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Alert } from 'react-native';
 import { Button, IconButton, Text } from 'react-native-paper'; // IconButton eklendi
-import { getGuides, deleteGuide } from '../services/firebaseService';
-import GuideItem from '../components/GuideItem';
-import styles from '../styles/styles';
+import { getGuides, deleteGuide } from '../../services/firebaseService';
+import GuideItem from '../../components/items/GuideItem';
+import styles from '../../styles/styles';
 
 const GuideManagementScreen = ({ navigation }) => {
     const [guides, setGuides] = useState([]);

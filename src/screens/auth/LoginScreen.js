@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { login } from '../services/authService';
-import { AuthContext } from '../context/AuthContext';
+import { login } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
     const { setUser } = useContext(AuthContext);

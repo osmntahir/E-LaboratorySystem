@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { db } from "../../../firebaseConfig";
 import { Picker } from '@react-native-picker/picker';
-import TEST_TYPES from '../constants/testTypes'; // Import TEST_TYPES
+import TEST_TYPES from '../../constants/testTypes'; // Import TEST_TYPES
 
 const PatientManagementScreen = () => {
     const [tcNo, setTcNo] = useState("");

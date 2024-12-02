@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker'; // Picker bileşenini ekliyoruz
-import { addGuide } from '../services/firebaseService';
-import styles from '../styles/styles';
+import { addGuide } from '../../../services/firebaseService';
+import styles from '../../../styles/styles';
 
 const AddGuideScreen = ({ navigation }) => {
     const [name, setName] = useState('');

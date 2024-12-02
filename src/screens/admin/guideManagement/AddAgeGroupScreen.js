@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { addAgeGroup } from '../services/firebaseService';
-import styles from '../styles/styles';
+import { addAgeGroup } from '../../../services/firebaseService';
+import styles from '../../../styles/styles';
 
 const AddAgeGroupScreen = ({ route, navigation }) => {
     const { guideId, testId } = route.params;

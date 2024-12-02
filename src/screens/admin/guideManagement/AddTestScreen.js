@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker'; // Alternatif olarak DropDownPicker kullanıyoruz
-import { addTest, getTests } from '../services/firebaseService';
-import styles from '../styles/styles';
+import { addTest, getTests } from '../../../services/firebaseService';
+import styles from '../../../styles/styles';
 
 const AddTestScreen = ({ route, navigation }) => {
     const { guideId } = route.params;

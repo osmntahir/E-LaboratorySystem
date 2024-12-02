@@ -5,7 +5,37 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AgeGroupItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/AgeGroupItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AuthForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/forms/AuthForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/GuideItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/GuideItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LogoutButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LogoutButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/PatientItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/PatientItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TestItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/TestItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TestResultItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/TestResultItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/context/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/context/AuthContext.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AppNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AppNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AuthNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AuthNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AddAgeGroupScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddAgeGroupScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AddGuideScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddGuideScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AddPatientScreen.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AddTestResultScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/AddTestResultScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AddTestScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddTestScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/AdminHomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/AdminHomeScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/EditAgeGroupScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditAgeGroupScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/EditGuideScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditGuideScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/EditTestScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditTestScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/GuideManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/GuideManagementScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/LoginScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/auth/LoginScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/PatientDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientDetailScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/PatientListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientListScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/PatientManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientManagementScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/RegisterScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/auth/RegisterScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/RoleBasedScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/auth/RoleBasedScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/TestResultsScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/TestResultsScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/UserHomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/users/UserHomeScreen.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +78,15 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\components\forms" />
+      <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\components\items" />
+      <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\screens\auth" />
+      <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\screens\admin" />
+      <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\screens\users" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
@@ -85,6 +124,7 @@
       <workItem from="1732951719887" duration="26827000" />
       <workItem from="1733063242071" duration="830000" />
       <workItem from="1733066434962" duration="2096000" />
+      <workItem from="1733127195538" duration="8446000" />
     </task>
     <servers />
   </component>

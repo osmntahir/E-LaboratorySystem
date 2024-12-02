@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import PatientItem from '../components/PatientItem';
+import { db } from '../../../firebaseConfig';
+import PatientItem from '../../components/items/PatientItem';
 
 const PatientListScreen = ({ navigation }) => {
     const [patients, setPatients] = useState([]);

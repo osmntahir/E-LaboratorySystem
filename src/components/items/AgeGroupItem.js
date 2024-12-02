@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Button } from 'react-native-paper';
-import { deleteAgeGroup } from '../services/firebaseService';
+import { deleteAgeGroup } from '../../services/firebaseService';
 import { Alert } from 'react-native'; // Import Alert from react-native
 
 const AgeGroupItem = ({ guideId, testId, ageGroup, navigation }) => {

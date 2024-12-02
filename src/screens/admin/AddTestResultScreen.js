@@ -1,11 +1,11 @@
 // src/screens/AddTestResultScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
-import { addTestResult } from '../services/testResultService';
-import { calculateAgeInMonths } from '../utils/ageCalculator';
-import { isAgeInRange } from '../utils/ageRangeEvaluator';
+import { addTestResult } from '../../services/testResultService';
+import { calculateAgeInMonths } from '../../utils/ageCalculator';
+import { isAgeInRange } from '../../utils/ageRangeEvaluator';
 
 const AddTestResultScreen = ({ route, navigation }) => {
     const { patient } = route.params;

@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { updateTest } from '../services/firebaseService';
-import { db } from '../../firebaseConfig';
+import { updateTest } from '../../../services/firebaseService';
+import { db } from '../../../../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
-import styles from '../styles/styles';
+import styles from '../../../styles/styles';
 
 const EditTestScreen = ({ route, navigation }) => {
     const { guideId, testId } = route.params;
