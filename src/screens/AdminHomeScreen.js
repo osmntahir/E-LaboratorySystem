@@ -14,6 +14,7 @@ const AdminHomeScreen = ({ navigation }) => {
                 title="Hasta Yönetimine Git"
                 onPress={() => navigation.navigate("PatientManagement")}
             />
+            <Button title="Hasta Listesi" onPress={() => navigation.navigate('Patients')} />
             <LogoutButton />
         </View>
     );
