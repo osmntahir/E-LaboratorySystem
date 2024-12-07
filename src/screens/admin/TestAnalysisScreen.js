@@ -1,58 +1,10 @@
+// src/screens/TestAnalysisScreen.js
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
-
-// Yardımcı fonksiyon: Yaş aralıklarını parse et ve kesişimi kontrol et
-const parseAgeRange = (rangeString) => {
-    // "cord" kontrolü
-    if (rangeString.toLowerCase() === 'cord') {
-        return { type: 'cord', min: null, max: null };
-    }
-
-    // "min-max" formatı
-    if (rangeString.includes("-")) {
-        const [minStr, maxStr] = rangeString.split("-").map(s => s.trim());
-        const minVal = parseInt(minStr, 10);
-        const maxVal = parseInt(maxStr, 10);
-        if (!isNaN(minVal) && !isNaN(maxVal)) {
-            return { type: 'range', min: minVal, max: maxVal };
-        }
-    }
-
-    // "min+" formatı (ör: "217+"), eğer ihtiyacınız varsa aşağıdaki kodu uyarlayın:
-    if (rangeString.includes("+")) {
-        const baseVal = parseInt(rangeString.replace("+","").trim(), 10);
-        if (!isNaN(baseVal)) {
-            // min = baseVal, max = sonsuz gibi düşünebilirsiniz.
-            return { type: 'range', min: baseVal, max: Infinity };
-        }
-    }
-
-    // Eğer farklı bir format yok ise null dönebiliriz
-    return null;
-};
-
-const checkRangeOverlap = (userRange, guideRange) => {
-    // Eğer ikisi de cord ise doğrudan true
-    if (userRange.type === 'cord' && guideRange.type === 'cord') {
-        return true;
-    }
-
-    // Biri cord diğeri normal aralık ise kesişim yok
-    if (userRange.type === 'cord' && guideRange.type !== 'cord') return false;
-    if (guideRange.type === 'cord' && userRange.type !== 'cord') return false;
-
-    // Her ikisi de aralık ise kesişimi kontrol edelim
-    if (userRange.type === 'range' && guideRange.type === 'range') {
-        // Aralıklar [userMin, userMax] ve [guideMin, guideMax]
-        // Kesişim varsa: guideMax >= userMin ve userMax >= guideMin
-        return (guideRange.max >= userRange.min && userRange.max >= guideRange.min);
-    }
-
-    // Diğer durumlar (örneğin biri null döndüyse) false dönebiliriz
-    return false;
-};
+import { parseAgeRange, checkRangeOverlap, sortAgeRanges } from '../../utils/ageRangeHelper';
 
 const TestAnalysisScreen = () => {
     const [testTypes, setTestTypes] = useState([]);
@@ -73,7 +25,8 @@ const TestAnalysisScreen = () => {
                         testTypeSet.add(testDoc.data().name);
                     });
                 }
-                setTestTypes(Array.from(testTypeSet));
+                const sortedTests = Array.from(testTypeSet).sort();
+                setTestTypes(sortedTests);
             } catch (error) {
                 console.error('Error fetching test types: ', error);
             }
@@ -113,10 +66,12 @@ const TestAnalysisScreen = () => {
 
                 if (foundTest && foundTestId) {
                     const ageGroupsSnapshot = await getDocs(collection(db, 'guides', guideDoc.id, 'tests', foundTestId, 'ageGroups'));
+                    let ageGroups = ageGroupsSnapshot.docs.map(doc => doc.data());
 
-                    ageGroupsSnapshot.forEach(ageGroupDoc => {
-                        const ageGroupData = ageGroupDoc.data();
+                    // Yaş gruplarını azalandan artana sırala
+                    ageGroups = sortAgeRanges(ageGroups);
 
+                    ageGroups.forEach(ageGroupData => {
                         const guideRange = parseAgeRange(ageGroupData.ageRange);
 
                         // Eğer userRange girilmişse kesişim kontrolü yap
