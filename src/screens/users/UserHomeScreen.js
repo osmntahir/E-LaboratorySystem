@@ -1,15 +1,30 @@
+// ./src/screens/users/UserHomeScreen.js
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Button } from 'react-native-paper';
 import LogoutButton from "../../components/LogoutButton";
 
 const UserHomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Kullanıcı Ana Sayfa</Text>
+
             <Button
-                title="Tahlil Sonuçlarına Git"
+                mode="contained"
                 onPress={() => navigation.navigate("TestResults")}
-            />
+                style={styles.button}
+            >
+                Tahlil Sonuçlarına Git
+            </Button>
+
+            <Button
+                mode="contained"
+                onPress={() => navigation.navigate("Profile")}
+                style={styles.button}
+            >
+                Profilimi Yönet
+            </Button>
+
             <LogoutButton />
         </View>
     );
@@ -26,7 +41,12 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 20,
+        marginBottom: 30,
+        color: '#3f51b5'
+    },
+    button: {
+        marginBottom: 15,
+        backgroundColor: '#3f51b5',
     },
 });
 
