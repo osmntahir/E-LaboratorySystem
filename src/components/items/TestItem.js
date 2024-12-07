@@ -1,18 +1,17 @@
-// src/components/TestItem.js
 import React, { useState, useEffect } from 'react';
-import { List, Button, Alert } from 'react-native-paper';
+import { List, Button } from 'react-native-paper';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { deleteTest } from '../../services/firebaseService';
 import AgeGroupItem from './AgeGroupItem';
-import { Alert as RNAlert } from 'react-native'; // Import Alert from react-native
+import { sortAgeRanges } from '../../utils/ageRangeHelper'; // Yardımcı fonksiyonu import ediyoruz
+import { Alert as RNAlert } from 'react-native';
 
 const TestItem = ({ guideId, test, navigation }) => {
     const [expanded, setExpanded] = useState(false);
     const [ageGroups, setAgeGroups] = useState([]);
 
     const handleDeleteTest = async () => {
-        console.log('Silme işlemi başlatıldı');
         RNAlert.alert(
             'Tetkik Sil',
             `${test.name} tetkikini silmek istediğinize emin misiniz?`,
@@ -22,10 +21,8 @@ const TestItem = ({ guideId, test, navigation }) => {
                     text: 'Sil',
                     style: 'destructive',
                     onPress: async () => {
-                        console.log('Silme işlemi onaylandı');
                         try {
                             await deleteTest(guideId, test.id);
-                            console.log('Tetkik başarıyla silindi');
                         } catch (error) {
                             console.error('Tetkik silinirken hata oluştu:', error);
                         }
@@ -44,7 +41,9 @@ const TestItem = ({ guideId, test, navigation }) => {
                     id: doc.id,
                     ...doc.data(),
                 }));
-                setAgeGroups(ageGroupList); // Ekranı otomatik günceller
+                // Yaş gruplarını sıralıyoruz
+                const sortedAgeGroups = sortAgeRanges(ageGroupList);
+                setAgeGroups(sortedAgeGroups);
             });
 
             return () => unsubscribe();
