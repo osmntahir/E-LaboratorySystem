@@ -1,17 +1,24 @@
 // src/screens/AddTestResultScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { addTestResult } from '../../services/testResultService';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
 import { isAgeInRange } from '../../utils/ageRangeEvaluator';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Text, TextInput, Button, Card, Title, IconButton, Subheading } from 'react-native-paper';
 
 const AddTestResultScreen = ({ route, navigation }) => {
     const { patient } = route.params;
     const [testTypes, setTestTypes] = useState([]);
     const [selectedTests, setSelectedTests] = useState([]);
     const [testValues, setTestValues] = useState({});
+
+    // Tarih ve saat seçimi için state
+    const [testDate, setTestDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
 
     useEffect(() => {
         const fetchTestTypes = async () => {
@@ -50,6 +57,36 @@ const AddTestResultScreen = ({ route, navigation }) => {
         setTestValues({ ...testValues, [testName]: value });
     };
 
+    const handleDateChange = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            const currentDate = new Date(testDate);
+            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+            setTestDate(currentDate);
+        }
+    };
+
+    const handleTimeChange = (event, selectedTime) => {
+        setShowTimePicker(false);
+        if (selectedTime) {
+            const currentDate = new Date(testDate);
+            currentDate.setHours(selectedTime.getHours());
+            currentDate.setMinutes(selectedTime.getMinutes());
+            setTestDate(currentDate);
+        }
+    };
+
+    const formatDate = (dateObj) => {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+
+        // Format: YYYY-MM-DD HH:mm:ss
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    };
+
     const handleSave = async () => {
         try {
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
@@ -71,9 +108,12 @@ const AddTestResultScreen = ({ route, navigation }) => {
                 });
             }
 
+            // Tarihi anlaşılır bir formatta kaydediyoruz
+            const formattedDate = formatDate(testDate);
+
             const testResult = {
                 patientTc: patient.tcNo,
-                testDate: new Date().toISOString().split('T')[0],
+                testDate: formattedDate,  // Daha okunaklı format
                 tests
             };
 
@@ -138,33 +178,124 @@ const AddTestResultScreen = ({ route, navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Test Ekle</Text>
-            {testTypes.map((testName, index) => (
-                <View key={index} style={styles.testTypeContainer}>
-                    <TouchableOpacity onPress={() => toggleTestSelection(testName)}>
-                        <Text style={styles.testName}>{testName}</Text>
-                    </TouchableOpacity>
-                    {selectedTests.includes(testName) && (
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Değer"
-                            keyboardType="numeric"
-                            onChangeText={(value) => handleValueChange(testName, value)}
+            <Card style={styles.card}>
+                <Card.Title
+                    title="Test Ekle"
+                    titleStyle={styles.cardTitle}
+                    left={(props) => <IconButton {...props} icon="flask" />}
+                />
+                <Card.Content>
+                    <Subheading style={styles.sectionTitle}>Tarih ve Saat Seçimi</Subheading>
+                    <View style={styles.dateTimeContainer}>
+                        <Button mode="outlined" onPress={() => setShowDatePicker(true)} style={styles.dateTimeButton}>
+                            Tarih Seç
+                        </Button>
+                        <Button mode="outlined" onPress={() => setShowTimePicker(true)} style={styles.dateTimeButton}>
+                            Saat Seç
+                        </Button>
+                    </View>
+                    <Text style={styles.selectedDate}>
+                        Seçilen Tarih ve Saat: {formatDate(testDate)}
+                    </Text>
+
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={testDate}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                            onChange={handleDateChange}
                         />
                     )}
-                </View>
-            ))}
-            <Button title="Kaydet" onPress={handleSave} />
+                    {showTimePicker && (
+                        <DateTimePicker
+                            value={testDate}
+                            mode="time"
+                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                            onChange={handleTimeChange}
+                        />
+                    )}
+
+                    <Subheading style={styles.sectionTitle}>Testler</Subheading>
+                    {testTypes.map((testName, index) => (
+                        <View key={index} style={styles.testTypeContainer}>
+                            <TouchableOpacity onPress={() => toggleTestSelection(testName)}>
+                                <Text style={styles.testName}>
+                                    {selectedTests.includes(testName) ? '☑ ' : '☐ '}
+                                    {testName}
+                                </Text>
+                            </TouchableOpacity>
+                            {selectedTests.includes(testName) && (
+                                <TextInput
+                                    mode="outlined"
+                                    label={`${testName} Değeri`}
+                                    placeholder="Değer giriniz"
+                                    keyboardType="numeric"
+                                    value={testValues[testName] || ''}
+                                    onChangeText={(value) => handleValueChange(testName, value)}
+                                    style={styles.input}
+                                />
+                            )}
+                        </View>
+                    ))}
+
+                    <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
+                        Kaydet
+                    </Button>
+                </Card.Content>
+            </Card>
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { padding: 10 },
-    title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-    testTypeContainer: { marginBottom: 10 },
-    testName: { fontSize: 16 },
-    input: { borderWidth: 1, borderColor: '#ccc', padding: 5, marginTop: 5 }
+    container: {
+        padding: 10,
+        backgroundColor: '#f2f6ff',
+        flexGrow: 1
+    },
+    card: {
+        borderRadius: 10
+    },
+    cardTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#3f51b5'
+    },
+    sectionTitle: {
+        marginTop: 20,
+        marginBottom: 10,
+        fontWeight: '600',
+        color: '#3f51b5',
+    },
+    dateTimeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginBottom: 10
+    },
+    dateTimeButton: {
+        marginRight: 10
+    },
+    selectedDate: {
+        marginTop: 5,
+        fontSize: 16,
+        marginBottom: 20
+    },
+    testTypeContainer: {
+        marginBottom: 15
+    },
+    testName: {
+        fontSize: 16,
+        marginBottom: 5
+    },
+    input: {
+        marginBottom: 10
+    },
+    saveButton: {
+        marginTop: 20,
+        borderRadius: 5,
+        padding: 5,
+        backgroundColor: '#3f51b5'
+    }
 });
 
 export default AddTestResultScreen;
