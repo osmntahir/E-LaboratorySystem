@@ -9,6 +9,7 @@ import PatientListScreen from '../screens/admin/PatientListScreen';
 import PatientDetailScreen from '../screens/admin/PatientDetailScreen';
 import AddTestResultScreen from '../screens/admin/AddTestResultScreen';
 import UploadJSONScreen from '../screens/UploadJSONScreen';
+import TestAnalysisScreen from '../screens/admin/TestAnalysisScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const AdminNavigator = () => {
             <Stack.Screen name="EditTestResult" component={AddTestResultScreen} options={{title: 'Tahlil Düzenle'}}/>
             <Stack.Screen name="TestResultDetail" component={AddTestResultScreen} options={{title: 'Tahlil Detayı'}}/>
             <Stack.Screen name ="UploadJSON" component={UploadJSONScreen} options={{title: 'JSON Yükle' }}/>
+            <Stack.Screen name ="TestAnalysis" component={TestAnalysisScreen} options={{title: 'Tetkik Analizi' }}/>
 
         </Stack.Navigator>
     );

@@ -11,6 +11,11 @@ const AdminHomeScreen = ({ navigation }) => {
                 onPress={() => navigation.navigate("GuideManagement")}
             />
             <Button title="Hasta Listesi" onPress={() => navigation.navigate('Patients')} />
+            <Button
+                title="Tetkik Arama Ekranı"
+                onPress={() => navigation.navigate('TestAnalysis')}
+            />
+
             <LogoutButton />
         </View>
     );
