@@ -87,6 +87,8 @@ const TestAnalysisScreen = () => {
                         if (!isNaN(adjustedTestValue)) {
                             // Girilen değer G/L cinsinden, eğer klavuz mg/L ise 1000 ile çarp
                             if (guideData.unit === 'mg/L') {
+
+                                console.log(guideData.name,' mg/L unit test analizi');
                                 adjustedTestValue *= 1000;
                             }
 

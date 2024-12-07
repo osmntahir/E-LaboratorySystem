@@ -1,5 +1,7 @@
+// src/screens/RegisterScreen.js
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, Platform, StyleSheet } from 'react-native';
+import { View, Alert, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { Text, TextInput, Button, Title, Card, Subheading } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { register } from '../../services/authService';
 import { AuthContext } from '../../context/AuthContext';
@@ -9,7 +11,6 @@ import { db } from '../../../firebaseConfig';
 const RegisterScreen = ({ navigation }) => {
     const { setUser } = useContext(AuthContext);
 
-    // Kullanıcı bilgileri için state
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,11 +23,9 @@ const RegisterScreen = ({ navigation }) => {
     const checkExistingUser = async (email, tcNo) => {
         const usersRef = collection(db, 'users');
 
-        // Email eşleşen kullanıcıyı sorgula
         const emailQuery = query(usersRef, where('email', '==', email));
         const emailSnapshot = await getDocs(emailQuery);
 
-        // TC No eşleşen kullanıcıyı sorgula
         const tcQuery = query(usersRef, where('tcNo', '==', tcNo));
         const tcSnapshot = await getDocs(tcQuery);
 
@@ -43,7 +42,7 @@ const RegisterScreen = ({ navigation }) => {
         }
 
         if (password.length < 6) {
-            Alert.alert('Hata', 'Şifre en az 6 karakter uzunluğunda olmalıdır.');
+            Alert.alert('Hata', 'Şifre en az 6 karakter olmalı.');
             return;
         }
 
@@ -99,67 +98,83 @@ const RegisterScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Kayıt Ol</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Ad"
-                value={name}
-                onChangeText={setName}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Soyad"
-                value={surname}
-                onChangeText={setSurname}
-            />
-            <View>
-                <Button title="Doğum Tarihini Seç" onPress={() => setShowDatePicker(true)} />
-                <Text style={styles.selectedDate}>
-                    Seçilen Tarih: {birthDate.toISOString().split('T')[0]}
-                </Text>
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={birthDate}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                        onChange={handleDateChange}
-                    />
-                )}
+            <View style={styles.headerContainer}>
+                <Title style={styles.title}>E-Lab</Title>
+                <Subheading style={styles.subtitle}>Yeni Hesap Oluşturun</Subheading>
             </View>
-            <TextInput
-                style={styles.input}
-                placeholder="TC Kimlik No"
-                value={tcNo}
-                onChangeText={setTcNo}
-                keyboardType="numeric"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Şifre"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Şifreyi Onayla"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-            />
-            <Button title="Kayıt Ol" onPress={handleRegister} />
-            <Button
-                title="Zaten hesabınız var mı? Giriş Yapın"
-                onPress={() => navigation.navigate('Login')}
-            />
+            <Card style={styles.card}>
+                <Card.Content>
+                    <Text style={styles.formTitle}>Kayıt Ol</Text>
+                    <TextInput
+                        mode="outlined"
+                        label="Ad"
+                        value={name}
+                        onChangeText={setName}
+                        style={styles.input}
+                    />
+                    <TextInput
+                        mode="outlined"
+                        label="Soyad"
+                        value={surname}
+                        onChangeText={setSurname}
+                        style={styles.input}
+                    />
+
+                    <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+                        <Text style={styles.dateText}>Doğum Tarihi Seç: {birthDate.toISOString().split('T')[0]}</Text>
+                    </TouchableOpacity>
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={birthDate}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                            onChange={handleDateChange}
+                        />
+                    )}
+
+                    <TextInput
+                        mode="outlined"
+                        label="TC Kimlik No"
+                        value={tcNo}
+                        onChangeText={setTcNo}
+                        keyboardType="numeric"
+                        style={styles.input}
+                        maxLength={11}
+                    />
+                    <TextInput
+                        mode="outlined"
+                        label="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        style={styles.input}
+                    />
+                    <TextInput
+                        mode="outlined"
+                        label="Şifre"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        style={styles.input}
+                    />
+                    <TextInput
+                        mode="outlined"
+                        label="Şifreyi Onayla"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry
+                        style={styles.input}
+                    />
+
+                    <Button mode="contained" onPress={handleRegister} style={styles.button}>
+                        Kayıt Ol
+                    </Button>
+                    <Button onPress={() => navigation.navigate('Login')} style={styles.linkButton}>
+                        Zaten hesabınız var mı? Giriş Yapın
+                    </Button>
+                </Card.Content>
+            </Card>
         </View>
     );
 };
@@ -167,26 +182,58 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f2f6ff',
         padding: 20,
-        backgroundColor: '#fff',
     },
-    header: {
+    headerContainer: {
+        paddingTop: 60,
+        paddingBottom: 30,
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#3f51b5',
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#333',
+        marginTop: 5,
+    },
+    card: {
+        borderRadius: 10,
+        paddingVertical: 20,
+    },
+    formTitle: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
+        color: '#3f51b5',
     },
     input: {
+        marginBottom: 15,
+    },
+    button: {
+        marginTop: 10,
+        paddingVertical: 5,
+        borderRadius: 5,
+        backgroundColor: '#3f51b5',
+    },
+    linkButton: {
+        marginTop: 10,
+    },
+    dateButton: {
+        marginBottom: 15,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-        fontSize: 16,
+        padding: 12,
+        justifyContent: 'center',
     },
-    selectedDate: {
-        marginVertical: 10,
+    dateText: {
         fontSize: 16,
+        color: '#555',
     },
 });
 
