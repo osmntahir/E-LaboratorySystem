@@ -1,14 +1,36 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, Alert } from 'react-native';
+// src/screens/PatientDetailScreen.js
+import React, { useCallback, useState } from 'react';
+import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import TestResultItem from '../../components/items/TestResultItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { deleteTestResult } from '../../services/testResultService';
+import { Text, Button, Card, Title, IconButton, Subheading, FAB, Divider } from 'react-native-paper';
 
 const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;
     const [testResults, setTestResults] = useState([]);
+
+    const parseDate = (dateStr) => {
+        const [datePart, timePart] = dateStr.split(' ');
+        const [year, month, day] = datePart.split('-').map(num => parseInt(num, 10));
+
+        let hourInt = 0;
+        let minuteInt = 0;
+        let secondInt = 0;
+
+        if (timePart) {
+            const timeSegments = timePart.split(':');
+            hourInt = parseInt(timeSegments[0], 10) || 0;
+            minuteInt = parseInt(timeSegments[1], 10) || 0;
+            if (timeSegments.length === 3) {
+                secondInt = parseInt(timeSegments[2], 10) || 0;
+            }
+        }
+
+        return new Date(year, month - 1, day, hourInt, minuteInt, secondInt);
+    };
 
     const fetchTestResults = useCallback(async () => {
         try {
@@ -34,26 +56,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
         }, [fetchTestResults])
     );
 
-    const parseDate = (dateStr) => {
-        const [datePart, timePart] = dateStr.split(' ');
-        const [year, month, day] = datePart.split('-').map(num => parseInt(num, 10));
-
-        let hourInt = 0;
-        let minuteInt = 0;
-        let secondInt = 0;
-
-        if (timePart) {
-            const timeSegments = timePart.split(':');
-            hourInt = parseInt(timeSegments[0], 10) || 0;
-            minuteInt = parseInt(timeSegments[1], 10) || 0;
-            if (timeSegments.length === 3) {
-                secondInt = parseInt(timeSegments[2], 10) || 0;
-            }
-        }
-
-        return new Date(year, month - 1, day, hourInt, minuteInt, secondInt);
-    };
-
     const handleAddTestResult = () => {
         navigation.navigate('AddTestResult', { patient });
     };
@@ -67,10 +69,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
             'Silme İşlemi',
             'Bu tahlil sonucunu silmek istediğinize emin misiniz?',
             [
-                {
-                    text: 'İptal Et',
-                    style: 'cancel',
-                },
+                { text: 'İptal Et', style: 'cancel' },
                 {
                     text: 'Sil',
                     onPress: async () => {
@@ -88,28 +87,50 @@ const PatientDetailScreen = ({ route, navigation }) => {
         );
     };
 
-    const renderItem = ({ item }) => (
-        <View style={styles.resultItem}>
-            <TestResultItem testResult={item} />
-            <View style={styles.actionsContainer}>
-                <Button title="Düzenle" onPress={() => handleEditTestResult(item)} />
-                <Button title="Sil" onPress={() => handleDeleteTestResult(item.id)} color="red" />
-            </View>
-        </View>
-    );
-
     return (
         <View style={styles.container}>
-            <Text style={styles.name}>{patient.name} {patient.surname}</Text>
-            <Text style={styles.tcNo}>TC No: {patient.tcNo}</Text>
-            <Text style={styles.birthDate}>Doğum Tarihi: {patient.birthDate}</Text>
-            <Button title="Tahlil Ekle" onPress={handleAddTestResult} />
-            <FlatList
-                data={testResults}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-                ListEmptyComponent={<Text>Tahlil sonucu bulunmamaktadır.</Text>}
-                style={styles.list}
+            <Card style={styles.patientCard}>
+                <Card.Title
+                    title={`${patient.name} ${patient.surname}`}
+                    left={(props) => <IconButton {...props} icon="account" />}
+                    titleStyle={styles.cardTitle}
+                />
+                <Card.Content>
+                    <Text style={styles.infoText}>TC No: {patient.tcNo}</Text>
+                    <Text style={styles.infoText}>Doğum Tarihi: {patient.birthDate}</Text>
+                </Card.Content>
+            </Card>
+
+            <Subheading style={styles.sectionTitle}>Tahlil Sonuçları</Subheading>
+
+            <ScrollView contentContainerStyle={{paddingBottom: 100}}>
+                {testResults.length === 0 ? (
+                    <Text style={styles.noDataText}>Tahlil sonucu bulunmamaktadır.</Text>
+                ) : (
+                    testResults.map(item => (
+                        <Card key={item.id} style={styles.resultCard}>
+                            <Card.Content>
+                                <TestResultItem testResult={item} />
+                                <Divider style={{ marginVertical: 10 }} />
+                                <View style={styles.actionsContainer}>
+                                    <Button mode="text" onPress={() => handleEditTestResult(item)}>
+                                        Düzenle
+                                    </Button>
+                                    <Button mode="text" color="red" onPress={() => handleDeleteTestResult(item.id)}>
+                                        Sil
+                                    </Button>
+                                </View>
+                            </Card.Content>
+                        </Card>
+                    ))
+                )}
+            </ScrollView>
+
+            <FAB
+                style={styles.fab}
+                icon="plus"
+                label="Tahlil Ekle"
+                onPress={handleAddTestResult}
             />
         </View>
     );
@@ -118,32 +139,46 @@ const PatientDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f2f6ff',
         padding: 10
     },
-    name: {
+    patientCard: {
+        marginBottom: 20,
+        borderRadius: 10
+    },
+    cardTitle: {
         fontSize: 20,
         fontWeight: 'bold'
     },
-    tcNo: {
-        fontSize: 16
-    },
-    birthDate: {
+    infoText: {
         fontSize: 16,
-        marginBottom: 10
+        marginVertical: 2
     },
-    list: {
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#3f51b5',
+        marginBottom: 15
+    },
+    noDataText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#777',
         marginTop: 20
     },
-    resultItem: {
-        marginBottom: 20,
-        backgroundColor: '#f2f2f2',
-        padding: 10,
-        borderRadius: 5
+    resultCard: {
+        marginBottom: 15,
+        borderRadius: 10
     },
     actionsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10
+        justifyContent: 'space-between'
+    },
+    fab: {
+        position: 'absolute',
+        right: 20,
+        bottom: 20,
+        backgroundColor: '#3f51b5'
     }
 });
 
