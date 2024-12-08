@@ -11,6 +11,7 @@ import AddTestResultScreen from '../screens/admin/AddTestResultScreen';
 import UploadJSONScreen from '../screens/UploadJSONScreen';
 import TestAnalysisScreen from '../screens/admin/TestAnalysisScreen';
 import AddAgeGroupScreen from '../screens/admin/guideManagement/AddAgeGroupScreen';
+import EditTestResultScreen from '../screens/admin/EditTestResultScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,10 +27,10 @@ const AdminNavigator = () => {
             <Stack.Screen name="PatientDetail" component={PatientDetailScreen} options={{title: 'Hasta Detayı'}}/>
             <Stack.Screen name="AddTestResult" component={AddTestResultScreen} options={{title: 'Tahlil Ekle'}}/>
             <Stack.Screen name="AddAgeGroup" component={AddAgeGroupScreen} options={{title: 'Yaş Grubu Ekle'}}/>
-            <Stack.Screen name="EditTestResult" component={AddTestResultScreen} options={{title: 'Tahlil Düzenle'}}/>
             <Stack.Screen name="TestResultDetail" component={AddTestResultScreen} options={{title: 'Tahlil Detayı'}}/>
             <Stack.Screen name ="UploadJSON" component={UploadJSONScreen} options={{title: 'JSON Yükle' }}/>
             <Stack.Screen name ="TestAnalysis" component={TestAnalysisScreen} options={{title: 'Tetkik Analizi' }}/>
+            <Stack.Screen name ="EditTestResult" component={EditTestResultScreen} options={{title: 'Tahlil Düzenle' }}/>
 
         </Stack.Navigator>
     );
