@@ -1,9 +1,8 @@
 // src/screens/PatientListScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet , FlatList } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
-import PatientItem from '../../components/items/PatientItem';
 import { Text, Card, Title, Subheading, Searchbar, IconButton, Divider } from 'react-native-paper';
 
 const PatientListScreen = ({ navigation }) => {
@@ -56,16 +55,24 @@ const PatientListScreen = ({ navigation }) => {
             {filteredPatients.length === 0 ? (
                 <Text style={styles.noDataText}>Hasta bulunamadı.</Text>
             ) : (
-                filteredPatients.map(item => (
-                    <Card key={item.id} style={styles.patientCard} onPress={() => handlePatientPress(item)}>
-                        <Card.Content>
-                            <Title>{item.name} {item.surname}</Title>
-                            <Subheading>TC: {item.tcNo}</Subheading>
-                            <Divider style={{ marginVertical: 10 }} />
-                            <Text>Doğum Tarihi: {item.birthDate}</Text>
-                        </Card.Content>
-                    </Card>
-                ))
+                // FlatList kullanarak uzun listelerde kaydırma desteği sağlıyoruz
+                <View style={styles.listContainer}>
+                    {/* FlatList */}
+                    <FlatList
+                        data={filteredPatients}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <Card style={styles.patientCard} onPress={() => handlePatientPress(item)}>
+                                <Card.Content>
+                                    <Title>{item.name} {item.surname}</Title>
+                                    <Subheading>TC: {item.tcNo}</Subheading>
+                                    <Divider style={{ marginVertical: 10 }} />
+                                    <Text>Doğum Tarihi: {item.birthDate}</Text>
+                                </Card.Content>
+                            </Card>
+                        )}
+                    />
+                </View>
             )}
         </View>
     );
@@ -95,6 +102,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: 16,
         color: '#777'
+    },
+    listContainer: {
+        flex: 1, // FlatList'in düzgün çalışması için parent container'a flex:1 veriyoruz
     },
     patientCard: {
         marginBottom: 15,

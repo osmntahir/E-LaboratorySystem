@@ -1,19 +1,18 @@
-// ./src/screens/users/TestResultsScreen.js
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
+import { Card, Divider } from 'react-native-paper';
 
-// Durum ikonu ve renkini belirleyen fonksiyon
 const getStatusInfo = (status) => {
     switch (status) {
         case 'Yüksek':
-            return { icon: '↑', color: '#ff4d4f' }; // kırmızı
+            return { icon: '↑', color: '#ff4d4f' };
         case 'Düşük':
-            return { icon: '↓', color: '#faad14' }; // turuncu
+            return { icon: '↓', color: '#faad14' };
         case 'Normal':
-            return { icon: '→', color: '#52c41a' }; // yeşil
+            return { icon: '→', color: '#52c41a' };
         default:
             return { icon: '', color: '#000' };
     }
@@ -29,8 +28,6 @@ const TestResultsScreen = () => {
         const fetchTestResults = async () => {
             if (!user || !user.uid) return;
 
-            // Kullanıcı bilgilerini almak için kullanıcı dokümanını çekiyoruz
-            // TC no çekip testResults sorgusu yapacağız.
             const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
             let patientTc = null;
             userDoc.forEach((docSnap) => {
@@ -41,38 +38,18 @@ const TestResultsScreen = () => {
 
             if (!patientTc) return;
 
-            // testResults koleksiyonundan bu kullanıcıya ait sonuçları çek
             const q = query(collection(db, 'testResults'), where('patientTc', '==', patientTc));
             const querySnapshot = await getDocs(q);
             const resultsData = querySnapshot.docs.map(doc => doc.data());
 
-            // resultsData içindeki "tests" alanından test detaylarını çıkaracağız
-            // Yapı:
-            // {
-            //   patientTc: "12345678901",
-            //   testDate: "2024-12-01",
-            //   tests: [
-            //     {
-            //       testName: "IgA",
-            //       testValue: 3.5,
-            //       guideEvaluations: [...]
-            //     },
-            //     ...
-            //   ]
-            // }
-
             let allTests = [];
             resultsData.forEach(result => {
                 result.tests.forEach(t => {
-                    // guideEvaluations içinden ilkini veya tümünü gösterebilirsiniz.
-                    // Burada basitlik için ilk rehberi baz alacağız.
-                    const evalInfo = t.guideEvaluations && t.guideEvaluations.length > 0 ? t.guideEvaluations[0] : null;
-                    const status = evalInfo ? evalInfo.status : null;
                     allTests.push({
                         testName: t.testName,
                         testValue: t.testValue,
                         testDate: result.testDate,
-                        status: status,
+                        guideEvaluations: t.guideEvaluations || [],
                     });
                 });
             });
@@ -85,7 +62,6 @@ const TestResultsScreen = () => {
     }, [user]);
 
     useEffect(() => {
-        // Filtre uygulama
         if (filterText.trim() === '') {
             setFilteredResults(testResults);
         } else {
@@ -97,18 +73,29 @@ const TestResultsScreen = () => {
     }, [filterText, testResults]);
 
     const renderItem = ({ item }) => {
-        const { icon, color } = getStatusInfo(item.status);
         return (
-            <View style={styles.resultItem}>
-                <Text style={styles.resultDate}>{item.testDate}</Text>
-                <Text style={styles.testName}>{item.testName}</Text>
-                <Text style={styles.testValue}>Değer: {item.testValue}</Text>
-                {item.status && (
-                    <Text style={[styles.statusText, { color: color }]}>
-                        Durum: {item.status} {icon}
-                    </Text>
-                )}
-            </View>
+            <Card style={styles.resultItem}>
+                <Card.Content>
+                    <Text style={styles.resultDate}>{item.testDate}</Text>
+                    <Divider style={{ marginVertical: 10 }} />
+                    <Text style={styles.testName}>{item.testName}</Text>
+                    <Text style={styles.testValue}>Değer: {item.testValue}</Text>
+                    <Divider style={{ marginVertical: 10 }} />
+                    {item.guideEvaluations.map((evaluation, idx) => {
+                        const { icon, color } = getStatusInfo(evaluation.status);
+                        return (
+                            <View key={idx} style={styles.evaluationContainer}>
+                                <Text style={styles.guideName}>Kılavuz: {evaluation.guideName || 'N/A'}</Text>
+                                <Text style={styles.reference}>Referans: {evaluation.minValue || 'N/A'} - {evaluation.maxValue || 'N/A'}</Text>
+                                <Text style={[styles.evaluationStatus, { color: color }]}>
+                                    Durum: {evaluation.status} {icon}
+                                </Text>
+                                <Divider style={{ marginVertical: 5 }} />
+                            </View>
+                        );
+                    })}
+                </Card.Content>
+            </Card>
         );
     };
 
@@ -168,6 +155,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 5,
         color: '#555',
+        fontWeight: 'bold',
     },
     testName: {
         fontSize: 18,
@@ -177,9 +165,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginVertical: 5,
     },
-    statusText: {
-        fontSize: 16,
-        fontWeight: 'bold',
+    evaluationContainer: {
+        marginVertical: 5,
+    },
+    guideName: {
+        fontSize: 14,
+    },
+    reference: {
+        fontSize: 14,
+    },
+    evaluationStatus: {
+        fontSize: 14,
     },
 });
 

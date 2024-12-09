@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/items/TestResultItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/TestResultItem.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/PatientDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientDetailScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/admin/AddTestResultScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/AddTestResultScreen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/screens/admin/PatientListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientListScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/TestAnalysisScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/TestAnalysisScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/users/TestResultsScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/users/TestResultsScreen.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,8 +80,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23726.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23726.103" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
       </set>
     </attachedChunks>
   </component>
@@ -100,6 +98,8 @@
       <workItem from="1733063242071" duration="830000" />
       <workItem from="1733066434962" duration="2096000" />
       <workItem from="1733127195538" duration="8446000" />
+      <workItem from="1733688211052" duration="5808000" />
+      <workItem from="1733738449219" duration="5535000" />
     </task>
     <servers />
   </component>
