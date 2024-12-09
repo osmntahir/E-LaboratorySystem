@@ -1,4 +1,3 @@
-// src/screens/PatientDetailScreen.js
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -6,11 +5,14 @@ import { db } from '../../../firebaseConfig';
 import TestResultItem from '../../components/items/TestResultItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { deleteTestResult } from '../../services/testResultService';
-import { Text, Button, Card, Title, IconButton, Subheading, FAB, Divider } from 'react-native-paper';
+import { Text, Button, Card, IconButton, Subheading, FAB, Divider, Menu, Searchbar } from 'react-native-paper';
 
 const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;
     const [testResults, setTestResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortOption, setSortOption] = useState('newToOld'); // Varsayılan olarak Yeniden Eskiye
+    const [menuVisible, setMenuVisible] = useState(false);
 
     const parseDate = (dateStr) => {
         const [datePart, timePart] = dateStr.split(' ');
@@ -41,14 +43,20 @@ const PatientDetailScreen = ({ route, navigation }) => {
             const sorted = testResultsData.sort((a, b) => {
                 const dateA = parseDate(a.testDate);
                 const dateB = parseDate(b.testDate);
-                return dateB - dateA;
+                // Eskiden Yeniye (oldToNew) -> dateA - dateB
+                // Yeniden Eskiye (newToOld) -> dateB - dateA
+                if (sortOption === 'oldToNew') {
+                    return dateA - dateB;
+                } else {
+                    return dateB - dateA;
+                }
             });
 
             setTestResults(sorted);
         } catch (error) {
             console.error('Error fetching test results: ', error);
         }
-    }, [patient.tcNo]);
+    }, [patient.tcNo, sortOption]);
 
     useFocusEffect(
         useCallback(() => {
@@ -87,6 +95,18 @@ const PatientDetailScreen = ({ route, navigation }) => {
         );
     };
 
+    const filteredResults = testResults.filter(result =>
+        result.tests.some(test => test.testName.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+    const openMenu = () => setMenuVisible(true);
+    const closeMenu = () => setMenuVisible(false);
+
+    const handleSortChange = (option) => {
+        setSortOption(option);
+        closeMenu();
+    };
+
     return (
         <View style={styles.container}>
             <Card style={styles.patientCard}>
@@ -101,13 +121,32 @@ const PatientDetailScreen = ({ route, navigation }) => {
                 </Card.Content>
             </Card>
 
-            <Subheading style={styles.sectionTitle}>Tahlil Sonuçları</Subheading>
+            <View style={styles.headerActions}>
+                <Searchbar
+                    placeholder="Test türü ara..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    style={styles.searchbar}
+                />
+                <Menu
+                    visible={menuVisible}
+                    onDismiss={closeMenu}
+                    anchor={
+                        <Button mode="outlined" onPress={openMenu} style={styles.menuButton}>
+                            Sırala
+                        </Button>
+                    }
+                >
+                    <Menu.Item onPress={() => handleSortChange('oldToNew')} title="Eskiden Yeniye" />
+                    <Menu.Item onPress={() => handleSortChange('newToOld')} title="Yeniden Eskiye" />
+                </Menu>
+            </View>
 
-            <ScrollView contentContainerStyle={{paddingBottom: 100}}>
-                {testResults.length === 0 ? (
+            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                {filteredResults.length === 0 ? (
                     <Text style={styles.noDataText}>Tahlil sonucu bulunmamaktadır.</Text>
                 ) : (
-                    testResults.map(item => (
+                    filteredResults.map(item => (
                         <Card key={item.id} style={styles.resultCard}>
                             <Card.Content>
                                 <TestResultItem testResult={item} />
@@ -154,11 +193,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginVertical: 2
     },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#3f51b5',
-        marginBottom: 15
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10
+    },
+    searchbar: {
+        flex: 1,
+        marginRight: 10
+    },
+    menuButton: {
+        height: 40
     },
     noDataText: {
         textAlign: 'center',
