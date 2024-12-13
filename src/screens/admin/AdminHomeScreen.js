@@ -2,16 +2,17 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Alert, ActivityIndicator } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { getPatientCount, getTestCount } from "../../services/firebaseService";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../../../firebaseConfig"; // Firestore bağlantısını ekledik
 import { LinearGradient } from 'expo-linear-gradient';
 
 const screenWidth = Dimensions.get('window').width;
 
 const AdminHomeScreen = ({ navigation }) => {
     const { user, logout } = useContext(AuthContext);
-    const [patientCount, setPatientCount] = useState(null); // Null başlangıç değerine çevrildi
+    const [patientCount, setPatientCount] = useState(null);
     const [testCount, setTestCount] = useState(null);
-    const [loading, setLoading] = useState(true); // Yüklenme durumu eklendi
+    const [loading, setLoading] = useState(true);
 
     const [menuOpen, setMenuOpen] = useState(false);
     const translateX = useRef(new Animated.Value(-screenWidth * 0.7)).current;
@@ -23,20 +24,25 @@ const AdminHomeScreen = ({ navigation }) => {
     }, [navigation]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const pCount = await getPatientCount();
-                const tCount = await getTestCount();
-                setPatientCount(pCount);
-                setTestCount(tCount);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                Alert.alert("Hata", "Veri yüklenirken bir sorun oluştu.");
-            } finally {
-                setLoading(false);
-            }
+        // Firestore'dan gerçek zamanlı hasta sayısını dinleme
+        const patientQuery = query(collection(db, "users"), where("role", "==", "patient"));
+        const unsubscribePatients = onSnapshot(patientQuery, (snapshot) => {
+            setPatientCount(snapshot.size);
+        });
+
+        // Firestore'dan gerçek zamanlı test sayısını dinleme
+        const testCollection = collection(db, "testResults");
+        const unsubscribeTests = onSnapshot(testCollection, (snapshot) => {
+            setTestCount(snapshot.size);
+        });
+
+        setLoading(false);
+
+        // Bellek sızıntısını önlemek için abonelikten çık
+        return () => {
+            unsubscribePatients();
+            unsubscribeTests();
         };
-        fetchData();
     }, []);
 
     useEffect(() => {
@@ -153,7 +159,6 @@ const AdminHomeScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
