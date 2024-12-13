@@ -17,7 +17,7 @@ const AdminHomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerShown: false, // Üst bar'ı kaldırıp kendi tasarımımızı uygulayalım
+            headerShown: false,
         });
     }, [navigation]);
 
@@ -62,7 +62,7 @@ const AdminHomeScreen = ({ navigation }) => {
     const renderSideMenu = () => (
         <Animated.View style={[styles.sideMenuAnimatedContainer, { transform: [{ translateX }] }]}>
             <LinearGradient
-                colors={['#2c3e50', '#4ca1af']}
+                colors={['#1abc9c', '#16a085']}
                 style={styles.sideMenuContainer}
             >
                 <View>
@@ -96,17 +96,16 @@ const AdminHomeScreen = ({ navigation }) => {
 
     return (
         <View style={styles.mainContainer}>
-            {/* Üst kısımda bir custom header alanı */}
             <LinearGradient
-                colors={['#374ABE', '#64B6FF']}
+                colors={['#2ecc71', '#27ae60']}
                 style={styles.headerContainer}
             >
                 <View style={styles.headerTopRow}>
                     <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
                         <Icon name="menu" size={28} color="#fff" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Admin Paneli</Text>
-                    <View style={{width: 28}} /> {/* Menü butonu boyutunda boşluk */}
+                    <Text style={styles.headerTitle}>Laboratuvar Sistemi</Text>
+                    <View style={{width: 28}} />
                 </View>
                 <Text style={styles.greeting}>Merhaba, {user?.name || "Admin"}!</Text>
             </LinearGradient>
@@ -120,19 +119,19 @@ const AdminHomeScreen = ({ navigation }) => {
                 <Text style={styles.subtitle}>Güncel Sistem İstatistikleri:</Text>
                 <View style={styles.statsContainer}>
                     <LinearGradient
-                        colors={['#ffffff', '#ecf0f1']}
+                        colors={['#ffffff', '#f7f9f9']}
                         style={styles.statItem}
                     >
-                        <Icon name="account-multiple" size={36} color="#2E86C1" style={styles.statIcon}/>
+                        <Icon name="account-multiple" size={36} color="#1abc9c" style={styles.statIcon}/>
                         <Text style={styles.statValue}>{patientCount}</Text>
                         <Text style={styles.statLabel}>Hasta</Text>
                     </LinearGradient>
 
                     <LinearGradient
-                        colors={['#ffffff', '#ecf0f1']}
+                        colors={['#ffffff', '#f7f9f9']}
                         style={styles.statItem}
                     >
-                        <Icon name="test-tube" size={36} color="#27AE60" style={styles.statIcon}/>
+                        <Icon name="test-tube" size={36} color="#3498db" style={styles.statIcon}/>
                         <Text style={styles.statValue}>{testCount}</Text>
                         <Text style={styles.statLabel}>Test</Text>
                     </LinearGradient>
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
-        backgroundColor: "#f5f7fa",
+        backgroundColor: "#ecf0f1",
         padding: 20
     },
     subtitle: {
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingVertical: 15,
         paddingHorizontal: 10,
-        backgroundColor: "rgba(255,0,0,0.8)",
+        backgroundColor: "#e74c3c",
         borderRadius: 8
     },
     logoutButtonText: {
