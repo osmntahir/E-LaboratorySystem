@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Alert, ActivityIndicator } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { getPatientCount, getTestCount } from "../../services/firebaseService";
@@ -9,8 +9,9 @@ const screenWidth = Dimensions.get('window').width;
 
 const AdminHomeScreen = ({ navigation }) => {
     const { user, logout } = useContext(AuthContext);
-    const [patientCount, setPatientCount] = useState(0);
-    const [testCount, setTestCount] = useState(0);
+    const [patientCount, setPatientCount] = useState(null); // Null başlangıç değerine çevrildi
+    const [testCount, setTestCount] = useState(null);
+    const [loading, setLoading] = useState(true); // Yüklenme durumu eklendi
 
     const [menuOpen, setMenuOpen] = useState(false);
     const translateX = useRef(new Animated.Value(-screenWidth * 0.7)).current;
@@ -23,10 +24,17 @@ const AdminHomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const pCount = await getPatientCount();
-            const tCount = await getTestCount();
-            setPatientCount(pCount);
-            setTestCount(tCount);
+            try {
+                const pCount = await getPatientCount();
+                const tCount = await getTestCount();
+                setPatientCount(pCount);
+                setTestCount(tCount);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                Alert.alert("Hata", "Veri yüklenirken bir sorun oluştu.");
+            } finally {
+                setLoading(false);
+            }
         };
         fetchData();
     }, []);
@@ -68,18 +76,18 @@ const AdminHomeScreen = ({ navigation }) => {
                 <View>
                     <Text style={styles.drawerHeader}>Menü</Text>
 
-                    <TouchableOpacity style={styles.menuItem} onPress={() => {closeMenu(); navigation.navigate("GuideManagement");}}>
-                        <Icon name="book" size={24} style={styles.menuIcon} color="#fff"/>
+                    <TouchableOpacity style={styles.menuItem} onPress={() => { closeMenu(); navigation.navigate("GuideManagement"); }}>
+                        <Icon name="book" size={24} style={styles.menuIcon} color="#fff" />
                         <Text style={styles.menuItemText}>Kılavuz Yönetimi</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.menuItem} onPress={() => {closeMenu(); navigation.navigate("Patients");}}>
-                        <Icon name="account-multiple" size={24} style={styles.menuIcon} color="#fff"/>
+                    <TouchableOpacity style={styles.menuItem} onPress={() => { closeMenu(); navigation.navigate("Patients"); }}>
+                        <Icon name="account-multiple" size={24} style={styles.menuIcon} color="#fff" />
                         <Text style={styles.menuItemText}>Hasta Listesi</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.menuItem} onPress={() => {closeMenu(); navigation.navigate("TestAnalysis");}}>
-                        <Icon name="magnify" size={24} style={styles.menuIcon} color="#fff"/>
+                    <TouchableOpacity style={styles.menuItem} onPress={() => { closeMenu(); navigation.navigate("TestAnalysis"); }}>
+                        <Icon name="magnify" size={24} style={styles.menuIcon} color="#fff" />
                         <Text style={styles.menuItemText}>Tetkik Arama</Text>
                     </TouchableOpacity>
                 </View>
@@ -105,7 +113,7 @@ const AdminHomeScreen = ({ navigation }) => {
                         <Icon name="menu" size={28} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Laboratuvar Sistemi</Text>
-                    <View style={{width: 28}} />
+                    <View style={{ width: 28 }} />
                 </View>
                 <Text style={styles.greeting}>Merhaba, {user?.name || "Admin"}!</Text>
             </LinearGradient>
@@ -117,25 +125,30 @@ const AdminHomeScreen = ({ navigation }) => {
 
             <View style={styles.contentContainer}>
                 <Text style={styles.subtitle}>Güncel Sistem İstatistikleri:</Text>
-                <View style={styles.statsContainer}>
-                    <LinearGradient
-                        colors={['#ffffff', '#f7f9f9']}
-                        style={styles.statItem}
-                    >
-                        <Icon name="account-multiple" size={36} color="#1abc9c" style={styles.statIcon}/>
-                        <Text style={styles.statValue}>{patientCount}</Text>
-                        <Text style={styles.statLabel}>Hasta</Text>
-                    </LinearGradient>
 
-                    <LinearGradient
-                        colors={['#ffffff', '#f7f9f9']}
-                        style={styles.statItem}
-                    >
-                        <Icon name="test-tube" size={36} color="#3498db" style={styles.statIcon}/>
-                        <Text style={styles.statValue}>{testCount}</Text>
-                        <Text style={styles.statLabel}>Test</Text>
-                    </LinearGradient>
-                </View>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#3498db" />
+                ) : (
+                    <View style={styles.statsContainer}>
+                        <LinearGradient
+                            colors={['#ffffff', '#f7f9f9']}
+                            style={styles.statItem}
+                        >
+                            <Icon name="account-multiple" size={36} color="#1abc9c" style={styles.statIcon} />
+                            <Text style={styles.statValue}>{patientCount}</Text>
+                            <Text style={styles.statLabel}>Hasta</Text>
+                        </LinearGradient>
+
+                        <LinearGradient
+                            colors={['#ffffff', '#f7f9f9']}
+                            style={styles.statItem}
+                        >
+                            <Icon name="test-tube" size={36} color="#3498db" style={styles.statIcon} />
+                            <Text style={styles.statValue}>{testCount}</Text>
+                            <Text style={styles.statLabel}>Test</Text>
+                        </LinearGradient>
+                    </View>
+                )}
             </View>
         </View>
     );

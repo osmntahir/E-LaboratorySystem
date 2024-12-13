@@ -8,6 +8,8 @@ import {
     deleteDoc,
     getDocs,
     getDoc,
+    query,
+    where
 } from 'firebase/firestore';
 
 // Kılavuz işlemleri
@@ -116,4 +118,29 @@ export const getAgeGroups = async (guideId, testId) => {
         ageGroups.push({ id: doc.id, ...doc.data() });
     });
     return ageGroups;
+};
+
+export const getPatientCount = async () => {
+    try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("role", "==", "patient"));
+        const querySnapshot = await getDocs(q);
+
+        return querySnapshot.size;
+    } catch (error) {
+        console.error("Error fetching patient count:", error);
+        throw new Error("Unable to fetch patient count");
+    }
+};
+
+export const getTestCount = async () => {
+    try {
+        const testResultsRef = collection(db, "testResults");
+        const querySnapshot = await getDocs(testResultsRef);
+        
+        return querySnapshot.size;
+    } catch (error) {
+        console.error("Error fetching test results count:", error);
+        throw new Error("Unable to fetch test results count");
+    }
 };
