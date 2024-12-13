@@ -1,12 +1,12 @@
-import React, {createContext, useEffect, useState} from "react";
-import {onAuthStateChanged} from "firebase/auth";
-import {auth, db} from "../../firebaseConfig";
-import {doc, getDoc} from "firebase/firestore";
+import React, { createContext, useEffect, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth, db } from "../../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -45,8 +45,18 @@ export const AuthProvider = ({children}) => {
         return () => unsubscribe(); // Cleanup için unsubscribe
     }, []);
 
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setUser(null);
+            await AsyncStorage.removeItem("userToken");
+        } catch (error) {
+            console.log("Oturum kapatma hatası:", error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{user, setUser}}>
+        <AuthContext.Provider value={{ user, setUser, logout }}>
             {children}
         </AuthContext.Provider>
     );
