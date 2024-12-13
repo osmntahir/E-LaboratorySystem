@@ -12,7 +12,7 @@ const UserNavigator = () => {
             <Stack.Screen
                 name="UserHome"
                 component={UserHomeScreen}
-                options={{ title: "Kullanıcı Ana Sayfa" }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="TestResults"

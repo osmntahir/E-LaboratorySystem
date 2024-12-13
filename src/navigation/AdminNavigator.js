@@ -18,7 +18,7 @@ const Stack = createStackNavigator();
 const AdminNavigator = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{title: 'Admin Anasayfa'}}/>
+            <Stack.Screen name="AdminHome" component={AdminHomeScreen}/>
             <Stack.Screen name="GuideManagement" component={GuideManagementScreen}
                           options={{title: 'Kılavuz Yönetimi'}}/>
             <Stack.Screen name="AddGuide" component={AddGuideScreen} options={{title: 'Kılavuz Ekle'}}/>
