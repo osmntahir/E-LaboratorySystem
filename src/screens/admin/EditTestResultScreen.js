@@ -116,6 +116,14 @@ const EditTestResultScreen = ({ route, navigation }) => {
     };
 
     const handleUpdate = async () => {
+        // Değer girilmiş mi kontrol et
+        const hasValues = tests.some(t => t.testValue.trim() !== '');
+
+        if (!hasValues) {
+            Alert.alert('Hata', 'En az bir tetkik değeri girmelisiniz.');
+            return;
+        }
+
         setLoading(true);
         try {
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
@@ -124,7 +132,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
             for (const t of tests) {
                 const trimmedValue = t.testValue.trim();
                 if (trimmedValue === '') {
-                    // Değer boşsa atla
                     continue;
                 }
 
@@ -155,7 +162,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
             Alert.alert('Başarılı', 'Tahlil sonucu güncellendi.');
             setLoading(false);
 
-            // Hasta detay ekranına geri dön
             navigation.navigate('PatientDetail', { patient });
         } catch (error) {
             console.error('Error updating test result:', error);
@@ -274,7 +280,12 @@ const EditTestResultScreen = ({ route, navigation }) => {
                         </View>
                     ))}
 
-                    <Button mode="contained" onPress={handleUpdate} style={styles.saveButton}>
+                    <Button
+                        mode="contained"
+                        onPress={handleUpdate}
+                        style={styles.saveButton}
+                        disabled={tests.every(t => t.testValue.trim() === '')}
+                    >
                         Güncelle
                     </Button>
                 </Card.Content>

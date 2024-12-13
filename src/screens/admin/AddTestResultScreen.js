@@ -7,7 +7,7 @@ import { addTestResult } from '../../services/testResultService';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
 import { isAgeInRange } from '../../utils/ageRangeEvaluator';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, TextInput, Button, Card, Title, IconButton, Subheading, ActivityIndicator, Portal, Modal } from 'react-native-paper';
+import { Text, TextInput, Button, Card, IconButton, Subheading, ActivityIndicator, Portal, Modal } from 'react-native-paper';
 
 const AddTestResultScreen = ({ route, navigation }) => {
     const { patient } = route.params;
@@ -15,12 +15,11 @@ const AddTestResultScreen = ({ route, navigation }) => {
     const [selectedTests, setSelectedTests] = useState([]);
     const [testValues, setTestValues] = useState({});
 
-    // Tarih ve saat seçimi için state
     const [testDate, setTestDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false); // Loading state
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchTestTypes = async () => {
@@ -84,14 +83,18 @@ const AddTestResultScreen = ({ route, navigation }) => {
         const day = String(dateObj.getDate()).padStart(2, '0');
         const hours = String(dateObj.getHours()).padStart(2, '0');
         const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-
-        // Format: YYYY-MM-DD HH:mm
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
     const handleSave = async () => {
+        // Değer kontrolü: en az bir test seçilmiş ve o teste değer girilmiş mi?
+        if (selectedTests.length === 0 || selectedTests.every(testName => !testValues[testName] || testValues[testName].trim() === '')) {
+            alert('En az bir tahlil seçimi yapıp geçerli bir değer giriniz.');
+            return;
+        }
+
         try {
-            setIsLoading(true); // Loading başlasın
+            setIsLoading(true);
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
 
             const tests = [];
@@ -128,7 +131,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
             console.error('Error saving test result: ', error);
             alert('Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
-            setIsLoading(false); // Loading bitsin
+            setIsLoading(false);
         }
     };
 
@@ -154,7 +157,6 @@ const AddTestResultScreen = ({ route, navigation }) => {
                         if (isAgeInRange(ageInMonths, ageGroupData.ageRange)) {
                             let adjustedTestValue = testValue;
 
-                            // Eğer birim mg/L ise değeri 1000 ile çarp
                             if (guideData.unit === 'mg/L') {
                                 adjustedTestValue *= 1000;
                             }
@@ -253,7 +255,12 @@ const AddTestResultScreen = ({ route, navigation }) => {
                             </View>
                         ))}
 
-                        <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
+                        <Button
+                            mode="contained"
+                            onPress={handleSave}
+                            style={styles.saveButton}
+                            disabled={selectedTests.length === 0 || selectedTests.every(testName => !testValues[testName] || testValues[testName].trim() === '')}
+                        >
                             Kaydet
                         </Button>
                     </Card.Content>
