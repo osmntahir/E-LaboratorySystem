@@ -4,6 +4,7 @@
       "name": "klavuz-tjp",
       "description": "Age-related serum immunoglobulin levels for healthy children.",
       "unit": "mg/L",
+      "type": "geometric",
       "testTypes": [
         {
           "name": "IgA",
@@ -140,124 +141,126 @@
         }
       ]
     },
-    
-     
+
+
     {
       "name": "klavuz-cilv",
       "description": "Reference Ranges for Serum Immunoglobulins and Specific Antibody Levels.",
       "unit": "mg/L",
+      "type": "minMax",
       "testTypes": [
-          {
-              "name": "IgG",
-              "ageGroups": [
-                  { "ageRange": "0-1", "minValue": 700, "maxValue": 1300 },
-                  { "ageRange": "1-4", "minValue": 280, "maxValue": 750 },
-                  { "ageRange": "4-7", "minValue": 200, "maxValue": 1200 },
-                  { "ageRange": "7-13", "minValue": 300, "maxValue": 1500 },
-                  { "ageRange": "13-36", "minValue": 400, "maxValue": 1300 },
-                  { "ageRange": "37-72", "minValue": 600, "maxValue": 1500 },
-                  { "ageRange": "73+", "minValue": 639, "maxValue": 1344 }
-              ]
-          },
-          {
-              "name": "IgA",
-              "ageGroups": [
-                  { "ageRange": "0-1", "minValue": 0, "maxValue": 11 },
-                  { "ageRange": "1-4", "minValue": 6, "maxValue": 50 },
-                  { "ageRange": "4-7", "minValue": 8, "maxValue": 90 },
-                  { "ageRange": "7-13", "minValue": 16, "maxValue": 100 },
-                  { "ageRange": "13-36", "minValue": 20, "maxValue": 230 },
-                  { "ageRange": "37-72", "minValue": 50, "maxValue": 150 },
-                  { "ageRange": "73+", "minValue": 70, "maxValue": 312 }
-              ]
-          },
-          {
-              "name": "IgM",
-              "ageGroups": [
-                  { "ageRange": "0-1", "minValue": 5, "maxValue": 30 },
-                  { "ageRange": "1-4", "minValue": 15, "maxValue": 70 },
-                  { "ageRange": "4-7", "minValue": 10, "maxValue": 90 },
-                  { "ageRange": "7-13", "minValue": 25, "maxValue": 115 },
-                  { "ageRange": "13-36", "minValue": 30, "maxValue": 120 },
-                  { "ageRange": "37-72", "minValue": 22, "maxValue": 100 },
-                  { "ageRange": "73+", "minValue": 56, "maxValue": 352 }
-              ]
-          },
-          {
-              "name": "IgG1",
-              "ageGroups": [
-                  { "ageRange": "Cord", "minValue": 435, "maxValue": 1084 },
-                  { "ageRange": "0-3", "minValue": 218, "maxValue": 496 },
-                  { "ageRange": "3-6", "minValue": 143, "maxValue": 394 },
-                  { "ageRange": "6-9", "minValue": 190, "maxValue": 388 },
-                  { "ageRange": "9-24", "minValue": 286, "maxValue": 680 },
-                  { "ageRange": "25-48", "minValue": 381, "maxValue": 884 },
-                  { "ageRange": "49-72", "minValue": 292, "maxValue": 816 },
-                  { "ageRange": "73-96", "minValue": 422, "maxValue": 802 },
-                  { "ageRange": "97-120", "minValue": 456, "maxValue": 938 },
-                  { "ageRange": "121-144", "minValue": 456, "maxValue": 952 },
-                  { "ageRange": "145-168", "minValue": 347, "maxValue": 993 },
-                  { "ageRange": "169+", "minValue": 422, "maxValue": 1292 }
-              ]
-          },
-          {
-              "name": "IgG2",
-              "ageGroups": [
-                  { "ageRange": "Cord", "minValue": 143, "maxValue": 453 },
-                  { "ageRange": "0-3", "minValue": 40, "maxValue": 167 },
-                  { "ageRange": "3-6", "minValue": 23, "maxValue": 147 },
-                  { "ageRange": "6-9", "minValue": 37, "maxValue": 60 },
-                  { "ageRange": "9-24", "minValue": 30, "maxValue": 327 },
-                  { "ageRange": "25-48", "minValue": 70, "maxValue": 443 },
-                  { "ageRange": "49-72", "minValue": 83, "maxValue": 513 },
-                  { "ageRange": "73-96", "minValue": 113, "maxValue": 480 },
-                  { "ageRange": "97-120", "minValue": 163, "maxValue": 513 },
-                  { "ageRange": "121-144", "minValue": 147, "maxValue": 493 },
-                  { "ageRange": "145-168", "minValue": 140, "maxValue": 440 },
-                  { "ageRange": "169+", "minValue": 117, "maxValue": 747 }
-              ]
-          },
-          {
-              "name": "IgG3",
-              "ageGroups": [
-                  { "ageRange": "Cord", "minValue": 27, "maxValue": 146 },
-                  { "ageRange": "0-3", "minValue": 4, "maxValue": 23 },
-                  { "ageRange": "3-6", "minValue": 4, "maxValue": 100 },
-                  { "ageRange": "6-9", "minValue": 12, "maxValue": 62 },
-                  { "ageRange": "9-24", "minValue": 13, "maxValue": 132 },
-                  { "ageRange": "25-48", "minValue": 17, "maxValue": 90 },
-                  { "ageRange": "49-72", "minValue": 8, "maxValue": 111 },
-                  { "ageRange": "73-96", "minValue": 15, "maxValue": 133 },
-                  { "ageRange": "97-120", "minValue": 26, "maxValue": 133 },
-                  { "ageRange": "121-144", "minValue": 23, "maxValue": 179 },
-                  { "ageRange": "145-168", "minValue": 23, "maxValue": 117 },
-                  { "ageRange": "169+", "minValue": 41, "maxValue": 129 }
-              ]
-          },
-          {
-              "name": "IgG4",
-              "ageGroups": [
-                  { "ageRange": "Cord", "minValue": 1, "maxValue": 47 },
-                  { "ageRange": "0-3", "minValue": 1, "maxValue": 120 },
-                  { "ageRange": "3-6", "minValue": 1, "maxValue": 120 },
-                  { "ageRange": "6-9", "minValue": 1, "maxValue": 120 },
-                  { "ageRange": "9-24", "minValue": 1, "maxValue": 120 },
-                  { "ageRange": "25-48", "minValue": 2, "maxValue": 112 },
-                  { "ageRange": "49-72", "minValue": 2, "maxValue": 138 },
-                  { "ageRange": "73-96", "minValue": 1, "maxValue": 95 },
-                  { "ageRange": "97-120", "minValue": 10, "maxValue": 143 },
-                  { "ageRange": "121-144", "minValue": 10, "maxValue": 143 },
-                  { "ageRange": "145-168", "minValue": 10, "maxValue": 143 },
-                  { "ageRange": "169+", "minValue": 10, "maxValue": 67 }
-              ]
-          }
+        {
+          "name": "IgG",
+          "ageGroups": [
+            { "ageRange": "0-1", "minValue": 700, "maxValue": 1300 },
+            { "ageRange": "1-4", "minValue": 280, "maxValue": 750 },
+            { "ageRange": "4-7", "minValue": 200, "maxValue": 1200 },
+            { "ageRange": "7-13", "minValue": 300, "maxValue": 1500 },
+            { "ageRange": "13-36", "minValue": 400, "maxValue": 1300 },
+            { "ageRange": "37-72", "minValue": 600, "maxValue": 1500 },
+            { "ageRange": "73+", "minValue": 639, "maxValue": 1344 }
+          ]
+        },
+        {
+          "name": "IgA",
+          "ageGroups": [
+            { "ageRange": "0-1", "minValue": 0, "maxValue": 11 },
+            { "ageRange": "1-4", "minValue": 6, "maxValue": 50 },
+            { "ageRange": "4-7", "minValue": 8, "maxValue": 90 },
+            { "ageRange": "7-13", "minValue": 16, "maxValue": 100 },
+            { "ageRange": "13-36", "minValue": 20, "maxValue": 230 },
+            { "ageRange": "37-72", "minValue": 50, "maxValue": 150 },
+            { "ageRange": "73+", "minValue": 70, "maxValue": 312 }
+          ]
+        },
+        {
+          "name": "IgM",
+          "ageGroups": [
+            { "ageRange": "0-1", "minValue": 5, "maxValue": 30 },
+            { "ageRange": "1-4", "minValue": 15, "maxValue": 70 },
+            { "ageRange": "4-7", "minValue": 10, "maxValue": 90 },
+            { "ageRange": "7-13", "minValue": 25, "maxValue": 115 },
+            { "ageRange": "13-36", "minValue": 30, "maxValue": 120 },
+            { "ageRange": "37-72", "minValue": 22, "maxValue": 100 },
+            { "ageRange": "73+", "minValue": 56, "maxValue": 352 }
+          ]
+        },
+        {
+          "name": "IgG1",
+          "ageGroups": [
+            { "ageRange": "Cord", "minValue": 435, "maxValue": 1084 },
+            { "ageRange": "0-3", "minValue": 218, "maxValue": 496 },
+            { "ageRange": "3-6", "minValue": 143, "maxValue": 394 },
+            { "ageRange": "6-9", "minValue": 190, "maxValue": 388 },
+            { "ageRange": "9-24", "minValue": 286, "maxValue": 680 },
+            { "ageRange": "25-48", "minValue": 381, "maxValue": 884 },
+            { "ageRange": "49-72", "minValue": 292, "maxValue": 816 },
+            { "ageRange": "73-96", "minValue": 422, "maxValue": 802 },
+            { "ageRange": "97-120", "minValue": 456, "maxValue": 938 },
+            { "ageRange": "121-144", "minValue": 456, "maxValue": 952 },
+            { "ageRange": "145-168", "minValue": 347, "maxValue": 993 },
+            { "ageRange": "169+", "minValue": 422, "maxValue": 1292 }
+          ]
+        },
+        {
+          "name": "IgG2",
+          "ageGroups": [
+            { "ageRange": "Cord", "minValue": 143, "maxValue": 453 },
+            { "ageRange": "0-3", "minValue": 40, "maxValue": 167 },
+            { "ageRange": "3-6", "minValue": 23, "maxValue": 147 },
+            { "ageRange": "6-9", "minValue": 37, "maxValue": 60 },
+            { "ageRange": "9-24", "minValue": 30, "maxValue": 327 },
+            { "ageRange": "25-48", "minValue": 70, "maxValue": 443 },
+            { "ageRange": "49-72", "minValue": 83, "maxValue": 513 },
+            { "ageRange": "73-96", "minValue": 113, "maxValue": 480 },
+            { "ageRange": "97-120", "minValue": 163, "maxValue": 513 },
+            { "ageRange": "121-144", "minValue": 147, "maxValue": 493 },
+            { "ageRange": "145-168", "minValue": 140, "maxValue": 440 },
+            { "ageRange": "169+", "minValue": 117, "maxValue": 747 }
+          ]
+        },
+        {
+          "name": "IgG3",
+          "ageGroups": [
+            { "ageRange": "Cord", "minValue": 27, "maxValue": 146 },
+            { "ageRange": "0-3", "minValue": 4, "maxValue": 23 },
+            { "ageRange": "3-6", "minValue": 4, "maxValue": 100 },
+            { "ageRange": "6-9", "minValue": 12, "maxValue": 62 },
+            { "ageRange": "9-24", "minValue": 13, "maxValue": 132 },
+            { "ageRange": "25-48", "minValue": 17, "maxValue": 90 },
+            { "ageRange": "49-72", "minValue": 8, "maxValue": 111 },
+            { "ageRange": "73-96", "minValue": 15, "maxValue": 133 },
+            { "ageRange": "97-120", "minValue": 26, "maxValue": 133 },
+            { "ageRange": "121-144", "minValue": 23, "maxValue": 179 },
+            { "ageRange": "145-168", "minValue": 23, "maxValue": 117 },
+            { "ageRange": "169+", "minValue": 41, "maxValue": 129 }
+          ]
+        },
+        {
+          "name": "IgG4",
+          "ageGroups": [
+            { "ageRange": "Cord", "minValue": 1, "maxValue": 47 },
+            { "ageRange": "0-3", "minValue": 1, "maxValue": 120 },
+            { "ageRange": "3-6", "minValue": 1, "maxValue": 120 },
+            { "ageRange": "6-9", "minValue": 1, "maxValue": 120 },
+            { "ageRange": "9-24", "minValue": 1, "maxValue": 120 },
+            { "ageRange": "25-48", "minValue": 2, "maxValue": 112 },
+            { "ageRange": "49-72", "minValue": 2, "maxValue": 138 },
+            { "ageRange": "73-96", "minValue": 1, "maxValue": 95 },
+            { "ageRange": "97-120", "minValue": 10, "maxValue": 143 },
+            { "ageRange": "121-144", "minValue": 10, "maxValue": 143 },
+            { "ageRange": "145-168", "minValue": 10, "maxValue": 143 },
+            { "ageRange": "169+", "minValue": 10, "maxValue": 67 }
+          ]
+        }
       ]
-  },
-  
+    },
+
     {
       "name": "turkjmedcsi",
       "description": "Age-related serum immunoglobulin levels in healthy children (mg/L).",
       "unit": "mg/L",
+      "type": "geometric",
       "testTypes": [
         {
           "name": "IgG",
@@ -361,11 +364,12 @@
         }
       ]
     },
-    
+
     {
       "name": "klavuz-ap",
       "description": "Age-related serum immunoglobulin levels for healthy donors (g/L).",
       "unit": "g/L",
+      "type": "minMax",
       "testTypes": [
         {
           "name": "IgA",
@@ -485,6 +489,7 @@
       "name": "Klavuz-os",
       "description": "Distribution of serum immunoglobulin levels according to age groups in children between 1 month and 18 years of age.",
       "unit": "mg/L",
+      "type": "geometric",
       "testTypes": [
         {
           "name": "IgG",
@@ -499,7 +504,7 @@
             { "ageRange": "97-132", "geometricMean": 1177.1, "standardDeviation": 248.22, "minValue": 645, "maxValue": 1520, "lowerLimit": 673.13, "upperLimit": 1673.42 },
             { "ageRange": "133-192", "geometricMean": 1213.95, "standardDeviation": 229.63, "minValue": 877, "maxValue": 1620, "lowerLimit": 749.51, "upperLimit": 1802.49 },
             { "ageRange": "193-216", "geometricMean": 1371.95, "standardDeviation": 328.3, "minValue": 900, "maxValue": 1600, "lowerLimit": 766.26, "upperLimit": 1780.94 }
-           
+
           ]
         },
         {
