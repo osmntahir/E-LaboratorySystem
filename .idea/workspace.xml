@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/UserNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/UserNavigator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/users/UserHomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/users/UserHomeScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/klavuz-verileri.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/klavuz-verileri.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LogoutButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LogoutButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/admin/PatientDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/PatientDetailScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/auth/RoleBasedScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/auth/RoleBasedScreen.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,21 +39,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.start.executor&quot;: &quot;Run&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.start.executor": "Run",
+    "settings.editor.selected.configurable": "terminal",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\osman\Desktop\E-LaboratorySystem\src\screens\admin" />
@@ -102,11 +106,16 @@
       <workItem from="1733738449219" duration="6224000" />
       <workItem from="1733921315233" duration="1056000" />
       <workItem from="1734017141718" duration="4906000" />
-      <workItem from="1734096391338" duration="5785000" />
+      <workItem from="1734096391338" duration="6639000" />
+      <workItem from="1734791238166" duration="1286000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

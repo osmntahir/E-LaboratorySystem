@@ -5,7 +5,7 @@ import { db } from '../../../firebaseConfig';
 import TestResultItem from '../../components/items/TestResultItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { deleteTestResult } from '../../services/testResultService';
-import { Text, Button, Card, IconButton, Subheading, FAB, Divider, Menu, Searchbar } from 'react-native-paper';
+import { Text, Button, Card, IconButton, FAB, Divider, Menu, Searchbar } from 'react-native-paper';
 
 const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;
@@ -15,8 +15,22 @@ const PatientDetailScreen = ({ route, navigation }) => {
     const [menuVisible, setMenuVisible] = useState(false);
 
     const parseDate = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') {
+            console.error('Invalid date string:', dateStr);
+            return new Date(0); // Geçersiz tarih durumunda epoch başlangıcı döndürülür
+        }
+
         const [datePart, timePart] = dateStr.split(' ');
+        if (!datePart) {
+            console.error('Invalid date format:', dateStr);
+            return new Date(0);
+        }
+
         const [year, month, day] = datePart.split('-').map(num => parseInt(num, 10));
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+            console.error('Invalid date numbers:', dateStr);
+            return new Date(0);
+        }
 
         let hourInt = 0;
         let minuteInt = 0;
@@ -38,18 +52,23 @@ const PatientDetailScreen = ({ route, navigation }) => {
         try {
             const q = query(collection(db, 'testResults'), where('patientTc', '==', patient.tcNo));
             const querySnapshot = await getDocs(q);
-            const testResultsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const testResultsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                tests: doc.data().tests || [], // Varsayılan olarak boş bir dizi
+            }));
 
-            const sorted = testResultsData.sort((a, b) => {
+            const validResults = testResultsData.filter(result =>
+                Array.isArray(result.tests) &&
+                result.tests.length > 0 &&
+                result.testDate &&
+                typeof result.testDate === 'string'
+            );
+
+            const sorted = validResults.sort((a, b) => {
                 const dateA = parseDate(a.testDate);
                 const dateB = parseDate(b.testDate);
-                // Eskiden Yeniye (oldToNew) -> dateA - dateB
-                // Yeniden Eskiye (newToOld) -> dateB - dateA
-                if (sortOption === 'oldToNew') {
-                    return dateA - dateB;
-                } else {
-                    return dateB - dateA;
-                }
+                return sortOption === 'oldToNew' ? dateA - dateB : dateB - dateA;
             });
 
             setTestResults(sorted);
@@ -95,9 +114,16 @@ const PatientDetailScreen = ({ route, navigation }) => {
         );
     };
 
-    const filteredResults = testResults.filter(result =>
-        result.tests.some(test => test.testName.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredResults = testResults.filter(result => {
+        // result.tests bir dizi ise ve en az bir test içeriyorsa
+        if (Array.isArray(result.tests) && result.tests.length > 0) {
+            // Test isimlerini kontrol ederek doğru sonuçları filtrele
+            return result.tests.some(test =>
+                test.testName && test.testName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+        return false; // Bozuk sonuçlar alınmasın
+    });
 
     const openMenu = () => setMenuVisible(true);
     const closeMenu = () => setMenuVisible(false);

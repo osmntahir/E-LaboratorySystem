@@ -3,255 +3,257 @@
     {
       "name": "klavuz-tjp",
       "description": "Age-related serum immunoglobulin levels for healthy children.",
-      "unit": "g/L",
+      "unit": "mg/L",
       "testTypes": [
         {
           "name": "IgA",
-
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.005, "maxValue": 0.006 },
-            { "ageRange": "1-5", "minValue": 0.006, "maxValue": 0.058 },
-            { "ageRange": "6-8", "minValue": 0.006, "maxValue": 0.086 },
-            { "ageRange": "9-12", "minValue": 0.018, "maxValue": 0.154 },
-            { "ageRange": "13-24", "minValue": 0.011, "maxValue": 0.094 },
-            { "ageRange": "25-36", "minValue": 0.023, "maxValue": 0.13 },
-            { "ageRange": "37-48", "minValue": 0.041, "maxValue": 0.115 },
-            { "ageRange": "49-60", "minValue": 0.023, "maxValue": 0.205 },
-            { "ageRange": "61-72", "minValue": 0.036, "maxValue": 0.268 },
-            { "ageRange": "73-84", "minValue": 0.054, "maxValue": 0.268 },
-            { "ageRange": "85-96", "minValue": 0.027, "maxValue": 0.198 },
-            { "ageRange": "97-108", "minValue": 0.052, "maxValue": 0.225 },
-            { "ageRange": "109-120", "minValue": 0.048, "maxValue": 0.158 },
-            { "ageRange": "121+", "minValue": 0.046, "maxValue": 0.221 }
+            { "ageRange": "0-1", "minValue": 5, "maxValue": 5.8, "geometricMean": 5.7, "standardDeviation": 0.2 },
+            { "ageRange": "1-5", "minValue": 5.8, "maxValue": 58, "geometricMean": 20.2, "standardDeviation": 19.7 },
+            { "ageRange": "6-8", "minValue": 5.8, "maxValue": 85.8, "geometricMean": 23.2, "standardDeviation": 25.2 },
+            { "ageRange": "9-12", "minValue": 18.4, "maxValue": 154, "geometricMean": 52.9, "standardDeviation": 36.7 },
+            { "ageRange": "13-24", "minValue": 11.5, "maxValue": 94.3, "geometricMean": 44.1, "standardDeviation": 18.3 },
+            { "ageRange": "25-36", "minValue": 23, "maxValue": 130, "geometricMean": 53.5, "standardDeviation": 26.8 },
+            { "ageRange": "37-48", "minValue": 40.7, "maxValue": 115, "geometricMean": 68.8, "standardDeviation": 22.2 },
+            { "ageRange": "49-60", "minValue": 23, "maxValue": 205.1, "geometricMean": 91.9, "standardDeviation": 37.4 },
+            { "ageRange": "61-72", "minValue": 36.1, "maxValue": 268, "geometricMean": 108.4, "standardDeviation": 42.3 },
+            { "ageRange": "73-84", "minValue": 54, "maxValue": 268, "geometricMean": 116.7, "standardDeviation": 45.9 },
+            { "ageRange": "85-96", "minValue": 27, "maxValue": 198, "geometricMean": 115.8, "standardDeviation": 43.0 },
+            { "ageRange": "97-108", "minValue": 52.4, "maxValue": 225, "geometricMean": 130.5, "standardDeviation": 47.4 },
+            { "ageRange": "109-120", "minValue": 48, "maxValue": 158, "geometricMean": 109.8, "standardDeviation": 29.4 },
+            { "ageRange": "121+", "minValue": 46.5, "maxValue": 221, "geometricMean": 121.3, "standardDeviation": 55.5 }
           ]
         },
         {
           "name": "IgM",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.0173, "maxValue": 0.0296 },
-            { "ageRange": "2-5", "minValue": 0.0184, "maxValue": 0.145 },
-            { "ageRange": "6-8", "minValue": 0.0264, "maxValue": 0.146 },
-            { "ageRange": "9-12", "minValue": 0.0235, "maxValue": 0.18 },
-            { "ageRange": "13-24", "minValue": 0.0256, "maxValue": 0.201 },
-            { "ageRange": "25-36", "minValue": 0.036, "maxValue": 0.199 },
-            { "ageRange": "37-48", "minValue": 0.0261, "maxValue": 0.188 },
-            { "ageRange": "49-60", "minValue": 0.0333, "maxValue": 0.207 },
-            { "ageRange": "61-72", "minValue": 0.0305, "maxValue": 0.22 },
-            { "ageRange": "73-84", "minValue": 0.0337, "maxValue": 0.257 },
-            { "ageRange": "85-96", "minValue": 0.03, "maxValue": 0.187 },
-            { "ageRange": "97-108", "minValue": 0.044, "maxValue": 0.206 },
-            { "ageRange": "109-120", "minValue": 0.033, "maxValue": 0.205 },
-            { "ageRange": "121+", "minValue": 0.075, "maxValue": 0.1985 }
+            { "ageRange": "0-1", "minValue": 17.3, "maxValue": 29.6, "geometricMean": 18.5, "standardDeviation": 3.5 },
+            { "ageRange": "2-5", "minValue": 18.4, "maxValue": 145, "geometricMean": 57.3, "standardDeviation": 37.4 },
+            { "ageRange": "6-8", "minValue": 26.4, "maxValue": 146, "geometricMean": 68.7, "standardDeviation": 38.9 },
+            { "ageRange": "9-12", "minValue": 23.5, "maxValue": 180, "geometricMean": 86.1, "standardDeviation": 40.3 },
+            { "ageRange": "13-24", "minValue": 25.6, "maxValue": 201, "geometricMean": 98.3, "standardDeviation": 40.3 },
+            { "ageRange": "25-36", "minValue": 36, "maxValue": 199, "geometricMean": 92.5, "standardDeviation": 33.9 },
+            { "ageRange": "37-48", "minValue": 26.1, "maxValue": 188, "geometricMean": 86.1, "standardDeviation": 35.3 },
+            { "ageRange": "49-60", "minValue": 33.3, "maxValue": 207, "geometricMean": 105.8, "standardDeviation": 40.8 },
+            { "ageRange": "61-72", "minValue": 30.5, "maxValue": 220, "geometricMean": 97.6, "standardDeviation": 42.9 },
+            { "ageRange": "73-84", "minValue": 33.7, "maxValue": 257, "geometricMean": 93.9, "standardDeviation": 49.3 },
+            { "ageRange": "85-96", "minValue": 30, "maxValue": 187, "geometricMean": 102.4, "standardDeviation": 38.8 },
+            { "ageRange": "97-108", "minValue": 44, "maxValue": 206, "geometricMean": 120.9, "standardDeviation": 43.8 },
+            { "ageRange": "109-120", "minValue": 33, "maxValue": 205, "geometricMean": 99.7, "standardDeviation": 49.7 },
+            { "ageRange": "121+", "minValue": 75, "maxValue": 198.5, "geometricMean": 130.9, "standardDeviation": 44.5 }
           ]
         },
         {
           "name": "IgG",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.492, "maxValue": 1.19 },
-            { "ageRange": "1-5", "minValue": 0.27, "maxValue": 0.792 },
-            { "ageRange": "6-8", "minValue": 0.268, "maxValue": 0.898 },
-            { "ageRange": "9-12", "minValue": 0.421, "maxValue": 1.1 },
-            { "ageRange": "13-24", "minValue": 0.365, "maxValue": 1.2 },
-            { "ageRange": "25-36", "minValue": 0.43, "maxValue": 1.29 },
-            { "ageRange": "37-48", "minValue": 0.539, "maxValue": 1.2 },
-            { "ageRange": "49-60", "minValue": 0.528, "maxValue": 1.49 },
-            { "ageRange": "61-72", "minValue": 0.527, "maxValue": 1.59 },
-            { "ageRange": "73-84", "minValue": 0.646, "maxValue": 1.62 },
-            { "ageRange": "85-96", "minValue": 0.579, "maxValue": 1.61 },
-            { "ageRange": "97-108", "minValue": 0.741, "maxValue": 1.65 },
-            { "ageRange": "109-120", "minValue": 0.666, "maxValue": 1.37 },
-            { "ageRange": "121+", "minValue": 0.83, "maxValue": 1.82 }
+            { "ageRange": "0-1", "minValue": 492, "maxValue": 1190, "geometricMean": 884.2, "standardDeviation": 230.4 },
+            { "ageRange": "1-5", "minValue": 270, "maxValue": 792, "geometricMean": 473.8, "standardDeviation": 193.1 },
+            { "ageRange": "6-8", "minValue": 268, "maxValue": 898, "geometricMean": 581.9, "standardDeviation": 207.9 },
+            { "ageRange": "9-12", "minValue": 421, "maxValue": 1100, "geometricMean": 692.7, "standardDeviation": 181.1 },
+            { "ageRange": "13-24", "minValue": 365, "maxValue": 1200, "geometricMean": 774.4, "standardDeviation": 199.7 },
+            { "ageRange": "25-36", "minValue": 430, "maxValue": 1290, "geometricMean": 822.3, "standardDeviation": 208.4 },
+            { "ageRange": "37-48", "minValue": 539, "maxValue": 1200, "geometricMean": 879.9, "standardDeviation": 157.2 },
+            { "ageRange": "49-60", "minValue": 528, "maxValue": 1490, "geometricMean": 986.2, "standardDeviation": 209.6 },
+            { "ageRange": "61-72", "minValue": 527, "maxValue": 1590, "geometricMean": 1040.7, "standardDeviation": 203.2 },
+            { "ageRange": "73-84", "minValue": 646, "maxValue": 1620, "geometricMean": 1062.8, "standardDeviation": 238.8 },
+            { "ageRange": "85-96", "minValue": 579, "maxValue": 1610, "geometricMean": 1051.7, "standardDeviation": 228.9 },
+            { "ageRange": "97-108", "minValue": 741, "maxValue": 1650, "geometricMean": 1087.8, "standardDeviation": 236.0 },
+            { "ageRange": "109-120", "minValue": 666, "maxValue": 1370, "geometricMean": 981.1, "standardDeviation": 207.7 },
+            { "ageRange": "121+", "minValue": 830, "maxValue": 1820, "geometricMean": 1224.9, "standardDeviation": 280.2 }
           ]
         },
         {
           "name": "IgG1",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.43, "maxValue": 0.897 },
-            { "ageRange": "1-5", "minValue": 0.16, "maxValue": 0.574 },
-            { "ageRange": "6-8", "minValue": 0.279, "maxValue": 0.82 },
-            { "ageRange": "9-12", "minValue": 0.328, "maxValue": 1.25 },
-            { "ageRange": "13-24", "minValue": 0.344, "maxValue": 1.435 },
-            { "ageRange": "25-36", "minValue": 0.34, "maxValue": 1.47 },
-            { "ageRange": "37-48", "minValue": 0.439, "maxValue": 1.333 },
-            { "ageRange": "49-60", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "61-72", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "73-84", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "85-96", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "97-108", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "109-120", "minValue": 0.468, "maxValue": 1.333 },
-            { "ageRange": "121+", "minValue": 0.468, "maxValue": 1.333 }
+            { "ageRange": "0-1", "minValue": 430, "maxValue": 897, "geometricMean": 675, "standardDeviation": 152 },
+            { "ageRange": "1-5", "minValue": 160, "maxValue": 574, "geometricMean": 319, "standardDeviation": 113 },
+            { "ageRange": "6-8", "minValue": 279, "maxValue": 820, "geometricMean": 485, "standardDeviation": 188 },
+            { "ageRange": "9-12", "minValue": 328, "maxValue": 1250, "geometricMean": 562, "standardDeviation": 240 },
+            { "ageRange": "13-24", "minValue": 344, "maxValue": 1435, "geometricMean": 721, "standardDeviation": 292 },
+            { "ageRange": "25-36", "minValue": 340, "maxValue": 1470, "geometricMean": 736, "standardDeviation": 285 },
+            { "ageRange": "37-48", "minValue": 439, "maxValue": 1333, "geometricMean": 762, "standardDeviation": 246 },
+            { "ageRange": "49-60", "minValue": 468, "maxValue": 1333, "geometricMean": 755, "standardDeviation": 209 },
+            { "ageRange": "61-72", "minValue": 420, "maxValue": 1470, "geometricMean": 806, "standardDeviation": 281 },
+            { "ageRange": "73-84", "minValue": 380, "maxValue": 1840, "geometricMean": 860, "standardDeviation": 329 },
+            { "ageRange": "85-96", "minValue": 599, "maxValue": 1560, "geometricMean": 842, "standardDeviation": 241 },
+            { "ageRange": "97-108", "minValue": 490, "maxValue": 1560, "geometricMean": 872, "standardDeviation": 354 },
+            { "ageRange": "109-120", "minValue": 498, "maxValue": 1460, "geometricMean": 796, "standardDeviation": 269 },
+            { "ageRange": "121+", "minValue": 528, "maxValue": 1384, "geometricMean": 857, "standardDeviation": 214 }
           ]
         },
         {
           "name": "IgG2",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.087, "maxValue": 0.263 },
-            { "ageRange": "1-5", "minValue": 0.032, "maxValue": 0.108 },
-            { "ageRange": "6-8", "minValue": 0.036, "maxValue": 0.146 },
-            { "ageRange": "9-12", "minValue": 0.025, "maxValue": 0.161 },
-            { "ageRange": "13-24", "minValue": 0.031, "maxValue": 0.264 },
-            { "ageRange": "25-36", "minValue": 0.043, "maxValue": 0.38 },
-            { "ageRange": "37-48", "minValue": 0.06, "maxValue": 0.41 },
-            { "ageRange": "49-60", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "61-72", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "73-84", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "85-96", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "97-108", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "109-120", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "121+", "minValue": 0.085, "maxValue": 0.44 }
+            { "ageRange": "0-1", "minValue": 87, "maxValue": 263, "geometricMean": 156, "standardDeviation": 50 },
+            { "ageRange": "1-5", "minValue": 32, "maxValue": 108, "geometricMean": 59, "standardDeviation": 26 },
+            { "ageRange": "6-8", "minValue": 36, "maxValue": 146, "geometricMean": 67, "standardDeviation": 37 },
+            { "ageRange": "9-12", "minValue": 25, "maxValue": 161, "geometricMean": 64, "standardDeviation": 35 },
+            { "ageRange": "13-24", "minValue": 31, "maxValue": 264, "geometricMean": 93, "standardDeviation": 49 },
+            { "ageRange": "25-36", "minValue": 43, "maxValue": 380, "geometricMean": 115, "standardDeviation": 85 },
+            { "ageRange": "37-48", "minValue": 60, "maxValue": 410, "geometricMean": 161, "standardDeviation": 92 },
+            { "ageRange": "49-60", "minValue": 85, "maxValue": 440, "geometricMean": 167, "standardDeviation": 78 },
+            { "ageRange": "61-72", "minValue": 67, "maxValue": 460, "geometricMean": 197, "standardDeviation": 101 },
+            { "ageRange": "73-84", "minValue": 70, "maxValue": 543, "geometricMean": 214, "standardDeviation": 121 },
+            { "ageRange": "85-96", "minValue": 111, "maxValue": 515, "geometricMean": 212, "standardDeviation": 88 },
+            { "ageRange": "97-108", "minValue": 100, "maxValue": 573, "geometricMean": 279, "standardDeviation": 134 },
+            { "ageRange": "109-120", "minValue": 110, "maxValue": 398, "geometricMean": 238, "standardDeviation": 83 },
+            { "ageRange": "121+", "minValue": 147, "maxValue": 610, "geometricMean": 307, "standardDeviation": 128 }
           ]
         },
         {
           "name": "IgG3",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.018, "maxValue": 0.078 },
-            { "ageRange": "1-5", "minValue": 0.013, "maxValue": 0.053 },
-            { "ageRange": "6-8", "minValue": 0.014, "maxValue": 0.1 },
-            { "ageRange": "9-12", "minValue": 0.018, "maxValue": 0.11 },
-            { "ageRange": "13-24", "minValue": 0.016, "maxValue": 0.132 },
-            { "ageRange": "25-36", "minValue": 0.014, "maxValue": 0.125 },
-            { "ageRange": "37-48", "minValue": 0.015, "maxValue": 0.12 },
-            { "ageRange": "49-60", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "61-72", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "73-84", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "85-96", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "97-108", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "109-120", "minValue": 0.015, "maxValue": 0.107 },
-            { "ageRange": "121+", "minValue": 0.015, "maxValue": 0.107 }
+            { "ageRange": "0-1", "minValue": 18, "maxValue": 78, "geometricMean": 37, "standardDeviation": 17 },
+            { "ageRange": "1-5", "minValue": 13, "maxValue": 53, "geometricMean": 24, "standardDeviation": 12 },
+            { "ageRange": "6-8", "minValue": 14, "maxValue": 100, "geometricMean": 35, "standardDeviation": 25 },
+            { "ageRange": "9-12", "minValue": 18, "maxValue": 110, "geometricMean": 38, "standardDeviation": 24 },
+            { "ageRange": "13-24", "minValue": 16, "maxValue": 132, "geometricMean": 37, "standardDeviation": 25 },
+            { "ageRange": "25-36", "minValue": 14, "maxValue": 125, "geometricMean": 32, "standardDeviation": 21 },
+            { "ageRange": "37-48", "minValue": 15, "maxValue": 120, "geometricMean": 37, "standardDeviation": 25 },
+            { "ageRange": "49-60", "minValue": 15, "maxValue": 107, "geometricMean": 37, "standardDeviation": 20 },
+            { "ageRange": "61-72", "minValue": 21, "maxValue": 186, "geometricMean": 51, "standardDeviation": 43 },
+            { "ageRange": "73-84", "minValue": 20, "maxValue": 186, "geometricMean": 51, "standardDeviation": 34 },
+            { "ageRange": "85-96", "minValue": 29, "maxValue": 200, "geometricMean": 53, "standardDeviation": 40 },
+            { "ageRange": "97-108", "minValue": 28, "maxValue": 223, "geometricMean": 80, "standardDeviation": 56 },
+            { "ageRange": "109-120", "minValue": 30, "maxValue": 120, "geometricMean": 58, "standardDeviation": 21 },
+            { "ageRange": "121+", "minValue": 21, "maxValue": 152, "geometricMean": 50, "standardDeviation": 33 }
           ]
         },
         {
           "name": "IgG4",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.087, "maxValue": 0.263 },
-            { "ageRange": "1-5", "minValue": 0.032, "maxValue": 0.108 },
-            { "ageRange": "6-8", "minValue": 0.036, "maxValue": 0.146 },
-            { "ageRange": "9-12", "minValue": 0.025, "maxValue": 0.161 },
-            { "ageRange": "13-24", "minValue": 0.031, "maxValue": 0.264 },
-            { "ageRange": "25-36", "minValue": 0.043, "maxValue": 0.38 },
-            { "ageRange": "37-48", "minValue": 0.06, "maxValue": 0.41 },
-            { "ageRange": "49-60", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "61-72", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "73-84", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "85-96", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "97-108", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "109-120", "minValue": 0.085, "maxValue": 0.44 },
-            { "ageRange": "121+", "minValue": 0.085, "maxValue": 0.44 }
+            { "ageRange": "0-1", "minValue": 17, "maxValue": 81, "geometricMean": 24, "standardDeviation": 17 },
+            { "ageRange": "1-5", "minValue": 2, "maxValue": 48, "geometricMean": 15, "standardDeviation": 14 },
+            { "ageRange": "6-8", "minValue": 2, "maxValue": 52, "geometricMean": 14, "standardDeviation": 11 },
+            { "ageRange": "9-12", "minValue": 2, "maxValue": 20, "geometricMean": 12, "standardDeviation": 5 },
+            { "ageRange": "13-24", "minValue": 2, "maxValue": 99, "geometricMean": 16, "standardDeviation": 17 },
+            { "ageRange": "25-36", "minValue": 2, "maxValue": 171, "geometricMean": 20, "standardDeviation": 40 },
+            { "ageRange": "37-48", "minValue": 4, "maxValue": 185, "geometricMean": 27, "standardDeviation": 37 },
+            { "ageRange": "49-60", "minValue": 8, "maxValue": 227, "geometricMean": 35, "standardDeviation": 46 },
+            { "ageRange": "61-72", "minValue": 2, "maxValue": 198, "geometricMean": 42, "standardDeviation": 46 },
+            { "ageRange": "73-84", "minValue": 5, "maxValue": 202, "geometricMean": 36, "standardDeviation": 45 },
+            { "ageRange": "85-96", "minValue": 4, "maxValue": 160, "geometricMean": 34, "standardDeviation": 44 },
+            { "ageRange": "97-108", "minValue": 10, "maxValue": 144, "geometricMean": 51, "standardDeviation": 45 },
+            { "ageRange": "109-120", "minValue": 9, "maxValue": 187, "geometricMean": 36, "standardDeviation": 44 },
+            { "ageRange": "121+", "minValue": 15, "maxValue": 202, "geometricMean": 33, "standardDeviation": 47 }
           ]
         }
       ]
     },
+    
+     
     {
       "name": "klavuz-cilv",
       "description": "Reference Ranges for Serum Immunoglobulins and Specific Antibody Levels.",
-      "unit": "g/L",
+      "unit": "mg/L",
       "testTypes": [
-        {
-          "name": "IgG",
-          "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.7, "maxValue": 1.3 },
-            { "ageRange": "1-4", "minValue": 0.28, "maxValue": 0.75 },
-            { "ageRange": "4-7", "minValue": 0.2, "maxValue": 1.2 },
-            { "ageRange": "7-13", "minValue": 0.3, "maxValue": 1.5 },
-            { "ageRange": "13-36", "minValue": 0.4, "maxValue": 1.3 },
-            { "ageRange": "37-72", "minValue": 0.6, "maxValue": 1.5 },
-            { "ageRange": "73+", "minValue": 0.639, "maxValue": 1.344 }
-          ]
-        },
-        {
-          "name": "IgA",
-          "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.0, "maxValue": 0.011 },
-            { "ageRange": "1-4", "minValue": 0.006, "maxValue": 0.05 },
-            { "ageRange": "4-7", "minValue": 0.008, "maxValue": 0.09 },
-            { "ageRange": "7-13", "minValue": 0.016, "maxValue": 0.1 },
-            { "ageRange": "13-36", "minValue": 0.02, "maxValue": 0.23 },
-            { "ageRange": "37-72", "minValue": 0.05, "maxValue": 0.15 },
-            { "ageRange": "73+", "minValue": 0.07, "maxValue": 0.312 }
-          ]
-        },
-        {
-          "name": "IgM",
-          "ageGroups": [
-            { "ageRange": "0-1", "minValue": 0.005, "maxValue": 0.03 },
-            { "ageRange": "1-4", "minValue": 0.015, "maxValue": 0.07 },
-            { "ageRange": "4-7", "minValue": 0.01, "maxValue": 0.09 },
-            { "ageRange": "7-13", "minValue": 0.025, "maxValue": 0.115 },
-            { "ageRange": "13-36", "minValue": 0.03, "maxValue": 0.12 },
-            { "ageRange": "37-72", "minValue": 0.022, "maxValue": 0.1 },
-            { "ageRange": "73+", "minValue": 0.056, "maxValue": 0.352 }
-          ]
-        },
-        {
-          "name": "IgG1",
-          "ageGroups": [
-            { "ageRange": "Cord", "minValue": 0.435, "maxValue": 1.084 },
-            { "ageRange": "0-3", "minValue": 0.218, "maxValue": 0.496 },
-            { "ageRange": "3-6", "minValue": 0.143, "maxValue": 0.394 },
-            { "ageRange": "6-9", "minValue": 0.19, "maxValue": 0.388 },
-            { "ageRange": "9-24", "minValue": 0.286, "maxValue": 0.68 },
-            { "ageRange": "25-48", "minValue": 0.381, "maxValue": 0.884 },
-            { "ageRange": "49-72", "minValue": 0.292, "maxValue": 0.816 },
-            { "ageRange": "73-96", "minValue": 0.422, "maxValue": 0.802 },
-            { "ageRange": "97-120", "minValue": 0.456, "maxValue": 0.938 },
-            { "ageRange": "121-144", "minValue": 0.456, "maxValue": 0.952 },
-            { "ageRange": "145-168", "minValue": 0.347, "maxValue": 0.993 },
-            { "ageRange": "169+", "minValue": 0.422, "maxValue": 1.292 }
-          ]
-        },
-        {
-          "name": "IgG2",
-          "ageGroups": [
-            { "ageRange": "Cord", "minValue": 0.143, "maxValue": 0.453 },
-            { "ageRange": "0-3", "minValue": 0.04, "maxValue": 0.167 },
-            { "ageRange": "3-6", "minValue": 0.023, "maxValue": 0.147 },
-            { "ageRange": "6-9", "minValue": 0.037, "maxValue": 0.06 },
-            { "ageRange": "9-24", "minValue": 0.03, "maxValue": 0.327 },
-            { "ageRange": "25-48", "minValue": 0.07, "maxValue": 0.443 },
-            { "ageRange": "49-72", "minValue": 0.083, "maxValue": 0.513 },
-            { "ageRange": "73-96", "minValue": 0.113, "maxValue": 0.48 },
-            { "ageRange": "97-120", "minValue": 0.163, "maxValue": 0.513 },
-            { "ageRange": "121-144", "minValue": 0.147, "maxValue": 0.493 },
-            { "ageRange": "145-168", "minValue": 0.14, "maxValue": 0.44 },
-            { "ageRange": "169+", "minValue": 0.117, "maxValue": 0.747 }
-          ]
-        },
-        {
-          "name": "IgG3",
-          "ageGroups": [
-            { "ageRange": "Cord", "minValue": 0.027, "maxValue": 0.146 },
-            { "ageRange": "0-3", "minValue": 0.004, "maxValue": 0.023 },
-            { "ageRange": "3-6", "minValue": 0.004, "maxValue": 0.1 },
-            { "ageRange": "6-9", "minValue": 0.012, "maxValue": 0.062 },
-            { "ageRange": "9-24", "minValue": 0.013, "maxValue": 0.132 },
-            { "ageRange": "25-48", "minValue": 0.017, "maxValue": 0.09 },
-            { "ageRange": "49-72", "minValue": 0.008, "maxValue": 0.111 },
-            { "ageRange": "73-96", "minValue": 0.015, "maxValue": 0.133 },
-            { "ageRange": "97-120", "minValue": 0.026, "maxValue": 0.133 },
-            { "ageRange": "121-144", "minValue": 0.023, "maxValue": 0.179 },
-            { "ageRange": "145-168", "minValue": 0.023, "maxValue": 0.117 },
-            { "ageRange": "169+", "minValue": 0.041, "maxValue": 0.129 }
-          ]
-        },
-        {
-          "name": "IgG4",
-          "ageGroups": [
-            { "ageRange": "Cord", "minValue": 0.001, "maxValue": 0.047 },
-            { "ageRange": "0-3", "minValue": 0.001, "maxValue": 0.12 },
-            { "ageRange": "3-6", "minValue": 0.001, "maxValue": 0.12 },
-            { "ageRange": "6-9", "minValue": 0.001, "maxValue": 0.12 },
-            { "ageRange": "9-24", "minValue": 0.001, "maxValue": 0.12 },
-            { "ageRange": "25-48", "minValue": 0.002, "maxValue": 0.112 },
-            { "ageRange": "49-72", "minValue": 0.002, "maxValue": 0.138 },
-            { "ageRange": "73-96", "minValue": 0.001, "maxValue": 0.095 },
-            { "ageRange": "97-120", "minValue": 0.01, "maxValue": 0.143 },
-            { "ageRange": "121-144", "minValue": 0.01, "maxValue": 0.143 },
-            { "ageRange": "145-168", "minValue": 0.01, "maxValue": 0.143 },
-            { "ageRange": "169+", "minValue": 0.01, "maxValue": 0.067 }
-          ]
-        }
+          {
+              "name": "IgG",
+              "ageGroups": [
+                  { "ageRange": "0-1", "minValue": 700, "maxValue": 1300 },
+                  { "ageRange": "1-4", "minValue": 280, "maxValue": 750 },
+                  { "ageRange": "4-7", "minValue": 200, "maxValue": 1200 },
+                  { "ageRange": "7-13", "minValue": 300, "maxValue": 1500 },
+                  { "ageRange": "13-36", "minValue": 400, "maxValue": 1300 },
+                  { "ageRange": "37-72", "minValue": 600, "maxValue": 1500 },
+                  { "ageRange": "73+", "minValue": 639, "maxValue": 1344 }
+              ]
+          },
+          {
+              "name": "IgA",
+              "ageGroups": [
+                  { "ageRange": "0-1", "minValue": 0, "maxValue": 11 },
+                  { "ageRange": "1-4", "minValue": 6, "maxValue": 50 },
+                  { "ageRange": "4-7", "minValue": 8, "maxValue": 90 },
+                  { "ageRange": "7-13", "minValue": 16, "maxValue": 100 },
+                  { "ageRange": "13-36", "minValue": 20, "maxValue": 230 },
+                  { "ageRange": "37-72", "minValue": 50, "maxValue": 150 },
+                  { "ageRange": "73+", "minValue": 70, "maxValue": 312 }
+              ]
+          },
+          {
+              "name": "IgM",
+              "ageGroups": [
+                  { "ageRange": "0-1", "minValue": 5, "maxValue": 30 },
+                  { "ageRange": "1-4", "minValue": 15, "maxValue": 70 },
+                  { "ageRange": "4-7", "minValue": 10, "maxValue": 90 },
+                  { "ageRange": "7-13", "minValue": 25, "maxValue": 115 },
+                  { "ageRange": "13-36", "minValue": 30, "maxValue": 120 },
+                  { "ageRange": "37-72", "minValue": 22, "maxValue": 100 },
+                  { "ageRange": "73+", "minValue": 56, "maxValue": 352 }
+              ]
+          },
+          {
+              "name": "IgG1",
+              "ageGroups": [
+                  { "ageRange": "Cord", "minValue": 435, "maxValue": 1084 },
+                  { "ageRange": "0-3", "minValue": 218, "maxValue": 496 },
+                  { "ageRange": "3-6", "minValue": 143, "maxValue": 394 },
+                  { "ageRange": "6-9", "minValue": 190, "maxValue": 388 },
+                  { "ageRange": "9-24", "minValue": 286, "maxValue": 680 },
+                  { "ageRange": "25-48", "minValue": 381, "maxValue": 884 },
+                  { "ageRange": "49-72", "minValue": 292, "maxValue": 816 },
+                  { "ageRange": "73-96", "minValue": 422, "maxValue": 802 },
+                  { "ageRange": "97-120", "minValue": 456, "maxValue": 938 },
+                  { "ageRange": "121-144", "minValue": 456, "maxValue": 952 },
+                  { "ageRange": "145-168", "minValue": 347, "maxValue": 993 },
+                  { "ageRange": "169+", "minValue": 422, "maxValue": 1292 }
+              ]
+          },
+          {
+              "name": "IgG2",
+              "ageGroups": [
+                  { "ageRange": "Cord", "minValue": 143, "maxValue": 453 },
+                  { "ageRange": "0-3", "minValue": 40, "maxValue": 167 },
+                  { "ageRange": "3-6", "minValue": 23, "maxValue": 147 },
+                  { "ageRange": "6-9", "minValue": 37, "maxValue": 60 },
+                  { "ageRange": "9-24", "minValue": 30, "maxValue": 327 },
+                  { "ageRange": "25-48", "minValue": 70, "maxValue": 443 },
+                  { "ageRange": "49-72", "minValue": 83, "maxValue": 513 },
+                  { "ageRange": "73-96", "minValue": 113, "maxValue": 480 },
+                  { "ageRange": "97-120", "minValue": 163, "maxValue": 513 },
+                  { "ageRange": "121-144", "minValue": 147, "maxValue": 493 },
+                  { "ageRange": "145-168", "minValue": 140, "maxValue": 440 },
+                  { "ageRange": "169+", "minValue": 117, "maxValue": 747 }
+              ]
+          },
+          {
+              "name": "IgG3",
+              "ageGroups": [
+                  { "ageRange": "Cord", "minValue": 27, "maxValue": 146 },
+                  { "ageRange": "0-3", "minValue": 4, "maxValue": 23 },
+                  { "ageRange": "3-6", "minValue": 4, "maxValue": 100 },
+                  { "ageRange": "6-9", "minValue": 12, "maxValue": 62 },
+                  { "ageRange": "9-24", "minValue": 13, "maxValue": 132 },
+                  { "ageRange": "25-48", "minValue": 17, "maxValue": 90 },
+                  { "ageRange": "49-72", "minValue": 8, "maxValue": 111 },
+                  { "ageRange": "73-96", "minValue": 15, "maxValue": 133 },
+                  { "ageRange": "97-120", "minValue": 26, "maxValue": 133 },
+                  { "ageRange": "121-144", "minValue": 23, "maxValue": 179 },
+                  { "ageRange": "145-168", "minValue": 23, "maxValue": 117 },
+                  { "ageRange": "169+", "minValue": 41, "maxValue": 129 }
+              ]
+          },
+          {
+              "name": "IgG4",
+              "ageGroups": [
+                  { "ageRange": "Cord", "minValue": 1, "maxValue": 47 },
+                  { "ageRange": "0-3", "minValue": 1, "maxValue": 120 },
+                  { "ageRange": "3-6", "minValue": 1, "maxValue": 120 },
+                  { "ageRange": "6-9", "minValue": 1, "maxValue": 120 },
+                  { "ageRange": "9-24", "minValue": 1, "maxValue": 120 },
+                  { "ageRange": "25-48", "minValue": 2, "maxValue": 112 },
+                  { "ageRange": "49-72", "minValue": 2, "maxValue": 138 },
+                  { "ageRange": "73-96", "minValue": 1, "maxValue": 95 },
+                  { "ageRange": "97-120", "minValue": 10, "maxValue": 143 },
+                  { "ageRange": "121-144", "minValue": 10, "maxValue": 143 },
+                  { "ageRange": "145-168", "minValue": 10, "maxValue": 143 },
+                  { "ageRange": "169+", "minValue": 10, "maxValue": 67 }
+              ]
+          }
       ]
-    },
+  },
+  
     {
       "name": "turkjmedcsi",
       "description": "Age-related serum immunoglobulin levels in healthy children (mg/L).",
@@ -260,107 +262,106 @@
         {
           "name": "IgG",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 399, "maxValue": 1480 },
-            { "ageRange": "1-3", "minValue": 217, "maxValue": 981 },
-            { "ageRange": "4-6", "minValue": 270, "maxValue": 1110 },
-            { "ageRange": "7-12", "minValue": 242, "maxValue": 977 },
-            { "ageRange": "13-24", "minValue": 389, "maxValue": 1260 },
-            { "ageRange": "25-36", "minValue": 486, "maxValue": 1970 },
-            { "ageRange": "37-60", "minValue": 457, "maxValue": 1120 },
-            { "ageRange": "61-96", "minValue": 483, "maxValue": 1580 },
-            { "ageRange": "97-132", "minValue": 642, "maxValue": 2290 },
-            { "ageRange": "133-192", "minValue": 636, "maxValue": 1610 },
-            { "ageRange": "193-216", "minValue": 688, "maxValue": 2430 },
-            { "ageRange": "217+", "minValue": 217, "maxValue": 2430 }
+            { "ageRange": "0-1", "minValue": 399, "maxValue": 1480, "geometricMean": 913.85, "standardDeviation": 262.19 },
+            { "ageRange": "1-3", "minValue": 217, "maxValue": 981, "geometricMean": 409.86, "standardDeviation": 145.59 },
+            { "ageRange": "4-6", "minValue": 270, "maxValue": 1110, "geometricMean": 440.17, "standardDeviation": 236.8 },
+            { "ageRange": "7-12", "minValue": 242, "maxValue": 977, "geometricMean": 536.79, "standardDeviation": 186.62 },
+            { "ageRange": "13-24", "minValue": 389, "maxValue": 1260, "geometricMean": 726.79, "standardDeviation": 238.61 },
+            { "ageRange": "25-36", "minValue": 486, "maxValue": 1970, "geometricMean": 786.41, "standardDeviation": 249.14 },
+            { "ageRange": "37-60", "minValue": 457, "maxValue": 1120, "geometricMean": 823.19, "standardDeviation": 164.19 },
+            { "ageRange": "61-96", "minValue": 483, "maxValue": 1580, "geometricMean": 982.86, "standardDeviation": 255.53 },
+            { "ageRange": "97-132", "minValue": 642, "maxValue": 2290, "geometricMean": 1016.12, "standardDeviation": 322.27 },
+            { "ageRange": "133-192", "minValue": 636, "maxValue": 1610, "geometricMean": 1123.56, "standardDeviation": 203.83 },
+            { "ageRange": "193-216", "minValue": 688, "maxValue": 2430, "geometricMean": 1277.2, "standardDeviation": 361.89 },
+            { "ageRange": "217+", "minValue": 217, "maxValue": 2430, "geometricMean": 773.94, "standardDeviation": 361.76 }
           ]
         },
         {
           "name": "IgA",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 6.67, "maxValue": 8.75 },
-            { "ageRange": "1-3", "minValue": 6.67, "maxValue": 24.6 },
-            { "ageRange": "4-6", "minValue": 6.67, "maxValue": 53 },
-            { "ageRange": "7-12", "minValue": 6.68, "maxValue": 114 },
-            { "ageRange": "13-24", "minValue": 13.1, "maxValue": 103 },
-            { "ageRange": "25-36", "minValue": 6.67, "maxValue": 135 },
-            { "ageRange": "37-60", "minValue": 35.7, "maxValue": 192 },
-            { "ageRange": "61-96", "minValue": 44.8, "maxValue": 276 },
-            { "ageRange": "97-132", "minValue": 32.6, "maxValue": 262 },
-            { "ageRange": "133-192", "minValue": 36.4, "maxValue": 305 },
-            { "ageRange": "193-216", "minValue": 46.3, "maxValue": 385 },
-            { "ageRange": "217+", "minValue": 6.67, "maxValue": 385 }
+            { "ageRange": "0-1", "minValue": 6.67, "maxValue": 8.75, "geometricMean": 6.77, "standardDeviation": 0.45 },
+            { "ageRange": "1-3", "minValue": 6.67, "maxValue": 24.6, "geometricMean": 9.58, "standardDeviation": 5.16 },
+            { "ageRange": "4-6", "minValue": 6.67, "maxValue": 53, "geometricMean": 17.23, "standardDeviation": 9.77 },
+            { "ageRange": "7-12", "minValue": 6.68, "maxValue": 114, "geometricMean": 23.63, "standardDeviation": 12.37 },
+            { "ageRange": "13-24", "minValue": 13.1, "maxValue": 103, "geometricMean": 34.09, "standardDeviation": 17.1 },
+            { "ageRange": "25-36", "minValue": 6.67, "maxValue": 135, "geometricMean": 48.87, "standardDeviation": 24.52 },
+            { "ageRange": "37-60", "minValue": 35.7, "maxValue": 192, "geometricMean": 62.75, "standardDeviation": 34.05 },
+            { "ageRange": "61-96", "minValue": 44.8, "maxValue": 276, "geometricMean": 97.38, "standardDeviation": 49.66 },
+            { "ageRange": "97-132", "minValue": 32.6, "maxValue": 262, "geometricMean": 102.27, "standardDeviation": 47.05 },
+            { "ageRange": "133-192", "minValue": 36.4, "maxValue": 305, "geometricMean": 112.16, "standardDeviation": 47.51 },
+            { "ageRange": "193-216", "minValue": 46.3, "maxValue": 385, "geometricMean": 179.21, "standardDeviation": 89.92 },
+            { "ageRange": "217+", "minValue": 6.67, "maxValue": 385, "geometricMean": 41.04, "standardDeviation": 32.13 }
           ]
         },
         {
           "name": "IgM",
           "ageGroups": [
-            { "ageRange": "0-1", "minValue": 5.1, "maxValue": 50.9 },
-            { "ageRange": "1-3", "minValue": 15.2, "maxValue": 68.5 },
-            { "ageRange": "4-6", "minValue": 26.9, "maxValue": 130 },
-            { "ageRange": "7-12", "minValue": 24.2, "maxValue": 162 },
-            { "ageRange": "13-24", "minValue": 38.6, "maxValue": 195 },
-            { "ageRange": "25-36", "minValue": 42.7, "maxValue": 236 },
-            { "ageRange": "37-60", "minValue": 58.7, "maxValue": 198 },
-            { "ageRange": "61-96", "minValue": 50.3, "maxValue": 242 },
-            { "ageRange": "97-132", "minValue": 37.4, "maxValue": 213 },
-            { "ageRange": "133-192", "minValue": 42.4, "maxValue": 197 },
-            { "ageRange": "193-216", "minValue": 60.7, "maxValue": 323 },
-            { "ageRange": "217+", "minValue": 5.1, "maxValue": 323 }
+            { "ageRange": "0-1", "minValue": 5.1, "maxValue": 50.9, "geometricMean": 16.89, "standardDeviation": 8.87 },
+            { "ageRange": "1-3", "minValue": 15.2, "maxValue": 68.5, "geometricMean": 34.21, "standardDeviation": 13.55 },
+            { "ageRange": "4-6", "minValue": 26.9, "maxValue": 130, "geometricMean": 69.05, "standardDeviation": 29.73 },
+            { "ageRange": "7-12", "minValue": 24.2, "maxValue": 162, "geometricMean": 73.42, "standardDeviation": 35.76 },
+            { "ageRange": "13-24", "minValue": 38.6, "maxValue": 195, "geometricMean": 115.25, "standardDeviation": 41.63 },
+            { "ageRange": "25-36", "minValue": 42.7, "maxValue": 236, "geometricMean": 104.66, "standardDeviation": 40.55 },
+            { "ageRange": "37-60", "minValue": 58.7, "maxValue": 198, "geometricMean": 115.6, "standardDeviation": 39.24 },
+            { "ageRange": "61-96", "minValue": 50.3, "maxValue": 242, "geometricMean": 108.05, "standardDeviation": 41.27 },
+            { "ageRange": "97-132", "minValue": 37.4, "maxValue": 213, "geometricMean": 104.95, "standardDeviation": 43.68 },
+            { "ageRange": "133-192", "minValue": 42.4, "maxValue": 197, "geometricMean": 119.16, "standardDeviation": 39.31 },
+            { "ageRange": "193-216", "minValue": 60.7, "maxValue": 323, "geometricMean": 130.6, "standardDeviation": 64.32 },
+            { "ageRange": "217+", "minValue": 5.1, "maxValue": 323, "geometricMean": 78.74, "standardDeviation": 43.46 }
           ]
         },
         {
           "name": "IgG1",
           "ageGroups": [
-            { "ageRange": "25-36", "minValue": 309, "maxValue": 1450 },
-            { "ageRange": "37-60", "minValue": 273, "maxValue": 679 },
-            { "ageRange": "61-96", "minValue": 292, "maxValue": 781 },
-            { "ageRange": "97-132", "minValue": 410, "maxValue": 1530 },
-            { "ageRange": "133-192", "minValue": 344, "maxValue": 958 },
-            { "ageRange": "193-216", "minValue": 403, "maxValue": 1520 },
-            { "ageRange": "217+", "minValue": 273, "maxValue": 1530 }
+            { "ageRange": "25-36", "minValue": 309, "maxValue": 1450, "geometricMean": 510.74, "standardDeviation": 192.04 },
+            { "ageRange": "37-60", "minValue": 273, "maxValue": 679, "geometricMean": 506.73, "standardDeviation": 82.28 },
+            { "ageRange": "61-96", "minValue": 292, "maxValue": 781, "geometricMean": 567.94, "standardDeviation": 121.64 },
+            { "ageRange": "97-132", "minValue": 410, "maxValue": 1530, "geometricMean": 634.17, "standardDeviation": 216.39 },
+            { "ageRange": "133-192", "minValue": 344, "maxValue": 958, "geometricMean": 635.52, "standardDeviation": 131.01 },
+            { "ageRange": "193-216", "minValue": 403, "maxValue": 1520, "geometricMean": 645.35, "standardDeviation": 229.62 },
+            { "ageRange": "217+", "minValue": 273, "maxValue": 1530, "geometricMean": 580.41, "standardDeviation": 179.97 }
           ]
         },
 
         {
           "name": "IgG2",
           "ageGroups": [
-            { "ageRange": "25-36", "minValue": 87.6, "maxValue": 289 },
-            { "ageRange": "37-60", "minValue": 73.3, "maxValue": 271 },
-            { "ageRange": "61-96", "minValue": 88.1, "maxValue": 408 },
-            { "ageRange": "97-132", "minValue": 81, "maxValue": 442 },
-            { "ageRange": "133-192", "minValue": 159, "maxValue": 406 },
-            { "ageRange": "193-216", "minValue": 184, "maxValue": 696 },
-            { "ageRange": "217+", "minValue": 73.3, "maxValue": 696 }
+            { "ageRange": "25-36", "minValue": 87.6, "maxValue": 289, "geometricMean": 137.88, "standardDeviation": 38.59 },
+            { "ageRange": "37-60", "minValue": 73.3, "maxValue": 271, "geometricMean": 143.92, "standardDeviation": 50.8 },
+            { "ageRange": "61-96", "minValue": 88.1, "maxValue": 408, "geometricMean": 196.57, "standardDeviation": 86.41 },
+            { "ageRange": "97-132", "minValue": 81, "maxValue": 442, "geometricMean": 250.67, "standardDeviation": 85.72 },
+            { "ageRange": "133-192", "minValue": 159, "maxValue": 406, "geometricMean": 261.62, "standardDeviation": 69.14 },
+            { "ageRange": "193-216", "minValue": 184, "maxValue": 696, "geometricMean": 359.76, "standardDeviation": 115.83 },
+            { "ageRange": "217+", "minValue": 73.3, "maxValue": 696, "geometricMean": 212.48, "standardDeviation": 111.26 }
           ]
         },
-
         {
           "name": "IgG3",
           "ageGroups": [
-            { "ageRange": "25-36", "minValue": 19.8, "maxValue": 75 },
-            { "ageRange": "37-60", "minValue": 20.8, "maxValue": 93.2 },
-            { "ageRange": "61-96", "minValue": 18.9, "maxValue": 135 },
-            { "ageRange": "97-132", "minValue": 34.1, "maxValue": 200 },
-            { "ageRange": "133-192", "minValue": 35.2, "maxValue": 150 },
-            { "ageRange": "193-216", "minValue": 29.3, "maxValue": 200 },
-            { "ageRange": "217+", "minValue": 18.9, "maxValue": 200 }
+            { "ageRange": "25-36", "minValue": 19.8, "maxValue": 75, "geometricMean": 48.78, "standardDeviation": 16.9 },
+            { "ageRange": "37-60", "minValue": 20.8, "maxValue": 93.2, "geometricMean": 44.05, "standardDeviation": 21.55 },
+            { "ageRange": "61-96", "minValue": 18.9, "maxValue": 135, "geometricMean": 56.82, "standardDeviation": 30.55 },
+            { "ageRange": "97-132", "minValue": 34.1, "maxValue": 200, "geometricMean": 77.59, "standardDeviation": 37.37 },
+            { "ageRange": "133-192", "minValue": 35.2, "maxValue": 150, "geometricMean": 75.3, "standardDeviation": 31.86 },
+            { "ageRange": "193-216", "minValue": 29.3, "maxValue": 200, "geometricMean": 86.33, "standardDeviation": 43.29 },
+            { "ageRange": "217+", "minValue": 18.9, "maxValue": 200, "geometricMean": 62.72, "standardDeviation": 37.13 }
           ]
         },
-
         {
           "name": "IgG4",
           "ageGroups": [
-            { "ageRange": "25-36", "minValue": 7.86, "maxValue": 57.5 },
-            { "ageRange": "37-60", "minValue": 7.86, "maxValue": 122 },
-            { "ageRange": "61-96", "minValue": 7.86, "maxValue": 157 },
-            { "ageRange": "97-132", "minValue": 7.86, "maxValue": 93.8 },
-            { "ageRange": "133-192", "minValue": 7.86, "maxValue": 119 },
-            { "ageRange": "193-216", "minValue": 7.86, "maxValue": 157 },
-            { "ageRange": "217+", "minValue": 7.86, "maxValue": 157 }
+            { "ageRange": "25-36", "minValue": 7.86, "maxValue": 57.5, "geometricMean": 15.53, "standardDeviation": 8.54 },
+            { "ageRange": "37-60", "minValue": 7.86, "maxValue": 122, "geometricMean": 30.81, "standardDeviation": 15.42 },
+            { "ageRange": "61-96", "minValue": 7.86, "maxValue": 157, "geometricMean": 39.33, "standardDeviation": 23.05 },
+            { "ageRange": "97-132", "minValue": 7.86, "maxValue": 93.8, "geometricMean": 25.36, "standardDeviation": 15.39 },
+            { "ageRange": "133-192", "minValue": 7.86, "maxValue": 119, "geometricMean": 31.03, "standardDeviation": 16.73 },
+            { "ageRange": "193-216", "minValue": 7.86, "maxValue": 157, "geometricMean": 38.89, "standardDeviation": 23.08 },
+            { "ageRange": "217+", "minValue": 7.86, "maxValue": 157, "geometricMean": 28.71, "standardDeviation": 15.76 }
           ]
         }
       ]
     },
+    
     {
       "name": "klavuz-ap",
       "description": "Age-related serum immunoglobulin levels for healthy donors (g/L).",
@@ -369,17 +370,17 @@
         {
           "name": "IgA",
           "ageGroups": [
-            { "ageRange": "0-5", "minValue": 0.07, "maxValue": 0.37 },
-            { "ageRange": "6-9", "minValue": 0.16, "maxValue": 0.50 },
-            { "ageRange": "10-15", "minValue": 0.27, "maxValue": 0.66 },
-            { "ageRange": "16-24", "minValue": 0.36, "maxValue": 0.79 },
-            { "ageRange": "25-48", "minValue": 0.27, "maxValue": 2.46 },
-            { "ageRange": "49-84", "minValue": 0.29, "maxValue": 2.56 },
-            { "ageRange": "85-120", "minValue": 0.34, "maxValue": 2.74 },
-            { "ageRange": "121-156", "minValue": 0.42, "maxValue": 2.95 },
-            { "ageRange": "157-192", "minValue": 0.52, "maxValue": 3.19 },
-            { "ageRange": "193-216", "minValue": 0.60, "maxValue": 3.37 },
-            { "ageRange": "217+", "minValue": 0.61, "maxValue": 3.56 }
+            { "ageRange": "0-4", "minValue": 0.07, "maxValue": 0.37 },
+            { "ageRange": "5-8", "minValue": 0.16, "maxValue": 0.50 },
+            { "ageRange": "9-14", "minValue": 0.27, "maxValue": 0.66 },
+            { "ageRange": "15-23", "minValue": 0.36, "maxValue": 0.79 },
+            { "ageRange": "24-47", "minValue": 0.27, "maxValue": 2.46 },
+            { "ageRange": "48-83", "minValue": 0.29, "maxValue": 2.56 },
+            { "ageRange": "84-119", "minValue": 0.34, "maxValue": 2.74 },
+            { "ageRange": "120-155", "minValue": 0.42, "maxValue": 2.95 },
+            { "ageRange": "156-191", "minValue": 0.52, "maxValue": 3.19 },
+            { "ageRange": "192-215", "minValue": 0.60, "maxValue": 3.37 },
+            { "ageRange": "216+", "minValue": 0.61, "maxValue": 3.56 }
           ]
         },
         {
@@ -449,17 +450,17 @@
         {
           "name": "IgG3",
           "ageGroups": [
-            { "ageRange": "0-5", "minValue": 0.076, "maxValue": 0.823 },
-            { "ageRange": "6-9", "minValue": 0.119, "maxValue": 0.74 },
+            { "ageRange": "0-5", "minValue": 0.076, "maxValue": 8.23 },
+            { "ageRange": "6-9", "minValue": 0.119, "maxValue": 0.740 },
             { "ageRange": "10-15", "minValue": 0.173, "maxValue": 0.637 },
             { "ageRange": "16-24", "minValue": 0.219, "maxValue": 0.55 },
             { "ageRange": "25-48", "minValue": 0.17, "maxValue": 0.847 },
             { "ageRange": "49-84", "minValue": 0.108, "maxValue": 0.949 },
-            { "ageRange": "85-120", "minValue": 0.085, "maxValue": 1.05 },
-            { "ageRange": "121-156", "minValue": 0.115, "maxValue": 1.053 },
-            { "ageRange": "157-192", "minValue": 0.2, "maxValue": 1.302 },
+            { "ageRange": "85-120", "minValue": 0.085, "maxValue": 10.26 },
+            { "ageRange": "121-156", "minValue": 0.115, "maxValue": 10.53 },
+            { "ageRange": "157-192", "minValue": 0.2, "maxValue": 10.32 },
             { "ageRange": "193-216", "minValue": 0.313, "maxValue": 0.976 },
-            { "ageRange": "217+", "minValue": 0.184, "maxValue": 1.06 }
+            { "ageRange": "217+", "minValue": 0.184, "maxValue": 10.60 }
           ]
         },
         {
@@ -479,7 +480,8 @@
           ]
         }
       ]
-    },{
+    },
+    {
       "name": "Klavuz-os",
       "description": "Distribution of serum immunoglobulin levels according to age groups in children between 1 month and 18 years of age.",
       "unit": "mg/L",
@@ -487,43 +489,47 @@
         {
           "name": "IgG",
           "ageGroups": [
-            { "ageRange": "1-3", "mean": 433.55, "stdDev": 137.11, "minValue": 227, "maxValue": 770, "lowerLimit": 45.72, "upperLimit": 677.11 },
-            { "ageRange": "4-6", "mean": 382.15, "stdDev": 173.18, "minValue": 141, "maxValue": 885, "lowerLimit": 141.42, "upperLimit": 825.52 },
-            { "ageRange": "7-12", "mean": 618.1, "stdDev": 200.78, "minValue": 350, "maxValue": 1010, "lowerLimit": 236.02, "upperLimit": 972.82 },
-            { "ageRange": "13-24", "mean": 671.1, "stdDev": 177.86, "minValue": 432, "maxValue": 990, "lowerLimit": 328.97, "upperLimit": 1118.46 },
-            { "ageRange": "25-36", "mean": 834.75, "stdDev": 193.52, "minValue": 437, "maxValue": 1320, "lowerLimit": 419.7, "upperLimit": 1261.89 },
-            { "ageRange": "37-60", "mean": 994.4, "stdDev": 236.68, "minValue": 524, "maxValue": 1400, "lowerLimit": 507.68, "upperLimit": 1402.57 },
-            { "ageRange": "61-96", "mean": 1162.75, "stdDev": 227.85, "minValue": 858, "maxValue": 1600, "lowerLimit": 592.34, "upperLimit": 1539.92 },
-            { "ageRange": "97-132", "mean": 1177.1, "stdDev": 248.22, "minValue": 645, "maxValue": 1520, "lowerLimit": 673.13, "upperLimit": 1673.42 },
-            { "ageRange": "133-192", "mean": 1213.95, "stdDev": 229.63, "minValue": 877, "maxValue": 1620, "lowerLimit": 749.51, "upperLimit": 1802.49 }
+            { "ageRange": "1-3", "geometricMean": 433.55, "standardDeviation": 137.11, "minValue": 227, "maxValue": 770, "lowerLimit": 45.72, "upperLimit": 677.11 },
+            { "ageRange": "4-6", "geometricMean": 382.15, "standardDeviation": 173.18, "minValue": 141, "maxValue": 885, "lowerLimit": 141.42, "upperLimit": 825.52 },
+            { "ageRange": "7-12", "geometricMean": 618.1, "standardDeviation": 200.78, "minValue": 350, "maxValue": 1010, "lowerLimit": 236.02, "upperLimit": 972.82 },
+            { "ageRange": "13-24", "geometricMean": 671.1, "standardDeviation": 177.86, "minValue": 432, "maxValue": 990, "lowerLimit": 328.97, "upperLimit": 1118.46 },
+            { "ageRange": "25-36", "geometricMean": 834.75, "standardDeviation": 193.52, "minValue": 437, "maxValue": 1320, "lowerLimit": 419.7, "upperLimit": 1261.89 },
+            { "ageRange": "37-60", "geometricMean": 994.4, "standardDeviation": 236.68, "minValue": 524, "maxValue": 1400, "lowerLimit": 507.68, "upperLimit": 1402.57 },
+            { "ageRange": "61-96", "geometricMean": 1162.75, "standardDeviation": 227.85, "minValue": 858, "maxValue": 1600, "lowerLimit": 592.34, "upperLimit": 1539.92 },
+            { "ageRange": "97-132", "geometricMean": 1177.1, "standardDeviation": 248.22, "minValue": 645, "maxValue": 1520, "lowerLimit": 673.13, "upperLimit": 1673.42 },
+            { "ageRange": "133-192", "geometricMean": 1213.95, "standardDeviation": 229.63, "minValue": 877, "maxValue": 1620, "lowerLimit": 749.51, "upperLimit": 1802.49 },
+            { "ageRange": "193-216", "geometricMean": 1371.95, "standardDeviation": 328.3, "minValue": 900, "maxValue": 1600, "lowerLimit": 766.26, "upperLimit": 1780.94 }
+           
           ]
         },
         {
           "name": "IgA",
           "ageGroups": [
-            { "ageRange": "1-3", "mean": 15.95, "stdDev": 12.02, "minValue": 6, "maxValue": 47, "lowerLimit": 0, "upperLimit": 36.36 },
-            { "ageRange": "4-6", "mean": 19.95, "stdDev": 12.7, "minValue": 7, "maxValue": 63, "lowerLimit": 0, "upperLimit": 53.39 },
-            { "ageRange": "7-12", "mean": 35.75, "stdDev": 23.29, "minValue": 12, "maxValue": 114, "lowerLimit": 0, "upperLimit": 72.26 },
-            { "ageRange": "13-24", "mean": 37.35, "stdDev": 10.95, "minValue": 15, "maxValue": 52, "lowerLimit": 0, "upperLimit": 93.9 },
-            { "ageRange": "25-36", "mean": 54.2, "stdDev": 16.04, "minValue": 24, "maxValue": 84, "lowerLimit": 2.29, "upperLimit": 119.23 },
-            { "ageRange": "37-60", "mean": 94.35, "stdDev": 20.9, "minValue": 55, "maxValue": 135, "lowerLimit": 13.24, "upperLimit": 149.16 },
-            { "ageRange": "61-96", "mean": 130.25, "stdDev": 47.41, "minValue": 81, "maxValue": 264, "lowerLimit": 29.73, "upperLimit": 184.63 },
-            { "ageRange": "97-132", "mean": 160.45, "stdDev": 70.56, "minValue": 78, "maxValue": 334, "lowerLimit": 52.67, "upperLimit": 226.55 },
-            { "ageRange": "133-192", "mean": 163.6, "stdDev": 49.58, "minValue": 87, "maxValue": 234, "lowerLimit": 82.99, "upperLimit": 275.84 }
+            { "ageRange": "1-3", "geometricMean": 15.95, "standardDeviation": 12.02, "minValue": 6, "maxValue": 47, "lowerLimit": 0, "upperLimit": 36.36 },
+            { "ageRange": "4-6", "geometricMean": 19.95, "standardDeviation": 12.7, "minValue": 7, "maxValue": 63, "lowerLimit": 0, "upperLimit": 53.39 },
+            { "ageRange": "7-12", "geometricMean": 35.75, "standardDeviation": 23.29, "minValue": 12, "maxValue": 114, "lowerLimit": 0, "upperLimit": 72.26 },
+            { "ageRange": "13-24", "geometricMean": 37.35, "standardDeviation": 10.95, "minValue": 15, "maxValue": 52, "lowerLimit": 0, "upperLimit": 93.9 },
+            { "ageRange": "25-36", "geometricMean": 54.2, "standardDeviation": 16.04, "minValue": 24, "maxValue": 84, "lowerLimit": 2.29, "upperLimit": 119.23 },
+            { "ageRange": "37-60", "geometricMean": 94.35, "standardDeviation": 20.9, "minValue": 55, "maxValue": 135, "lowerLimit": 13.24, "upperLimit": 149.16 },
+            { "ageRange": "61-96", "geometricMean": 130.25, "standardDeviation": 47.41, "minValue": 81, "maxValue": 264, "lowerLimit": 29.73, "upperLimit": 184.63 },
+            { "ageRange": "97-132", "geometricMean": 160.45, "standardDeviation": 70.56, "minValue": 78, "maxValue": 334, "lowerLimit": 52.67, "upperLimit": 226.55 },
+            { "ageRange": "133-192", "geometricMean": 163.6, "standardDeviation": 49.58, "minValue": 87, "maxValue": 234, "lowerLimit": 82.99, "upperLimit": 275.84 },
+            { "ageRange": "193-216", "geometricMean": 206.3, "standardDeviation": 83.8, "minValue": 98, "maxValue": 285, "lowerLimit": 30.79, "upperLimit": 228.35 }
           ]
         },
         {
           "name": "IgM",
           "ageGroups": [
-            { "ageRange": "1-3", "mean": 34.7, "stdDev": 16.48, "minValue": 18, "maxValue": 87, "lowerLimit": 2.78, "upperLimit": 63.58 },
-            { "ageRange": "4-6", "mean": 50.15, "stdDev": 25.71, "minValue": 18, "maxValue": 136, "lowerLimit": 11.56, "upperLimit": 89.45 },
-            { "ageRange": "7-12", "mean": 57.95, "stdDev": 21.25, "minValue": 28, "maxValue": 115, "lowerLimit": 19.59, "upperLimit": 114.57 },
-            { "ageRange": "13-24", "mean": 85.4, "stdDev": 36.53, "minValue": 32, "maxValue": 148, "lowerLimit": 26.48, "upperLimit": 138.56 },
-            { "ageRange": "25-36", "mean": 100.45, "stdDev": 25.58, "minValue": 47, "maxValue": 144, "lowerLimit": 31.87, "upperLimit": 161.04 },
-            { "ageRange": "37-60", "mean": 121.1, "stdDev": 37.33, "minValue": 65, "maxValue": 205, "lowerLimit": 35.37, "upperLimit": 181.64 },
-            { "ageRange": "61-96", "mean": 118.15, "stdDev": 39.49, "minValue": 47, "maxValue": 198, "lowerLimit": 36.61, "upperLimit": 199.98 },
-            { "ageRange": "97-132", "mean": 102.2, "stdDev": 36.58, "minValue": 38, "maxValue": 163, "lowerLimit": 35.21, "upperLimit": 215.67 },
-            { "ageRange": "133-192", "mean": 143.6, "stdDev": 57.71, "minValue": 47, "maxValue": 285, "lowerLimit": 30.79, "upperLimit": 228.35 }
+            { "ageRange": "1-3", "geometricMean": 34.7, "standardDeviation": 16.48, "minValue": 18, "maxValue": 87, "lowerLimit": 2.78, "upperLimit": 63.58 },
+            { "ageRange": "4-6", "geometricMean": 50.15, "standardDeviation": 25.71, "minValue": 18, "maxValue": 136, "lowerLimit": 11.56, "upperLimit": 89.45 },
+            { "ageRange": "7-12", "geometricMean": 57.95, "standardDeviation": 21.25, "minValue": 28, "maxValue": 115, "lowerLimit": 19.59, "upperLimit": 114.57 },
+            { "ageRange": "13-24", "geometricMean": 85.4, "standardDeviation": 36.53, "minValue": 32, "maxValue": 148, "lowerLimit": 26.48, "upperLimit": 138.56 },
+            { "ageRange": "25-36", "geometricMean": 100.45, "standardDeviation": 25.58, "minValue": 47, "maxValue": 144, "lowerLimit": 31.87, "upperLimit": 161.04 },
+            { "ageRange": "37-60", "geometricMean": 121.1, "standardDeviation": 37.33, "minValue": 65, "maxValue": 205, "lowerLimit": 35.37, "upperLimit": 181.64 },
+            { "ageRange": "61-96", "geometricMean": 118.15, "standardDeviation": 39.49, "minValue": 47, "maxValue": 198, "lowerLimit": 36.61, "upperLimit": 199.98 },
+            { "ageRange": "97-132", "geometricMean": 102.2, "standardDeviation": 36.58, "minValue": 38, "maxValue": 163, "lowerLimit": 35.21, "upperLimit": 215.67 },
+            { "ageRange": "133-192", "geometricMean": 143.6, "standardDeviation": 57.71, "minValue": 47, "maxValue": 285, "lowerLimit": 30.79, "upperLimit": 228.35 },
+            { "ageRange": "193-216", "geometricMean": 128.5, "standardDeviation": 50.20, "minValue": 47, "maxValue": 285, "lowerLimit": 30.79, "upperLimit": 228.35 }
           ]
         }
       ]

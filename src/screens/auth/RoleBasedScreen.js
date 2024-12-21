@@ -18,7 +18,12 @@ const RoleBasedScreen = () => {
     // Rol bazlı yönlendirme
     //console.log("RoleBasedScreen", user);
     //console.log(user.role);
-    return user.role === "admin" ? <AdminNavigator /> : <UserNavigator />;
+    if (user.role === "admin") {
+        return <AdminNavigator />;
+    }
+    else if (user.role === "patient") {
+        return <UserNavigator />;
+    }
 };
 
 export default RoleBasedScreen;
