@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
@@ -11,13 +11,18 @@ const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;
     const [testResults, setTestResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortOption, setSortOption] = useState('newToOld'); // Varsayılan olarak Yeniden Eskiye
+    const [sortOption, setSortOption] = useState('newToOld');
     const [menuVisible, setMenuVisible] = useState(false);
+    const [ageInMonths, setAgeInMonths] = useState(0);
+
+    useEffect(() => {
+        setAgeInMonths(patient.age);
+    }, [patient.age]);
 
     const parseDate = (dateStr) => {
         if (!dateStr || typeof dateStr !== 'string') {
             console.error('Invalid date string:', dateStr);
-            return new Date(0); // Geçersiz tarih durumunda epoch başlangıcı döndürülür
+            return new Date(0);
         }
 
         const [datePart, timePart] = dateStr.split(' ');
@@ -55,7 +60,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
             const testResultsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                tests: doc.data().tests || [], // Varsayılan olarak boş bir dizi
+                tests: doc.data().tests || [],
             }));
 
             const validResults = testResultsData.filter(result =>
@@ -105,6 +110,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                             fetchTestResults();
                         } catch (error) {
                             console.error('Error deleting test result: ', error);
+                            Alert.alert('Hata', 'Tahlil sonucu silinirken bir hata oluştu.');
                         }
                     },
                     style: 'destructive',
@@ -115,14 +121,12 @@ const PatientDetailScreen = ({ route, navigation }) => {
     };
 
     const filteredResults = testResults.filter(result => {
-        // result.tests bir dizi ise ve en az bir test içeriyorsa
         if (Array.isArray(result.tests) && result.tests.length > 0) {
-            // Test isimlerini kontrol ederek doğru sonuçları filtrele
             return result.tests.some(test =>
                 test.testName && test.testName.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-        return false; // Bozuk sonuçlar alınmasın
+        return false;
     });
 
     const openMenu = () => setMenuVisible(true);
@@ -137,13 +141,13 @@ const PatientDetailScreen = ({ route, navigation }) => {
         <View style={styles.container}>
             <Card style={styles.patientCard}>
                 <Card.Title
-                    title={`${patient.name} ${patient.surname}`}
+                    title={<Text style={styles.cardTitle}>{`${patient.name} ${patient.surname}`}</Text>}
                     left={(props) => <IconButton {...props} icon="account" />}
-                    titleStyle={styles.cardTitle}
                 />
                 <Card.Content>
                     <Text style={styles.infoText}>TC No: {patient.tcNo}</Text>
                     <Text style={styles.infoText}>Doğum Tarihi: {patient.birthDate}</Text>
+                    <Text style={styles.infoText}>Yaş (Ay): {ageInMonths}</Text>
                 </Card.Content>
             </Card>
 
@@ -179,10 +183,10 @@ const PatientDetailScreen = ({ route, navigation }) => {
                                 <Divider style={{ marginVertical: 10 }} />
                                 <View style={styles.actionsContainer}>
                                     <Button mode="text" onPress={() => handleEditTestResult(item)}>
-                                        Düzenle
+                                        <Text>Düzenle</Text>
                                     </Button>
                                     <Button mode="text" color="red" onPress={() => handleDeleteTestResult(item.id)}>
-                                        Sil
+                                        <Text>Sil</Text>
                                     </Button>
                                 </View>
                             </Card.Content>

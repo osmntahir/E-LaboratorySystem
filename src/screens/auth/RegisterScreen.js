@@ -7,6 +7,7 @@ import { register } from '../../services/authService';
 import { AuthContext } from '../../context/AuthContext';
 import { setDoc, doc, getDocs, query, where, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
+import {calculateAgeInMonths} from '../../utils/ageCalculator';
 
 const RegisterScreen = ({ navigation }) => {
     const { setUser } = useContext(AuthContext);
@@ -34,6 +35,7 @@ const RegisterScreen = ({ navigation }) => {
             tcNoExists: !tcSnapshot.empty,
         };
     };
+
 
     const handleRegister = async () => {
         if (!email || !password || !confirmPassword || !name || !surname || !tcNo) {
@@ -80,6 +82,7 @@ const RegisterScreen = ({ navigation }) => {
                 tcNo: tcNo,
                 role: 'patient',
                 createdAt: serverTimestamp(),
+                age: calculateAgeInMonths(birthDate),
             });
 
             setUser({ ...user, role: 'patient' });
