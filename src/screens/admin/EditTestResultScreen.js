@@ -1,6 +1,6 @@
-// src/screens/EditTestResultScreen.js
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Platform, Alert, ActivityIndicator } from 'react-native';
+// src/screens/admin/EditTestResultScreen.js
+import React, { useCallback, useState, useEffect } from 'react';
+import { View, StyleSheet, Alert, ScrollView,ActivityIndicator  } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 
@@ -8,7 +8,7 @@ import { calculateAgeInMonths } from '../../utils/ageCalculator';
 import { isAgeInRange } from '../../utils/ageRangeEvaluator';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, TextInput, Button, Card, IconButton, Subheading } from 'react-native-paper';
+import { Text, TextInput, Button, Card, IconButton, Subheading, Portal, Modal } from 'react-native-paper';
 import { updateTestResult } from '../../services/testResultService';
 
 const EditTestResultScreen = ({ route, navigation }) => {
@@ -18,9 +18,12 @@ const EditTestResultScreen = ({ route, navigation }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
-    const [tests, setTests] = useState([]); // Tüm test tipleri (IgA, IgM, ...)
+    const [tests, setTests] = useState([]); // All test types (IgA, IgM, ...)
     const [allTestTypes, setAllTestTypes] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Loading indicator state
+    const [isLoadingModalVisible, setIsLoadingModalVisible] = useState(false);
 
     useEffect(() => {
         fetchAllTestTypes();
@@ -34,7 +37,9 @@ const EditTestResultScreen = ({ route, navigation }) => {
                 const guideData = guideDoc.data();
                 if (Array.isArray(guideData.testTypes)) {
                     guideData.testTypes.forEach((t) => {
-                        testNameSet.add(t.name);
+                        if (t.name) { // Ensure t has name
+                            testNameSet.add(t.name);
+                        }
                     });
                 }
             });
@@ -44,7 +49,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
         }
     };
 
-    // Mevcut testResult'taki testDate'i parse edip state'e aktar
+    // Parse and set the existing test date
     useEffect(() => {
         if (testResult) {
             const parsedDate = parseDate(testResult.testDate);
@@ -52,7 +57,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
         }
     }, [testResult]);
 
-    // Tüm test tipleri geldikten sonra, testResult.tests içindeki değerlerle eşleştir
+    // Initialize test values based on all test types and existing test results
     useEffect(() => {
         if (allTestTypes.length > 0 && testResult) {
             const initialTests = allTestTypes.map((testName) => {
@@ -67,8 +72,22 @@ const EditTestResultScreen = ({ route, navigation }) => {
     }, [allTestTypes, testResult]);
 
     const parseDate = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') {
+            console.error('Invalid date string:', dateStr);
+            return new Date(0); // Return epoch start for invalid dates
+        }
+
         const [datePart, timePart] = dateStr.split(' ');
+        if (!datePart) {
+            console.error('Invalid date format:', dateStr);
+            return new Date(0);
+        }
+
         const [year, month, day] = datePart.split('-').map(Number);
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+            console.error('Invalid date numbers:', dateStr);
+            return new Date(0);
+        }
 
         let hour = 0;
         let minute = 0;
@@ -116,35 +135,34 @@ const EditTestResultScreen = ({ route, navigation }) => {
     };
 
     const handleUpdate = async () => {
-        // Değer girilmiş mi kontrol et: tüm testValue alanları boşsa uyarı
+        // Check if at least one test value is entered
         const hasValues = tests.some((t) => t.testValue.trim() !== '');
         if (!hasValues) {
             Alert.alert('Hata', 'En az bir tetkik değeri girmelisiniz.');
             return;
         }
 
-        setLoading(true);
+        setIsLoadingModalVisible(true);
         try {
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
 
-            // tests[] içinden testValue dolu olanları al, evaluate yap
+            // Gather updated tests with evaluations
             const updatedTests = [];
             for (const t of tests) {
                 const tvTrim = t.testValue.trim();
                 if (tvTrim === '') {
-                    // eğer user bu testi boş bırakmışsa eklemiyoruz
+                    // Skip tests with empty values
                     continue;
                 }
 
                 const val = parseFloat(tvTrim);
                 if (isNaN(val)) {
                     Alert.alert('Hata', `${t.testName} için geçerli bir sayı giriniz.`);
-                    setLoading(false);
+                    setIsLoadingModalVisible(false);
                     return;
                 }
 
                 const guideEvaluations = await evaluateTestValueAcrossGuides(t.testName, val, ageInMonths);
-
                 updatedTests.push({
                     testName: t.testName,
                     testValue: val,
@@ -162,19 +180,19 @@ const EditTestResultScreen = ({ route, navigation }) => {
             await updateTestResult(testResult.id, updatedResult);
 
             Alert.alert('Başarılı', 'Tahlil sonucu güncellendi.');
-            setLoading(false);
+            setIsLoadingModalVisible(false);
 
-            // Hasta detay ekranına geri dön
+            // Navigate back to PatientDetail screen
             navigation.navigate('PatientDetail', { patient });
         } catch (error) {
             console.error('Error updating test result:', error);
             Alert.alert('Hata', 'Güncelleme sırasında bir hata oluştu.');
-            setLoading(false);
+            setIsLoadingModalVisible(false);
         }
     };
 
     /**
-     *  KILAVUZ ŞEMASI UYGULAMASI:
+     *  GUIDE SCHEMA IMPLEMENTATION:
      *  guides -> guideData.testTypes -> test -> ageGroups -> referenceMin/referenceMax
      */
     const evaluateTestValueAcrossGuides = async (testName, testValue, ageInMonths) => {
@@ -184,17 +202,23 @@ const EditTestResultScreen = ({ route, navigation }) => {
 
             guidesSnapshot.forEach((guideDoc) => {
                 const guideData = guideDoc.data();
-                const foundTest = (guideData.testTypes || []).find((t) => t.name === testName);
+                // Ensure guideData.testTypes exists and is an array
+                if (!Array.isArray(guideData.testTypes)) return;
+
+                // Find the test in guide's testTypes
+                const foundTest = guideData.testTypes.find((t) => t.name === testName);
                 if (!foundTest) return;
 
+                // Iterate through ageGroups
                 if (!Array.isArray(foundTest.ageGroups)) return;
 
                 foundTest.ageGroups.forEach((ageGroup) => {
+                    // ageGroup.ageRange => "0-1", "2-5", ...
                     if (isAgeInRange(ageInMonths, ageGroup.ageRange)) {
                         let adjustedValue = testValue;
+                        // Unit conversion if necessary
                         if (guideData.unit === 'mg/L') {
-                            // eğer input g/L ise => mg/L çevir => adjustedValue = testValue * 1000
-                            // Proje gereğine göre ekleyin
+                            // Convert from g/L to mg/L
                             adjustedValue = testValue * 1000;
                         }
 
@@ -206,9 +230,11 @@ const EditTestResultScreen = ({ route, navigation }) => {
                         else if (adjustedValue > maxVal) status = 'Yüksek';
 
                         guideEvaluations.push({
-                            guideName: guideData.name,
-                            minValue: minVal,
-                            maxValue: maxVal,
+                            guideName: guideData.name || 'N/A',
+                            unit: guideData.unit || 'N/A',
+                            type: guideData.type || 'N/A',
+                            minValue: minVal !== undefined ? minVal : 'N/A',
+                            maxValue: maxVal !== undefined ? maxVal : 'N/A',
                             status,
                         });
                     }
@@ -221,83 +247,99 @@ const EditTestResultScreen = ({ route, navigation }) => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {loading && (
-                <View style={styles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                    <Text>Yeni tahlil değerleri hesaplanıyor...</Text>
-                </View>
-            )}
-            <Card style={styles.card}>
-                <Card.Title
-                    title="Tahlil Sonucu Düzenle"
-                    titleStyle={styles.cardTitle}
-                    left={(props) => <IconButton {...props} icon="flask" />}
-                />
-                <Card.Content>
-                    <Subheading style={styles.sectionTitle}>Tarih ve Saat</Subheading>
-                    <View style={styles.dateTimeContainer}>
-                        <Button mode="outlined" onPress={() => setShowDatePicker(true)} style={styles.dateTimeButton}>
-                            Tarih Değiştir
-                        </Button>
-                        <Button mode="outlined" onPress={() => setShowTimePicker(true)} style={styles.dateTimeButton}>
-                            Saat Değiştir
-                        </Button>
+        <View style={styles.container}>
+            <Portal>
+                <Modal visible={isLoadingModalVisible} dismissable={false}>
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator animating={true} size="large" color="#3f51b5" />
+                        <Text style={styles.loadingText}>Test sonuçları hesaplanıyor...</Text>
                     </View>
-                    <Text style={styles.selectedDate}>Seçilen Tarih ve Saat: {formatDate(testDate)}</Text>
-
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={testDate}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                            onChange={handleDateChange}
-                        />
-                    )}
-                    {showTimePicker && (
-                        <DateTimePicker
-                            value={testDate}
-                            mode="time"
-                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                            onChange={handleTimeChange}
-                        />
-                    )}
-
-                    <Subheading style={styles.sectionTitle}>Test Değerleri (Opsiyonel)</Subheading>
-                    {tests.map((t, index) => (
-                        <View key={index} style={styles.testTypeContainer}>
-                            <Text style={styles.testName}>{t.testName}</Text>
-                            <TextInput
+                </Modal>
+            </Portal>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Card style={styles.card}>
+                    <Card.Title
+                        title={<Text style={styles.cardTitle}>Tahlil Sonucu Düzenle</Text>}
+                        left={(props) => <IconButton {...props} icon="flask" />}
+                    />
+                    <Card.Content>
+                        <Subheading style={styles.sectionTitle}>Tarih ve Saat Seçimi</Subheading>
+                        <View style={styles.dateTimeContainer}>
+                            <Button
                                 mode="outlined"
-                                label={`${t.testName} Değeri (Opsiyonel)`}
-                                placeholder="Değer giriniz ya da boş bırakınız"
-                                keyboardType="numeric"
-                                value={t.testValue}
-                                onChangeText={(value) => handleTestValueChange(t.testName, value)}
-                                style={styles.input}
-                            />
+                                onPress={() => setShowDatePicker(true)}
+                                style={styles.dateTimeButton}
+                            >
+                                Tarih Değiştir
+                            </Button>
+                            <Button
+                                mode="outlined"
+                                onPress={() => setShowTimePicker(true)}
+                                style={styles.dateTimeButton}
+                            >
+                                Saat Değiştir
+                            </Button>
                         </View>
-                    ))}
+                        <Text style={styles.selectedDate}>
+                            Seçilen Tarih ve Saat: {formatDate(testDate)}
+                        </Text>
 
-                    <Button
-                        mode="contained"
-                        onPress={handleUpdate}
-                        style={styles.saveButton}
-                        disabled={tests.every((test) => test.testValue.trim() === '')}
-                    >
-                        Güncelle
-                    </Button>
-                </Card.Content>
-            </Card>
-        </ScrollView>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={testDate}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                                onChange={handleDateChange}
+                            />
+                        )}
+                        {showTimePicker && (
+                            <DateTimePicker
+                                value={testDate}
+                                mode="time"
+                                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                                onChange={handleTimeChange}
+                            />
+                        )}
+
+                        <Subheading style={styles.sectionTitle}>Test Değerleri (Opsiyonel)</Subheading>
+                        {tests.map((t, index) => (
+                            <View key={index} style={styles.testTypeContainer}>
+                                <Text style={styles.testName}>{t.testName}</Text>
+                                <TextInput
+                                    mode="outlined"
+                                    label={`${t.testName} Değeri (g/L)`}
+                                    placeholder="Değer giriniz ya da boş bırakınız"
+                                    keyboardType="numeric"
+                                    value={t.testValue}
+                                    onChangeText={(value) => handleTestValueChange(t.testName, value)}
+                                    style={styles.input}
+                                />
+                            </View>
+                        ))}
+
+                        <Button
+                            mode="contained"
+                            onPress={handleUpdate}
+                            style={styles.saveButton}
+                            disabled={tests.every((test) => test.testValue.trim() === '')}
+                        >
+                            Güncelle
+                        </Button>
+                    </Card.Content>
+                </Card>
+            </ScrollView>
+        </View>
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
-        padding: 10,
+        flex: 1,
         backgroundColor: '#f2f6ff',
-        flexGrow: 1,
+    },
+    scrollContent: {
+        padding: 10,
     },
     card: {
         borderRadius: 10,
@@ -315,6 +357,7 @@ const styles = StyleSheet.create({
     },
     dateTimeContainer: {
         flexDirection: 'row',
+        justifyContent: 'flex-start',
         marginBottom: 10,
     },
     dateTimeButton: {
@@ -341,16 +384,17 @@ const styles = StyleSheet.create({
         padding: 5,
         backgroundColor: '#3f51b5',
     },
-    loadingOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255,255,255,0.8)',
+    loadingContainer: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        padding: 20,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 999,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        color: '#fff',
     },
 });
 

@@ -1,9 +1,9 @@
-// src/screens/PatientListScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet , FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { Text, Card, Title, Subheading, Searchbar, IconButton, Divider } from 'react-native-paper';
+import { calculateAgeInMonths } from '../../utils/ageCalculator';
 
 const PatientListScreen = ({ navigation }) => {
     const [patients, setPatients] = useState([]);
@@ -15,7 +15,13 @@ const PatientListScreen = ({ navigation }) => {
                 const q = query(collection(db, 'users'), where('role', '==', 'patient'));
                 const querySnapshot = await getDocs(q);
                 const patientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setPatients(patientsData);
+
+                const patientsWithAge = patientsData.map(patient => ({
+                    ...patient,
+                    ageInMonths: calculateAgeInMonths(patient.birthDate),
+                }));
+
+                setPatients(patientsWithAge);
             } catch (error) {
                 console.error('Error fetching patients: ', error);
             }
@@ -38,9 +44,8 @@ const PatientListScreen = ({ navigation }) => {
         <View style={styles.container}>
             <Card style={styles.headerCard}>
                 <Card.Title
-                    title="Hasta Listesi"
+                    title={<Text style={styles.headerTitle}>Hasta Listesi</Text>}
                     left={(props) => <IconButton {...props} icon="account-group" />}
-                    titleStyle={styles.headerTitle}
                 />
                 <Card.Content>
                     <Searchbar
@@ -55,9 +60,7 @@ const PatientListScreen = ({ navigation }) => {
             {filteredPatients.length === 0 ? (
                 <Text style={styles.noDataText}>Hasta bulunamadı.</Text>
             ) : (
-                // FlatList kullanarak uzun listelerde kaydırma desteği sağlıyoruz
                 <View style={styles.listContainer}>
-                    {/* FlatList */}
                     <FlatList
                         data={filteredPatients}
                         keyExtractor={(item) => item.id}
@@ -68,6 +71,7 @@ const PatientListScreen = ({ navigation }) => {
                                     <Subheading>TC: {item.tcNo}</Subheading>
                                     <Divider style={{ marginVertical: 10 }} />
                                     <Text>Doğum Tarihi: {item.birthDate}</Text>
+                                    <Text>Yaş (Ay): {item.ageInMonths}</Text>
                                 </Card.Content>
                             </Card>
                         )}
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
         color: '#777'
     },
     listContainer: {
-        flex: 1, // FlatList'in düzgün çalışması için parent container'a flex:1 veriyoruz
+        flex: 1,
     },
     patientCard: {
         marginBottom: 15,

@@ -163,7 +163,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                     onDismiss={closeMenu}
                     anchor={
                         <Button mode="outlined" onPress={openMenu} style={styles.menuButton}>
-                            Sırala
+                            <Text>Sırala</Text>
                         </Button>
                     }
                 >

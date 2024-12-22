@@ -1,4 +1,4 @@
-// src/screens/AddTestResultScreen.js
+// src/screens/admin/AddTestResultScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { db } from '../../../firebaseConfig';
@@ -158,13 +158,9 @@ const AddTestResultScreen = ({ route, navigation }) => {
                     if (isAgeInRange(ageInMonths, ageGroup.ageRange)) {
                         let adjustedValue = testValue;
                         // unit kontrolü
-                        // Örneğin, eğer guideData.unit === 'mg/L' ve siz testValue'yu g/L giriyorsanız,
-                        //   adjustedValue *= 1000 yapabilirsiniz. Tam tersi de olabilir.
-                        //   Bu tamamen projenizdeki mantığa göre.
                         if (guideData.unit === 'mg/L') {
-                            // Örnek: testValue g/L ise => mg/L'ye çevirmek isterseniz => * 1000
-                            // if your input is in g/L
-                             adjustedValue *= 1000;
+                            // Giriş değeri g/L ise mg/L'ye çevirmek için 1000 ile çarp
+                            adjustedValue *= 1000;
                         }
 
                         const minVal = ageGroup.referenceMin;
@@ -176,6 +172,8 @@ const AddTestResultScreen = ({ route, navigation }) => {
 
                         guideEvaluations.push({
                             guideName: guideData.name,
+                            unit: guideData.unit,
+                            type: guideData.type,
                             minValue: minVal,
                             maxValue: maxVal,
                             status,
@@ -202,8 +200,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Card style={styles.card}>
                     <Card.Title
-                        title="Test Ekle"
-                        titleStyle={styles.cardTitle}
+                        title={<Text style={styles.cardTitle}>Test Ekle</Text>}
                         left={(props) => <IconButton {...props} icon="flask" />}
                     />
                     <Card.Content>
@@ -247,7 +244,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
                                 {selectedTests.includes(testName) && (
                                     <TextInput
                                         mode="outlined"
-                                        label={`${testName} Değeri`}
+                                        label={`${testName} Değeri (g/L)`}
                                         placeholder="Değer giriniz"
                                         keyboardType="numeric"
                                         value={testValues[testName] || ''}
@@ -274,6 +271,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
             </ScrollView>
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({

@@ -30,7 +30,7 @@ const TestResultItem = ({ testResult }) => {
                 tests.map((test, index) => (
                     <View key={index} style={styles.testContainer}>
                         <Text style={styles.testName}>Test: {test.testName || 'N/A'}</Text>
-                        <Text style={styles.testValue}>Değer: {test.testValue !== undefined ? test.testValue : 'N/A'}</Text>
+                        <Text style={styles.testValue}>Değer: {test.testValue !== undefined ? `${test.testValue} g/L` : 'N/A'}  {'|'} {test.testValue !== undefined ? `${test.testValue*1000} mg/L` : 'N/A'} </Text>
 
                         {Array.isArray(test.guideEvaluations) && test.guideEvaluations.length > 0 ? (
                             test.guideEvaluations.map((evaluation, idx) => {
@@ -52,7 +52,10 @@ const TestResultItem = ({ testResult }) => {
                                             Kılavuz: {evaluation.guideName || 'N/A'}
                                         </Text>
                                         <Text style={styles.reference}>
-                                            Referans: {evaluation.minValue.toFixed(2) || 'N/A'} - {evaluation.maxValue.toFixed(2) || 'N/A'}
+                                            Referans: {evaluation.minValue.toFixed(2) || 0} {evaluation.unit} - {evaluation.maxValue.toFixed(2) || 'N/A'} {evaluation.unit}
+                                        </Text>
+                                        <Text style={styles.typeText}>
+                                            Tip: {evaluation.type || 'N/A'}
                                         </Text>
                                         <Divider style={{ marginVertical: 5 }} />
                                     </View>
@@ -97,6 +100,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         marginBottom: 5,
+        fontWeight: 'bold',
     },
     evaluationContainer: {
         marginVertical: 5,
@@ -106,6 +110,11 @@ const styles = StyleSheet.create({
         color: '#555',
     },
     reference: {
+        fontSize: 14,
+        color: '#555',
+        fontWeight: 'bold',
+    },
+    typeText: {
         fontSize: 14,
         color: '#555',
     },
