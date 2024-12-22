@@ -10,7 +10,7 @@ const UploadJSONScreen = () => {
     const handleUpload = async () => {
         setIsLoading(true); // Yükleme başlıyor
         try {
-            await JSONUploader.uploadGuides(); // JSON'dan yükleme işlemini başlat
+            await JSONUploader.uploadGuidesToFirestore(); // JSON'dan yükleme işlemini başlat
             Alert.alert('Başarılı', 'JSON verileri başarıyla yüklendi!');
         } catch (error) {
             Alert.alert('Hata', 'JSON yükleme sırasında bir hata oluştu.');

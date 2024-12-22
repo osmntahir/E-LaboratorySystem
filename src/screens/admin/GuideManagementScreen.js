@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Alert } from 'react-native';
-import { Button, IconButton, Text } from 'react-native-paper'; // IconButton eklendi
-import { getGuides, deleteGuide } from '../../services/firebaseService';
+import { Button, IconButton, Text } from 'react-native-paper';
+import { getAllGuides, deleteGuide } from '../../services/firebaseService'; // Fonksiyon adını getAllGuides olarak güncelledim
 import GuideItem from '../../components/items/GuideItem';
 import styles from '../../styles/styles';
 
@@ -19,7 +19,7 @@ const GuideManagementScreen = ({ navigation }) => {
     const fetchGuides = async () => {
         setLoading(true);
         try {
-            const guideList = await getGuides();
+            const guideList = await getAllGuides(); // getGuides yerine getAllGuides kullanıldı
             setGuides(guideList);
         } catch (error) {
             console.error('Kılavuzları çekerken bir hata oluştu:', error);
@@ -105,7 +105,9 @@ const GuideManagementScreen = ({ navigation }) => {
             </View>
 
             {/* Kılavuz Listesi */}
-            <ScrollView>{renderGuides()}</ScrollView>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {renderGuides()}
+            </ScrollView>
         </View>
     );
 };

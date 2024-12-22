@@ -1,29 +1,31 @@
+// src/components/items/GuideItem.js
 import React, { useState, useEffect } from 'react';
 import { List, Button } from 'react-native-paper';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
-import TestItem from '../items/TestItem';
-import { Alert } from 'react-native'; // Import Alert from react-native
+import { Alert } from 'react-native';
+import TestItem from './TestItem';
 
 const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
     const [expanded, setExpanded] = useState(false);
-    const [tests, setTests] = useState([]);
+    const [testTypes, setTestTypes] = useState([]);
 
     useEffect(() => {
+        let unsubscribe;
         if (expanded) {
-            const unsubscribe = onSnapshot(
-                collection(db, 'guides', guide.id, 'tests'),
-                (snapshot) => {
-                    const testList = snapshot.docs.map((doc) => ({
-                        id: doc.id,
-                        ...doc.data(),
-                    }));
-                    setTests(testList);
+            // Realtime dinlemek için onSnapshot kullanıyoruz
+            const guideRef = doc(db, 'guides', guide.id);
+            unsubscribe = onSnapshot(guideRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    setTestTypes(data.testTypes || []);
                 }
-            );
-            return () => unsubscribe();
+            });
         }
-    }, [expanded]);
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [expanded, guide.id]);
 
     const handleDeleteGuide = () => {
         Alert.alert(
@@ -43,23 +45,26 @@ const GuideItem = ({ guide, onDelete, onEdit, navigation }) => {
     return (
         <List.Accordion
             title={guide.name}
-            description={`Birim: ${guide.unit}`}
+            description={`Birim: ${guide.unit} | Tip: ${guide.type}`}
             expanded={expanded}
             onPress={() => setExpanded(!expanded)}
             left={(props) => <List.Icon {...props} icon="folder" />}
         >
-            <Button onPress={onEdit}>Düzenle</Button>
-            <Button onPress={handleDeleteGuide}>Sil</Button>
+            <Button onPress={onEdit} style={{ marginVertical: 5 }}>
+                Düzenle
+            </Button>
+            <Button onPress={handleDeleteGuide} style={{ marginVertical: 5 }}>
+                Sil
+            </Button>
             <Button
-                onPress={() =>
-                    navigation.navigate('AddTest', { guideId: guide.id })
-                }
+                onPress={() => navigation.navigate('AddTest', { guideId: guide.id })}
+                style={{ marginVertical: 5 }}
             >
                 Yeni Tetkik Ekle
             </Button>
-            {tests.map((test) => (
+            {testTypes.map((test, index) => (
                 <TestItem
-                    key={test.id}
+                    key={test.name} // Daha iyi performans için test.name kullanıldı
                     guideId={guide.id}
                     test={test}
                     navigation={navigation}

@@ -1,14 +1,12 @@
-// src/screens/EditTestScreen.js
+// src/screens/admin/guideManagement/EditTestScreen.js
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { updateTest } from '../../../services/firebaseService';
-import { db } from '../../../../firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { getGuideById, updateTest } from '../../../services/firebaseService';
 import styles from '../../../styles/styles';
 
 const EditTestScreen = ({ route, navigation }) => {
-    const { guideId, testId } = route.params;
+    const { guideId, testName } = route.params;
     const [name, setName] = useState('');
 
     useEffect(() => {
@@ -16,18 +14,19 @@ const EditTestScreen = ({ route, navigation }) => {
     }, []);
 
     const fetchTest = async () => {
-        const testRef = doc(db, 'guides', guideId, 'tests', testId);
-        const docSnap = await getDoc(testRef);
-        if (docSnap.exists()) {
-            const test = docSnap.data();
+        const guide = await getGuideById(guideId);
+        if (!guide) return;
+
+        const test = guide.testTypes.find((t) => t.name === testName);
+        if (test) {
             setName(test.name);
-        } else {
-            console.log('Belge bulunamadı!');
         }
     };
 
     const handleUpdateTest = async () => {
-        await updateTest(guideId, testId, { name });
+        // testName -> eski ad, name -> yeni ad
+        // updateTest fonksiyonunda 1.parametre guideId, 2. parametre testId (eski ad), 3. parametre ise yeni veriler
+        await updateTest(guideId, testName, { name });
         navigation.goBack();
     };
 
