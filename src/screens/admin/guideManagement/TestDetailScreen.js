@@ -153,7 +153,7 @@ const TestDetailScreen = ({ route, navigation }) => {
                             <List.Item
                                 key={index}
                                 title={`Yaş Aralığı: ${ageGroup.ageRange}`}
-                                description={`Ref Min: ${ageGroup.referenceMin}, Ref Max: ${ageGroup.referenceMax}`}
+                                description={`Ref Min: ${ageGroup.referenceMin.toFixed(2)}\nRef Max: ${ageGroup.referenceMax.toFixed(2)}`}
                                 left={(props) => <List.Icon {...props} icon="account-multiple" />}
                                 right={() => (
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>

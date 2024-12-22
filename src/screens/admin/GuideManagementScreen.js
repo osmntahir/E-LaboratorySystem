@@ -125,6 +125,7 @@ const GuideManagementScreen = ({ navigation }) => {
                 title={guide.name}
                 description={`Birim: ${guide.unit} | Tip: ${guide.type}`}
                 onPress={() => navigation.navigate('GuideDetail', { guideId: guide.id })}
+                left={() => <List.Icon icon="folder" />} // Folder icon added here
                 right={() => (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <IconButton
@@ -178,6 +179,7 @@ const GuideManagementScreen = ({ navigation }) => {
             </ScrollView>
         </View>
     );
+
 };
 
 export default GuideManagementScreen;
