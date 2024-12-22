@@ -22,6 +22,8 @@ import PatientDetailScreen from '../screens/admin/PatientDetailScreen';
 import AddTestResultScreen from '../screens/admin/AddTestResultScreen';
 import EditTestResultScreen from '../screens/admin/EditTestResultScreen';
 
+import AddPatientScreen from '../screens/admin/AddPatientScreen';
+import UpdatePatientScreen from '../screens/admin/UpdatePatientScreen';
 
 import TestAnalysisScreen from '../screens/admin/TestAnalysisScreen';
 
@@ -114,7 +116,7 @@ const AdminNavigator = () => {
             />
             <Stack.Screen
                 name="TestResultDetail"
-                component={AddTestResultScreen}
+                component={EditTestResultScreen}
                 options={{ title: 'Tahlil Detayı' }}
             />
 
@@ -123,6 +125,16 @@ const AdminNavigator = () => {
                 component={TestAnalysisScreen}
                 options={{ title: 'Tetkik Analizi' }}
             />
+                <Stack.Screen
+                    name="AddPatient"
+                    component={AddPatientScreen}
+                    options={{ title: 'Hasta Ekle' }}
+                />
+                <Stack.Screen
+            name="UpdatePatient"
+            component={UpdatePatientScreen}
+            options={{ title: 'Hasta Güncelle' }}
+        />
         </Stack.Navigator>
     );
 };
