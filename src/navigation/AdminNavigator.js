@@ -27,6 +27,8 @@ import UpdatePatientScreen from '../screens/admin/UpdatePatientScreen';
 
 import TestAnalysisScreen from '../screens/admin/TestAnalysisScreen';
 
+import PatientGraphScreen from '../screens/admin/PatientGraphScreen';
+
 const Stack = createStackNavigator();
 
 const AdminNavigator = () => {
@@ -135,6 +137,12 @@ const AdminNavigator = () => {
             component={UpdatePatientScreen}
             options={{ title: 'Hasta Güncelle' }}
         />
+                <Stack.Screen
+                    name="PatientGraphic"
+                    component={PatientGraphScreen}
+                    options={{ title: 'Hasta Grafik' }}
+                />
+
         </Stack.Navigator>
     );
 };

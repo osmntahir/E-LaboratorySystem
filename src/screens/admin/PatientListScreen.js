@@ -84,7 +84,7 @@ const PatientListScreen = ({ navigation }) => {
     };
 
     const handleViewGraph = (patient) => {
-        Alert.alert('Grafik', 'Hasta grafiği sayfası henüz tasarlanmadı...');
+        navigation.navigate('PatientGraphic', { patient });
     };
 
     const handleAddPatient = () => {
