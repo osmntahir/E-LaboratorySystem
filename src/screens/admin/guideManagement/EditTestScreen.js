@@ -1,47 +1,78 @@
 // src/screens/admin/guideManagement/EditTestScreen.js
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { View, Alert, ScrollView } from 'react-native';
+import { Button, Text } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import { getGuideById, updateTest } from '../../../services/firebaseService';
+import TEST_TYPES from '../../../constants/testTypes';
 import styles from '../../../styles/styles';
 
 const EditTestScreen = ({ route, navigation }) => {
     const { guideId, testName } = route.params;
-    const [name, setName] = useState('');
+    const [selectedTest, setSelectedTest] = useState(testName);
+    const [availableTests, setAvailableTests] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchTest();
+        fetchAvailableTests();
     }, []);
 
-    const fetchTest = async () => {
-        const guide = await getGuideById(guideId);
-        if (!guide) return;
-
-        const test = guide.testTypes.find((t) => t.name === testName);
-        if (test) {
-            setName(test.name);
+    const fetchAvailableTests = async () => {
+        setLoading(true);
+        try {
+            const guide = await getGuideById(guideId);
+            if (guide) {
+                const existingTests = guide.testTypes.map(t => t.name);
+                const filteredTests = TEST_TYPES.filter(
+                    test => !existingTests.includes(test.name) || test.name === testName
+                );
+                setAvailableTests(filteredTests);
+            }
+        } catch (error) {
+            console.error('Testleri çekerken hata:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleUpdateTest = async () => {
-        // testName -> eski ad, name -> yeni ad
-        // updateTest fonksiyonunda 1.parametre guideId, 2. parametre testId (eski ad), 3. parametre ise yeni veriler
-        await updateTest(guideId, testName, { name });
+        if (!selectedTest) {
+            Alert.alert('Hata', 'Lütfen bir tetkik adı seçin!');
+            return;
+        }
+        await updateTest(guideId, testName, { name: selectedTest });
         navigation.goBack();
     };
 
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>Yükleniyor...</Text>
+            </View>
+        );
+    }
+
     return (
-        <View style={styles.container}>
-            <TextInput
-                label="Tetkik Adı"
-                value={name}
-                onChangeText={setName}
-                style={styles.input}
-            />
-            <Button mode="contained" onPress={handleUpdateTest}>
-                Güncelle
-            </Button>
-        </View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+                <Text style={{ marginBottom: 10 }}>Tetkik Adı</Text>
+                <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }}>
+                    <Picker
+                        selectedValue={selectedTest}
+                        onValueChange={(itemValue) => setSelectedTest(itemValue)}
+                        style={styles.picker}
+                        itemStyle={{ height: 50 }}
+                    >
+                        {availableTests.map((test) => (
+                            <Picker.Item key={test.id} label={test.name} value={test.name} />
+                        ))}
+                    </Picker>
+                </View>
+                <Button mode="contained" onPress={handleUpdateTest} style={{ marginTop: 20 }}>
+                    Güncelle
+                </Button>
+            </View>
+        </ScrollView>
     );
 };
 

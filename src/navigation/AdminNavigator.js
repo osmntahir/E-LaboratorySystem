@@ -22,7 +22,7 @@ import PatientDetailScreen from '../screens/admin/PatientDetailScreen';
 import AddTestResultScreen from '../screens/admin/AddTestResultScreen';
 import EditTestResultScreen from '../screens/admin/EditTestResultScreen';
 
-import UploadJSONScreen from '../screens/UploadJSONScreen';
+
 import TestAnalysisScreen from '../screens/admin/TestAnalysisScreen';
 
 const Stack = createStackNavigator();
@@ -118,12 +118,6 @@ const AdminNavigator = () => {
                 options={{ title: 'Tahlil Detayı' }}
             />
 
-            {/** Diğer Ekranlar **/}
-            <Stack.Screen
-                name="UploadJSON"
-                component={UploadJSONScreen}
-                options={{ title: 'JSON Yükle' }}
-            />
             <Stack.Screen
                 name="TestAnalysis"
                 component={TestAnalysisScreen}

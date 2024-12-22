@@ -1,13 +1,17 @@
 // src/screens/admin/GuideManagementScreen.js
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
+import { ScrollView, View, Alert, ActivityIndicator } from 'react-native';
 import { Button, IconButton, Text, List } from 'react-native-paper';
 import { getAllGuides, deleteGuide } from '../../services/firebaseService';
 import styles from '../../styles/styles';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
+import guidesData from '../../../assets/klavuz-verileri.json';
 
 const GuideManagementScreen = ({ navigation }) => {
     const [guides, setGuides] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -44,6 +48,62 @@ const GuideManagementScreen = ({ navigation }) => {
             ],
             { cancelable: false }
         );
+    };
+
+    const handleUploadJSON = () => {
+        Alert.alert(
+            'JSON Yükleme',
+            'JSON verilerini yüklemek istediğinize emin misiniz?',
+            [
+                { text: 'İptal', style: 'cancel' },
+                {
+                    text: 'Evet',
+                    onPress: () => uploadGuides(),
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const uploadGuides = async () => {
+        setUploading(true);
+        try {
+            const guidesCollection = collection(db, 'guides');
+
+            for (const guide of guidesData.guides) {
+                const processedTestTypes = guide.testTypes.map((testType) => ({
+                    ...testType,
+                    ageGroups: testType.ageGroups.map((ageGroup) => {
+                        const { geometricMean, standardDeviation, minValue, maxValue } = ageGroup;
+                        return {
+                            ...ageGroup,
+                            referenceMin: geometricMean && standardDeviation
+                                ? geometricMean - standardDeviation
+                                : minValue,
+                            referenceMax: geometricMean && standardDeviation
+                                ? geometricMean + standardDeviation
+                                : maxValue,
+                        };
+                    }),
+                }));
+
+                await addDoc(guidesCollection, {
+                    name: guide.name,
+                    description: guide.description,
+                    unit: guide.unit,
+                    type: guide.type,
+                    testTypes: processedTestTypes,
+                });
+            }
+
+            Alert.alert('Başarılı', 'Kılavuzlar başarıyla yüklendi.');
+            fetchGuides();
+        } catch (error) {
+            console.error('Firestore yüklenirken hata oluştu:', error);
+            Alert.alert('Hata', 'Kılavuzlar yüklenirken bir hata oluştu.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const renderGuides = () => {
@@ -99,23 +159,18 @@ const GuideManagementScreen = ({ navigation }) => {
                 <IconButton
                     icon="upload"
                     size={24}
-                    onPress={() =>
-                        Alert.alert(
-                            'JSON Yükleme',
-                            'JSON verilerini yüklemek istediğinize emin misiniz?',
-                            [
-                                { text: 'İptal', style: 'cancel' },
-                                {
-                                    text: 'Evet',
-                                    onPress: () => navigation.navigate('UploadJSON'),
-                                },
-                            ],
-                            { cancelable: false }
-                        )
-                    }
+                    onPress={handleUploadJSON}
                     style={styles.uploadButton}
                 />
             </View>
+
+            {/* Yükleniyor Göstergesi */}
+            {uploading && (
+                <View style={{ alignItems: 'center', marginBottom: 10 }}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text>Yükleniyor...</Text>
+                </View>
+            )}
 
             {/* Kılavuz Listesi */}
             <ScrollView contentContainerStyle={styles.scrollViewContent}>

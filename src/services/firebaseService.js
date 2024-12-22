@@ -86,19 +86,14 @@ export const addTest = async (guideId, testData) => {
  * testData: { name: "IgM" } gibi.
  * Not: ageGroups dizisine dokunmadan sadece test adını düzenlemek için.
  */
-export const updateTest = async (guideId, testId, testData) => {
-    // testId burada "IgA", "IgM" vb. ID yerine 'isim' mi, yoksa array index'i mi tutuyorsunuz?
-    // Genelde 'testId' yerine array içinde test name'e göre bulmak daha pratik olur.
-    // Aşağıdaki örnekte name'e göre buluyoruz.
-    // testId parametresi test'in "ismi" olarak kullanıldığını varsayıyoruz.
-
+export const updateTest = async (guideId, testName, testData) => {
     const guideRef = doc(db, 'guides', guideId);
     const guideSnap = await getDoc(guideRef);
     if (!guideSnap.exists()) return;
 
     const guide = guideSnap.data();
     const updatedTestTypes = (guide.testTypes || []).map((test) => {
-        if (test.name === testId) {
+        if (test.name === testName) {
             return { ...test, ...testData };
         }
         return test;
@@ -134,8 +129,6 @@ export const addAgeGroup = async (guideId, testName, ageGroupData) => {
     const guide = guideSnap.data();
 
     // Klavuz tipine göre referans değerlerini hesapla
-    // Eğer geometric ise geometricMean ve standardDeviation'u bekliyoruz
-    // Eğer minMax ise minValue ve maxValue'yu bekliyoruz.
     let referenceMin = 0;
     let referenceMax = 0;
 
@@ -171,7 +164,6 @@ export const addAgeGroup = async (guideId, testName, ageGroupData) => {
  * Yaş Grubu güncelle
  */
 export const updateAgeGroup = async (guideId, testName, ageGroupIndex, ageGroupData) => {
-    // ageGroupIndex: ageGroups dizisindeki index'i (veya başka bir eşsiz ID)
     const guideRef = doc(db, 'guides', guideId);
     const guideSnap = await getDoc(guideRef);
     if (!guideSnap.exists()) return;
@@ -202,6 +194,29 @@ export const updateAgeGroup = async (guideId, testName, ageGroupIndex, ageGroupD
                 referenceMin,
                 referenceMax,
             };
+            return { ...test, ageGroups: updatedAgeGroups };
+        }
+        return test;
+    });
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
+};
+
+/**
+ * Yaş Grubu sil
+ */
+export const deleteAgeGroup = async (guideId, testName, ageGroupIndex) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
+
+    const guide = guideSnap.data();
+    const updatedTestTypes = (guide.testTypes || []).map((test) => {
+        if (test.name === testName) {
+            const updatedAgeGroups = [...(test.ageGroups || [])];
+            if (updatedAgeGroups.length > ageGroupIndex) {
+                updatedAgeGroups.splice(ageGroupIndex, 1);
+            }
             return { ...test, ageGroups: updatedAgeGroups };
         }
         return test;
