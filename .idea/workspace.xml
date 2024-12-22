@@ -9,16 +9,9 @@
       <change beforePath="$PROJECT_DIR$/src/components/items/GuideItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/GuideItem.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/items/TestItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/TestItem.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/UploadJSONScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/UploadJSONScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AppNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AppNavigator.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/screens/admin/GuideManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/GuideManagementScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddAgeGroupScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddAgeGroupScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddGuideScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddGuideScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddTestScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/AddTestScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditAgeGroupScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditAgeGroupScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditGuideScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditGuideScreen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditTestScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditTestScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/JSONUploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/JSONUploader.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/firebaseService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/firebaseService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +108,7 @@
       <workItem from="1734017141718" duration="4906000" />
       <workItem from="1734096391338" duration="6639000" />
       <workItem from="1734791238166" duration="3225000" />
-      <workItem from="1734862324395" duration="2944000" />
+      <workItem from="1734862324395" duration="4353000" />
     </task>
     <servers />
   </component>

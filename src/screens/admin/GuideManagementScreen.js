@@ -1,8 +1,8 @@
+// src/screens/admin/GuideManagementScreen.js
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Alert } from 'react-native';
-import { Button, IconButton, Text } from 'react-native-paper';
-import { getAllGuides, deleteGuide } from '../../services/firebaseService'; // Fonksiyon adını getAllGuides olarak güncelledim
-import GuideItem from '../../components/items/GuideItem';
+import { Button, IconButton, Text, List } from 'react-native-paper';
+import { getAllGuides, deleteGuide } from '../../services/firebaseService';
 import styles from '../../styles/styles';
 
 const GuideManagementScreen = ({ navigation }) => {
@@ -19,16 +19,16 @@ const GuideManagementScreen = ({ navigation }) => {
     const fetchGuides = async () => {
         setLoading(true);
         try {
-            const guideList = await getAllGuides(); // getGuides yerine getAllGuides kullanıldı
+            const guideList = await getAllGuides();
             setGuides(guideList);
         } catch (error) {
-            console.error('Kılavuzları çekerken bir hata oluştu:', error);
+            console.error('Kılavuzları çekerken hata:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDeleteGuide = async (id) => {
+    const handleDeleteGuide = async (guideId) => {
         Alert.alert(
             'Silme Onayı',
             'Bu kılavuzu silmek istediğinize emin misiniz?',
@@ -37,24 +37,9 @@ const GuideManagementScreen = ({ navigation }) => {
                 {
                     text: 'Evet',
                     onPress: async () => {
-                        await deleteGuide(id);
+                        await deleteGuide(guideId);
                         fetchGuides();
                     },
-                },
-            ],
-            { cancelable: false }
-        );
-    };
-
-    const handleUploadJSON = () => {
-        Alert.alert(
-            'JSON Yükleme',
-            'JSON verilerini yüklemek istediğinize emin misiniz?',
-            [
-                { text: 'İptal', style: 'cancel' },
-                {
-                    text: 'Evet',
-                    onPress: () => navigation.navigate('UploadJSON'),
                 },
             ],
             { cancelable: false }
@@ -75,12 +60,27 @@ const GuideManagementScreen = ({ navigation }) => {
         }
 
         return guides.map((guide) => (
-            <GuideItem
+            <List.Item
                 key={guide.id}
-                guide={guide}
-                onDelete={() => handleDeleteGuide(guide.id)}
-                onEdit={() => navigation.navigate('EditGuide', { guideId: guide.id })}
-                navigation={navigation}
+                title={guide.name}
+                description={`Birim: ${guide.unit} | Tip: ${guide.type}`}
+                onPress={() => navigation.navigate('GuideDetail', { guideId: guide.id })}
+                right={() => (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton
+                            icon="pencil"
+                            size={20}
+                            onPress={() =>
+                                navigation.navigate('EditGuide', { guideId: guide.id })
+                            }
+                        />
+                        <IconButton
+                            icon="delete"
+                            size={20}
+                            onPress={() => handleDeleteGuide(guide.id)}
+                        />
+                    </View>
+                )}
             />
         ));
     };
@@ -99,7 +99,20 @@ const GuideManagementScreen = ({ navigation }) => {
                 <IconButton
                     icon="upload"
                     size={24}
-                    onPress={handleUploadJSON}
+                    onPress={() =>
+                        Alert.alert(
+                            'JSON Yükleme',
+                            'JSON verilerini yüklemek istediğinize emin misiniz?',
+                            [
+                                { text: 'İptal', style: 'cancel' },
+                                {
+                                    text: 'Evet',
+                                    onPress: () => navigation.navigate('UploadJSON'),
+                                },
+                            ],
+                            { cancelable: false }
+                        )
+                    }
                     style={styles.uploadButton}
                 />
             </View>
