@@ -1,6 +1,6 @@
 // src/screens/AddTestResultScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { addTestResult } from '../../services/testResultService';
@@ -21,31 +21,34 @@ const AddTestResultScreen = ({ route, navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    // 1) Tüm kılavuzları al, içindeki testTypes'ları toplayıp testTypes'e at.
     useEffect(() => {
         const fetchTestTypes = async () => {
             try {
                 const guidesSnapshot = await getDocs(collection(db, 'guides'));
-                let testTypeSet = new Set();
+                // Tüm kılavuzlardan testTypes listele
+                const testNameSet = new Set();
 
-                for (const guideDoc of guidesSnapshot.docs) {
-                    const testsSnapshot = await getDocs(collection(db, 'guides', guideDoc.id, 'tests'));
-                    testsSnapshot.forEach(testDoc => {
-                        testTypeSet.add(testDoc.data().name);
-                    });
-                }
+                guidesSnapshot.forEach((guideDoc) => {
+                    const guideData = guideDoc.data();
+                    if (Array.isArray(guideData.testTypes)) {
+                        guideData.testTypes.forEach((t) => {
+                            testNameSet.add(t.name);
+                        });
+                    }
+                });
 
-                setTestTypes(Array.from(testTypeSet));
+                setTestTypes(Array.from(testNameSet));
             } catch (error) {
                 console.error('Error fetching test types: ', error);
             }
         };
-
         fetchTestTypes();
     }, []);
 
     const toggleTestSelection = (testName) => {
         if (selectedTests.includes(testName)) {
-            setSelectedTests(selectedTests.filter(name => name !== testName));
+            setSelectedTests(selectedTests.filter((name) => name !== testName));
             const newTestValues = { ...testValues };
             delete newTestValues[testName];
             setTestValues(newTestValues);
@@ -86,10 +89,10 @@ const AddTestResultScreen = ({ route, navigation }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
+    // 2) "Kaydet" butonuna basıldığında
     const handleSave = async () => {
-        // Değer kontrolü: en az bir test seçilmiş ve o teste değer girilmiş mi?
-        if (selectedTests.length === 0 || selectedTests.every(testName => !testValues[testName] || testValues[testName].trim() === '')) {
-            alert('En az bir tahlil seçimi yapıp geçerli bir değer giriniz.');
+        if (selectedTests.length === 0 || selectedTests.every((tn) => !testValues[tn] || testValues[tn].trim() === '')) {
+            Alert.alert('Uyarı', 'En az bir tahlil seçimi yapıp geçerli bir değer giriniz.');
             return;
         }
 
@@ -97,21 +100,21 @@ const AddTestResultScreen = ({ route, navigation }) => {
             setIsLoading(true);
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
 
+            // Her test için testValue al, sonra evaluateTestValueAcrossGuides ile rehber kontrolü yap.
             const tests = [];
             for (const testName of selectedTests) {
                 const testValue = parseFloat(testValues[testName]);
                 if (isNaN(testValue)) {
-                    alert(`${testName} için geçerli bir değer giriniz.`);
+                    Alert.alert('Hata', `${testName} için geçerli bir sayı giriniz.`);
                     setIsLoading(false);
                     return;
                 }
 
                 const guideEvaluations = await evaluateTestValueAcrossGuides(testName, testValue, ageInMonths);
-
                 tests.push({
                     testName,
                     testValue,
-                    guideEvaluations
+                    guideEvaluations,
                 });
             }
 
@@ -120,66 +123,68 @@ const AddTestResultScreen = ({ route, navigation }) => {
             const testResult = {
                 patientTc: patient.tcNo,
                 testDate: formattedDate,
-                tests
+                tests,
             };
 
             await addTestResult(testResult);
 
-            alert('Test sonuçları başarıyla kaydedildi.');
+            Alert.alert('Başarılı', 'Test sonuçları başarıyla kaydedildi.');
             navigation.goBack();
         } catch (error) {
             console.error('Error saving test result: ', error);
-            alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            Alert.alert('Hata', 'Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setIsLoading(false);
         }
     };
 
+    // 3) Kılavuz Şemasına Göre Değer Kontrol Fonksiyonu
     const evaluateTestValueAcrossGuides = async (testName, testValue, ageInMonths) => {
         const guideEvaluations = [];
         try {
             const guidesSnapshot = await getDocs(collection(db, 'guides'));
-            for (const guideDoc of guidesSnapshot.docs) {
-                const guideData = guideDoc.data();
-                const testsSnapshot = await getDocs(collection(db, 'guides', guideDoc.id, 'tests'));
-                let foundTest = null;
 
-                testsSnapshot.forEach(testDoc => {
-                    if (testDoc.data().name === testName) {
-                        foundTest = testDoc;
+            guidesSnapshot.forEach((guideDoc) => {
+                const guideData = guideDoc.data();
+                // Her guide'da testTypes array var.
+                const foundTest = (guideData.testTypes || []).find((t) => t.name === testName);
+                if (!foundTest) return; // Bu guide'da ilgili test yoksa geç
+
+                // Her testin ageGroups dizisini gez
+                if (!Array.isArray(foundTest.ageGroups)) return;
+
+                foundTest.ageGroups.forEach((ageGroup) => {
+                    // ageGroup.ageRange => "0-1", "2-5", ...
+                    if (isAgeInRange(ageInMonths, ageGroup.ageRange)) {
+                        let adjustedValue = testValue;
+                        // unit kontrolü
+                        // Örneğin, eğer guideData.unit === 'mg/L' ve siz testValue'yu g/L giriyorsanız,
+                        //   adjustedValue *= 1000 yapabilirsiniz. Tam tersi de olabilir.
+                        //   Bu tamamen projenizdeki mantığa göre.
+                        if (guideData.unit === 'mg/L') {
+                            // Örnek: testValue g/L ise => mg/L'ye çevirmek isterseniz => * 1000
+                            // if your input is in g/L
+                             adjustedValue *= 1000;
+                        }
+
+                        const minVal = ageGroup.referenceMin;
+                        const maxVal = ageGroup.referenceMax;
+                        let status = 'Normal';
+
+                        if (adjustedValue < minVal) status = 'Düşük';
+                        else if (adjustedValue > maxVal) status = 'Yüksek';
+
+                        guideEvaluations.push({
+                            guideName: guideData.name,
+                            minValue: minVal,
+                            maxValue: maxVal,
+                            status,
+                        });
                     }
                 });
-
-                if (foundTest) {
-                    const ageGroupsSnapshot = await getDocs(collection(db, 'guides', guideDoc.id, 'tests', foundTest.id, 'ageGroups'));
-                    ageGroupsSnapshot.forEach(ageGroupDoc => {
-                        const ageGroupData = ageGroupDoc.data();
-                        if (isAgeInRange(ageInMonths, ageGroupData.ageRange)) {
-                            let adjustedTestValue = testValue;
-
-                            if (guideData.unit === 'mg/L') {
-                                adjustedTestValue *= 1000;
-                            }
-
-                            const minValue = ageGroupData.minValue;
-                            const maxValue = ageGroupData.maxValue;
-                            let status = 'Normal';
-
-                            if (adjustedTestValue < minValue) status = 'Düşük';
-                            else if (adjustedTestValue > maxValue) status = 'Yüksek';
-
-                            guideEvaluations.push({
-                                guideName: guideData.name,
-                                minValue,
-                                maxValue,
-                                status
-                            });
-                        }
-                    });
-                }
-            }
+            });
         } catch (error) {
-            console.error('Error evaluating test value: ', error);
+            console.error('Error evaluating test value:', error);
         }
         return guideEvaluations;
     };
@@ -211,9 +216,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
                                 Saat Seç
                             </Button>
                         </View>
-                        <Text style={styles.selectedDate}>
-                            Seçilen Tarih ve Saat: {formatDate(testDate)}
-                        </Text>
+                        <Text style={styles.selectedDate}>Seçilen Tarih ve Saat: {formatDate(testDate)}</Text>
 
                         {showDatePicker && (
                             <DateTimePicker
@@ -259,7 +262,10 @@ const AddTestResultScreen = ({ route, navigation }) => {
                             mode="contained"
                             onPress={handleSave}
                             style={styles.saveButton}
-                            disabled={selectedTests.length === 0 || selectedTests.every(testName => !testValues[testName] || testValues[testName].trim() === '')}
+                            disabled={
+                                selectedTests.length === 0 ||
+                                selectedTests.every((testName) => !testValues[testName] || testValues[testName].trim() === '')
+                            }
                         >
                             Kaydet
                         </Button>
@@ -279,12 +285,12 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     card: {
-        borderRadius: 10
+        borderRadius: 10,
     },
     cardTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#3f51b5'
+        color: '#3f51b5',
     },
     sectionTitle: {
         marginTop: 20,
@@ -295,31 +301,31 @@ const styles = StyleSheet.create({
     dateTimeContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        marginBottom: 10
+        marginBottom: 10,
     },
     dateTimeButton: {
-        marginRight: 10
+        marginRight: 10,
     },
     selectedDate: {
         marginTop: 5,
         fontSize: 16,
-        marginBottom: 20
+        marginBottom: 20,
     },
     testTypeContainer: {
-        marginBottom: 15
+        marginBottom: 15,
     },
     testName: {
         fontSize: 16,
-        marginBottom: 5
+        marginBottom: 5,
     },
     input: {
-        marginBottom: 10
+        marginBottom: 10,
     },
     saveButton: {
         marginTop: 20,
         borderRadius: 5,
         padding: 5,
-        backgroundColor: '#3f51b5'
+        backgroundColor: '#3f51b5',
     },
     loadingContainer: {
         backgroundColor: 'rgba(0,0,0,0.7)',
@@ -331,8 +337,8 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 10,
         fontSize: 18,
-        color: '#fff'
-    }
+        color: '#fff',
+    },
 });
 
 export default AddTestResultScreen;

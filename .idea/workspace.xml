@@ -6,14 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AdminNavigator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/UploadJSONScreen.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/GuideManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/GuideManagementScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditTestScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/EditTestScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/GuideDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/GuideDetailScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/admin/guideManagement/TestDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/guideManagement/TestDetailScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/firebaseService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/firebaseService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/styles.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/styles.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/items/TestResultItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/items/TestResultItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/admin/AddTestResultScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/AddTestResultScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/admin/EditTestResultScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/EditTestResultScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/testResultService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/testResultService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/ageRangeEvaluator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/ageRangeEvaluator.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +107,7 @@
       <workItem from="1734017141718" duration="4906000" />
       <workItem from="1734096391338" duration="6639000" />
       <workItem from="1734791238166" duration="3225000" />
-      <workItem from="1734862324395" duration="5570000" />
+      <workItem from="1734862324395" duration="8294000" />
     </task>
     <servers />
   </component>

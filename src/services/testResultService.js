@@ -1,5 +1,5 @@
 // src/services/testResultService.js
-import { collection, addDoc , deleteDoc , updateDoc , doc } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 
 export const addTestResult = async (testResult) => {
@@ -11,12 +11,10 @@ export const addTestResult = async (testResult) => {
     }
 };
 
-
 export const updateTestResult = async (resultId, updatedData) => {
     const resultRef = doc(db, 'testResults', resultId);
     await updateDoc(resultRef, updatedData);
 };
-
 
 export const deleteTestResult = async (resultId) => {
     const resultRef = doc(db, 'testResults', resultId);
