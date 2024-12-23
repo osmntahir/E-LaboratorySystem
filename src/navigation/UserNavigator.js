@@ -5,6 +5,7 @@ import UserHomeScreen from "../screens/users/UserHomeScreen";
 import TestResultsScreen from "../screens/users/TestResultsScreen";
 import ProfileScreen from "../screens/users/ProfileScreen";
 import ChangePasswordScreen from "../screens/users/ChangePasswordScreen";
+import UserGraphScreen from "../screens/users/UserGraphScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,11 @@ const UserNavigator = () => {
                 name="ChangePassword"
                 component={ChangePasswordScreen}
                 options={{ title: "Şifre Değiştir" }}
+            />
+            <Stack.Screen
+                name="UserGraph"
+                component={UserGraphScreen}
+                options={{ title: "Grafik" }}
             />
         </Stack.Navigator>
     );

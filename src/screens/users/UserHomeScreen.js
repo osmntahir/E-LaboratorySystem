@@ -88,6 +88,10 @@ const UserHomeScreen = ({ navigation }) => {
                         <Icon name="lock" size={24} style={styles.menuIcon} color="#fff" />
                         <Text style={styles.menuItemText}>Şifre Değiştir</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate("UserGraph")}>
+                        <Icon name="chart-line" size={24} style={styles.menuIcon} color="#fff" />
+                        <Text style={styles.menuItemText}>Grafik</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.logoutContainer}>
