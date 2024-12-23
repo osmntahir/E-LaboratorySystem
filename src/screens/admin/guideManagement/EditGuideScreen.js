@@ -1,38 +1,34 @@
-// src/screens/EditGuideScreen.js
+// src/screens/admin/guideManagement/EditGuideScreen.js
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker'; // Picker bileşenini ekliyoruz
-import { updateGuide } from '../../../services/firebaseService';
-import { db } from '../../../../firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
+import { getGuideById, updateGuide } from '../../../services/firebaseService';
 import styles from '../../../styles/styles';
 
 const EditGuideScreen = ({ route, navigation }) => {
     const { guideId } = route.params;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [unit, setUnit] = useState('g/L'); // Varsayılan değer 'g/L'
+    const [unit, setUnit] = useState('mg/L');
+    const [type, setType] = useState('minMax');
 
     useEffect(() => {
         fetchGuide();
     }, []);
 
     const fetchGuide = async () => {
-        const guideRef = doc(db, 'guides', guideId);
-        const docSnap = await getDoc(guideRef);
-        if (docSnap.exists()) {
-            const guide = docSnap.data();
+        const guide = await getGuideById(guideId);
+        if (guide) {
             setName(guide.name);
             setDescription(guide.description);
-            setUnit(guide.unit || 'g/L'); // Eğer unit yoksa varsayılan 'g/L'
-        } else {
-            console.log('Belge bulunamadı!');
+            setUnit(guide.unit || 'mg/L');
+            setType(guide.type || 'minMax');
         }
     };
 
     const handleUpdateGuide = async () => {
-        await updateGuide(guideId, { name, description, unit });
+        await updateGuide(guideId, { name, description, unit, type });
         navigation.goBack();
     };
 
@@ -53,10 +49,18 @@ const EditGuideScreen = ({ route, navigation }) => {
             <Picker
                 selectedValue={unit}
                 onValueChange={(itemValue) => setUnit(itemValue)}
-                style={styles.picker} // Stil uyguluyoruz
+                style={styles.picker}
             >
                 <Picker.Item label="mg/L" value="mg/L" />
                 <Picker.Item label="g/L" value="g/L" />
+            </Picker>
+            <Picker
+                selectedValue={type}
+                onValueChange={(itemValue) => setType(itemValue)}
+                style={styles.picker}
+            >
+                <Picker.Item label="minMax" value="minMax" />
+                <Picker.Item label="geometric" value="geometric" />
             </Picker>
             <Button mode="contained" onPress={handleUpdateGuide}>
                 Güncelle

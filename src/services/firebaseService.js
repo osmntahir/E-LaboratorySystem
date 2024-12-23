@@ -3,121 +3,224 @@ import { db } from '../../firebaseConfig';
 import {
     collection,
     doc,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    getDocs,
     getDoc,
-    query,
-    where
+    getDocs,
+    setDoc,
+    updateDoc,
+    addDoc,
+    deleteDoc,
 } from 'firebase/firestore';
 
-// Kılavuz işlemleri
-export const addGuide = async (guide) => {
-    return await addDoc(collection(db, 'guides'), guide);
+/**
+ * Tüm kılavuzları getir
+ */
+export const getAllGuides = async () => {
+    const guidesSnapshot = await getDocs(collection(db, 'guides'));
+    return guidesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    }));
 };
 
-export const updateGuide = async (id, guide) => {
-    const guideRef = doc(db, 'guides', id);
-    return await updateDoc(guideRef, guide);
-};
-
-export const deleteGuide = async (id) => {
-    const guideRef = doc(db, 'guides', id);
-    const testsSnapshot = await getDocs(collection(db, 'guides', id, 'tests'));
-    for (const testDoc of testsSnapshot.docs) {
-        await deleteTest(id, testDoc.id);
+/**
+ * Tekil kılavuz verisini getir
+ */
+export const getGuideById = async (guideId) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (guideSnap.exists()) {
+        return { id: guideSnap.id, ...guideSnap.data() };
     }
-    return await deleteDoc(guideRef);
+    return null;
 };
 
-export const getGuides = async () => {
-    const querySnapshot = await getDocs(collection(db, 'guides'));
-    let guides = [];
-    querySnapshot.forEach((doc) => {
-        guides.push({ id: doc.id, ...doc.data() });
+/**
+ * Kılavuz ekle
+ */
+export const addGuide = async (guideData) => {
+    const guidesRef = collection(db, 'guides');
+    const newDocRef = await addDoc(guidesRef, {
+        ...guideData,
+        // testTypes boş array olarak başlatılabilir
+        testTypes: [],
     });
-    return guides;
+    return newDocRef.id;
 };
 
-// Tetkik işlemleri
-export const addTest = async (guideId, test) => {
-    return await addDoc(collection(db, 'guides', guideId, 'tests'), test);
+/**
+ * Kılavuz güncelle
+ */
+export const updateGuide = async (guideId, guideData) => {
+    const guideRef = doc(db, 'guides', guideId);
+    await updateDoc(guideRef, {
+        ...guideData,
+    });
 };
 
-export const updateTest = async (guideId, testId, test) => {
-    const testRef = doc(db, 'guides', guideId, 'tests', testId);
-    return await updateDoc(testRef, test);
+/**
+ * Kılavuz sil
+ */
+export const deleteGuide = async (guideId) => {
+    const guideRef = doc(db, 'guides', guideId);
+    await deleteDoc(guideRef);
 };
 
-export const deleteTest = async (guideId, testId) => {
-    const testRef = doc(db, 'guides', guideId, 'tests', testId);
-    const ageGroupsSnapshot = await getDocs(collection(db, 'guides', guideId, 'tests', testId, 'ageGroups'));
-    for (const ageGroupDoc of ageGroupsSnapshot.docs) {
-        await deleteAgeGroup(guideId, testId, ageGroupDoc.id);
+/**
+ * Test ekle
+ * guideId: ekleneceği kılavuzun ID'si
+ * testData: { name: "IgA", ageGroups: [] } gibi bir obje
+ */
+export const addTest = async (guideId, testData) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
+
+    const guide = guideSnap.data();
+    // testTypes dizisine yeni test'i ekle
+    const updatedTestTypes = [...(guide.testTypes || []), { ...testData, ageGroups: [] }];
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
+};
+
+/**
+ * Test güncelle
+ * testData: { name: "IgM" } gibi.
+ * Not: ageGroups dizisine dokunmadan sadece test adını düzenlemek için.
+ */
+export const updateTest = async (guideId, testName, testData) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
+
+    const guide = guideSnap.data();
+    const updatedTestTypes = (guide.testTypes || []).map((test) => {
+        if (test.name === testName) {
+            return { ...test, ...testData };
+        }
+        return test;
+    });
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
+};
+
+/**
+ * Test sil
+ */
+export const deleteTest = async (guideId, testName) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
+
+    const guide = guideSnap.data();
+    const updatedTestTypes = (guide.testTypes || []).filter(
+        (test) => test.name !== testName
+    );
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
+};
+
+/**
+ * Yaş Grubu ekle
+ */
+export const addAgeGroup = async (guideId, testName, ageGroupData) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
+
+    const guide = guideSnap.data();
+
+    // Klavuz tipine göre referans değerlerini hesapla
+    let referenceMin = 0;
+    let referenceMax = 0;
+
+    if (guide.type === 'geometric') {
+        const { geometricMean, standardDeviation } = ageGroupData;
+        referenceMin = parseFloat(geometricMean) - parseFloat(standardDeviation);
+        referenceMax = parseFloat(geometricMean) + parseFloat(standardDeviation);
+    } else if (guide.type === 'minMax') {
+        const { minValue, maxValue } = ageGroupData;
+        referenceMin = parseFloat(minValue);
+        referenceMax = parseFloat(maxValue);
     }
-    return await deleteDoc(testRef);
-};
 
-export const getTests = async (guideId) => {
-    const testsCollection = collection(db, 'guides', guideId, 'tests');
-    const querySnapshot = await getDocs(testsCollection);
-    let tests = [];
-    querySnapshot.forEach((doc) => {
-        tests.push({ id: doc.id, ...doc.data() });
+    const newAgeGroup = {
+        ...ageGroupData,
+        referenceMin,
+        referenceMax,
+    };
+
+    const updatedTestTypes = (guide.testTypes || []).map((test) => {
+        if (test.name === testName) {
+            // AgeGroups yoksa başlat
+            const updatedAgeGroups = [...(test.ageGroups || []), newAgeGroup];
+            return { ...test, ageGroups: updatedAgeGroups };
+        }
+        return test;
     });
-    return tests;
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
 };
 
-// Yaş grubu işlemleri
-export const addAgeGroup = async (guideId, testId, ageGroup) => {
-    return await addDoc(
-        collection(db, 'guides', guideId, 'tests', testId, 'ageGroups'),
-        ageGroup
-    );
-};
+/**
+ * Yaş Grubu güncelle
+ */
+export const updateAgeGroup = async (guideId, testName, ageGroupIndex, ageGroupData) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
 
-export const updateAgeGroup = async (guideId, testId, ageGroupId, ageGroup) => {
-    const ageGroupRef = doc(
-        db,
-        'guides',
-        guideId,
-        'tests',
-        testId,
-        'ageGroups',
-        ageGroupId
-    );
-    return await updateDoc(ageGroupRef, ageGroup);
-};
+    const guide = guideSnap.data();
 
-export const deleteAgeGroup = async (guideId, testId, ageGroupId) => {
-    const ageGroupRef = doc(
-        db,
-        'guides',
-        guideId,
-        'tests',
-        testId,
-        'ageGroups',
-        ageGroupId
-    );
-    return await deleteDoc(ageGroupRef);
-};
+    // Klavuz tipine göre referans değerlerini hesapla
+    let referenceMin = 0;
+    let referenceMax = 0;
 
-export const getAgeGroups = async (guideId, testId) => {
-    const ageGroupsCollection = collection(
-        db,
-        'guides',
-        guideId,
-        'tests',
-        testId,
-        'ageGroups'
-    );
-    const querySnapshot = await getDocs(ageGroupsCollection);
-    let ageGroups = [];
-    querySnapshot.forEach((doc) => {
-        ageGroups.push({ id: doc.id, ...doc.data() });
+    if (guide.type === 'geometric') {
+        const { geometricMean, standardDeviation } = ageGroupData;
+        referenceMin = parseFloat(geometricMean) - parseFloat(standardDeviation);
+        referenceMax = parseFloat(geometricMean) + parseFloat(standardDeviation);
+    } else if (guide.type === 'minMax') {
+        const { minValue, maxValue } = ageGroupData;
+        referenceMin = parseFloat(minValue);
+        referenceMax = parseFloat(maxValue);
+    }
+
+    const updatedTestTypes = (guide.testTypes || []).map((test) => {
+        if (test.name === testName) {
+            const updatedAgeGroups = [...(test.ageGroups || [])];
+            // index'e göre ilgili yaş grubunu güncelle
+            updatedAgeGroups[ageGroupIndex] = {
+                ...updatedAgeGroups[ageGroupIndex],
+                ...ageGroupData,
+                referenceMin,
+                referenceMax,
+            };
+            return { ...test, ageGroups: updatedAgeGroups };
+        }
+        return test;
     });
-    return ageGroups;
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
 };
 
+/**
+ * Yaş Grubu sil
+ */
+export const deleteAgeGroup = async (guideId, testName, ageGroupIndex) => {
+    const guideRef = doc(db, 'guides', guideId);
+    const guideSnap = await getDoc(guideRef);
+    if (!guideSnap.exists()) return;
 
+    const guide = guideSnap.data();
+    const updatedTestTypes = (guide.testTypes || []).map((test) => {
+        if (test.name === testName) {
+            const updatedAgeGroups = [...(test.ageGroups || [])];
+            if (updatedAgeGroups.length > ageGroupIndex) {
+                updatedAgeGroups.splice(ageGroupIndex, 1);
+            }
+            return { ...test, ageGroups: updatedAgeGroups };
+        }
+        return test;
+    });
+
+    await updateDoc(guideRef, { testTypes: updatedTestTypes });
+};

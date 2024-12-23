@@ -1,59 +1,42 @@
-import { collection, doc, addDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'; // Firestore bağlantısını içe aktar
 import guidesData from '../../assets/klavuz-verileri.json'; // JSON dosyasını içe aktar
 
 class JSONUploader {
-    /**
-     * Firestore'a JSON'dan kılavuzları yükler.
-     */
-    async uploadGuides() {
+
+    async uploadGuidesToFirestore() {
         try {
-            console.log('JSON yükleme işlemi başlıyor...');
+            const guidesCollection = collection(db, 'guides');
+
             for (const guide of guidesData.guides) {
-                // 1. Kılavuzu ekle
-                const guideRef = await addDoc(collection(db, 'guides'), {
+                const processedTestTypes = guide.testTypes.map((testType) => ({
+                    ...testType,
+                    ageGroups: testType.ageGroups.map((ageGroup) => {
+                        const { geometricMean, standardDeviation, minValue, maxValue } = ageGroup;
+                        return {
+                            ...ageGroup,
+                            referenceMin: geometricMean && standardDeviation
+                                ? geometricMean - standardDeviation
+                                : minValue,
+                            referenceMax: geometricMean && standardDeviation
+                                ? geometricMean + standardDeviation
+                                : maxValue,
+                        };
+                    }),
+                }));
+
+                await addDoc(guidesCollection, {
                     name: guide.name,
                     description: guide.description,
-                    unit: guide.unit, // Unit alanını kılavuz düzeyine ekle
+                    unit: guide.unit,
+                    type: guide.type,
+                    testTypes: processedTestTypes,
                 });
-                console.log(`Kılavuz eklendi: ${guide.name}`);
-
-                for (const test of guide.testTypes) {
-                    // 2. Tetkikleri ekle
-                    const testRef = await addDoc(
-                        collection(db, 'guides', guideRef.id, 'tests'),
-                        {
-                            name: test.name,
-                        }
-                    );
-                    console.log(`Tetkik eklendi: ${test.name}`);
-
-                    for (const ageGroup of test.ageGroups) {
-                        // 3. Yaş Gruplarını ekle
-                        await addDoc(
-                            collection(
-                                db,
-                                'guides',
-                                guideRef.id,
-                                'tests',
-                                testRef.id,
-                                'ageGroups'
-                            ),
-                            {
-                                ageRange: ageGroup.ageRange,
-                                minValue: ageGroup.minValue,
-                                maxValue: ageGroup.maxValue,
-                            }
-                        );
-                        console.log(
-                            `Yaş Grubu eklendi: ${ageGroup.ageRange} (${test.name})`
-                        );
-                    }
-                }
             }
-            console.log('JSON verileri başarıyla yüklendi!');
+
+            console.log('Klavuzlar başarıyla yüklendi.');
         } catch (error) {
-            console.error('JSON yükleme sırasında hata oluştu:', error);
+            console.error('Firestore yüklenirken hata oluştu:', error);
         }
     }
 }

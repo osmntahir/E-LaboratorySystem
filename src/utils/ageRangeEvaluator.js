@@ -2,8 +2,10 @@
 export const isAgeInRange = (age, ageRange) => {
     // "cord" kontrolü
     if (ageRange.toLowerCase() === "cord") {
-        // Eğer yaş "cord" olarak işaretlenmişse, bu gruba dahil
-        return age === "cord";
+        // Eğer yaş "cord" olarak işaretlenmişse
+        // Bu projede "cord" => yenidoğan (ay=0) gibi düşünebilirsiniz.
+        // isAgeInRange( ay, 'cord' ) => ay==0 ise true gibi
+        return age === 0;
     }
 
     // "min-max" formatı kontrolü
@@ -18,6 +20,6 @@ export const isAgeInRange = (age, ageRange) => {
         return age >= minAge;
     }
 
-    // Belirtilen formatların dışında kalan durumlar
+    // Diğer durumlar (eşleşmiyorsa false)
     return false;
 };

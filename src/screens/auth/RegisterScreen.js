@@ -35,6 +35,7 @@ const RegisterScreen = ({ navigation }) => {
         };
     };
 
+
     const handleRegister = async () => {
         if (!email || !password || !confirmPassword || !name || !surname || !tcNo) {
             Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');

@@ -30,9 +30,9 @@ const TestResultItem = ({ testResult }) => {
                 tests.map((test, index) => (
                     <View key={index} style={styles.testContainer}>
                         <Text style={styles.testName}>Test: {test.testName || 'N/A'}</Text>
-                        <Text style={styles.testValue}>Değer: {test.testValue !== undefined ? test.testValue : 'N/A'}</Text>
+                        <Text style={styles.testValue}>Değer: {test.testValue !== undefined ? `${test.testValue} g/L` : 'N/A'}  {'|'} {test.testValue !== undefined ? `${test.testValue*1000} mg/L` : 'N/A'} </Text>
 
-                        {test.guideEvaluations && test.guideEvaluations.length > 0 ? (
+                        {Array.isArray(test.guideEvaluations) && test.guideEvaluations.length > 0 ? (
                             test.guideEvaluations.map((evaluation, idx) => {
                                 const { icon, color } = getStatusIconAndColor(evaluation.status);
                                 return (
@@ -41,15 +41,22 @@ const TestResultItem = ({ testResult }) => {
                                             <Avatar.Icon
                                                 size={24}
                                                 icon={icon}
-                                                style={{backgroundColor: 'transparent'}}
+                                                style={{ backgroundColor: 'transparent' }}
                                                 color={color}
                                             />
-                                            <Text style={[styles.statusText, {color: color}]}>
+                                            <Text style={[styles.statusText, { color }]}>
                                                 {evaluation.status || 'N/A'}
                                             </Text>
                                         </View>
-                                        <Text style={styles.guideName}>Kılavuz: {evaluation.guideName || 'N/A'}</Text>
-                                        <Text style={styles.reference}>Referans: {evaluation.minValue || 'N/A'} - {evaluation.maxValue || 'N/A'}</Text>
+                                        <Text style={styles.guideName}>
+                                            Kılavuz: {evaluation.guideName || 'N/A'}
+                                        </Text>
+                                        <Text style={styles.reference}>
+                                            Referans: {evaluation.minValue.toFixed(2) || 0} {evaluation.unit} - {evaluation.maxValue.toFixed(2) || 'N/A'} {evaluation.unit}
+                                        </Text>
+                                        <Text style={styles.typeText}>
+                                            Tip: {evaluation.type || 'N/A'}
+                                        </Text>
                                         <Divider style={{ marginVertical: 5 }} />
                                     </View>
                                 );
@@ -70,61 +77,67 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         borderRadius: 5,
-        backgroundColor: '#f9f9f9'
+        backgroundColor: '#f9f9f9',
     },
     date: {
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 5,
-        color: '#333'
+        color: '#333',
     },
     testContainer: {
         marginVertical: 10,
         backgroundColor: '#ffffff',
         borderRadius: 5,
-        padding: 10
+        padding: 10,
     },
     testName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333'
+        color: '#333',
     },
     testValue: {
         fontSize: 16,
         color: '#333',
-        marginBottom: 5
+        marginBottom: 5,
+        fontWeight: 'bold',
     },
     evaluationContainer: {
-        marginVertical: 5
+        marginVertical: 5,
     },
     guideName: {
         fontSize: 14,
-        color: '#555'
+        color: '#555',
     },
     reference: {
         fontSize: 14,
-        color: '#555'
+        color: '#555',
+        fontWeight: 'bold',
+    },
+    typeText: {
+        fontSize: 14,
+        color: '#555',
     },
     noEvaluation: {
         fontSize: 14,
         fontStyle: 'italic',
-        color: '#777'
+        color: '#777',
     },
     noTest: {
         fontSize: 14,
         fontStyle: 'italic',
-        color: '#777'
+        color: '#777',
     },
     statusRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 5
+        marginBottom: 5,
     },
     statusText: {
         fontSize: 16,
         marginLeft: 5,
-        fontWeight: 'bold'
-    }
+        fontWeight: 'bold',
+    },
 });
 
 export default TestResultItem;

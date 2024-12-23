@@ -1,13 +1,17 @@
+// src/screens/admin/GuideManagementScreen.js
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
-import { Button, IconButton, Text } from 'react-native-paper'; // IconButton eklendi
-import { getGuides, deleteGuide } from '../../services/firebaseService';
-import GuideItem from '../../components/items/GuideItem';
+import { ScrollView, View, Alert, ActivityIndicator } from 'react-native';
+import { Button, IconButton, Text, List } from 'react-native-paper';
+import { getAllGuides, deleteGuide } from '../../services/firebaseService';
 import styles from '../../styles/styles';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
+import guidesData from '../../../assets/klavuz-verileri.json';
 
 const GuideManagementScreen = ({ navigation }) => {
     const [guides, setGuides] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -19,16 +23,16 @@ const GuideManagementScreen = ({ navigation }) => {
     const fetchGuides = async () => {
         setLoading(true);
         try {
-            const guideList = await getGuides();
+            const guideList = await getAllGuides();
             setGuides(guideList);
         } catch (error) {
-            console.error('Kılavuzları çekerken bir hata oluştu:', error);
+            console.error('Kılavuzları çekerken hata:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDeleteGuide = async (id) => {
+    const handleDeleteGuide = async (guideId) => {
         Alert.alert(
             'Silme Onayı',
             'Bu kılavuzu silmek istediğinize emin misiniz?',
@@ -37,7 +41,7 @@ const GuideManagementScreen = ({ navigation }) => {
                 {
                     text: 'Evet',
                     onPress: async () => {
-                        await deleteGuide(id);
+                        await deleteGuide(guideId);
                         fetchGuides();
                     },
                 },
@@ -54,11 +58,52 @@ const GuideManagementScreen = ({ navigation }) => {
                 { text: 'İptal', style: 'cancel' },
                 {
                     text: 'Evet',
-                    onPress: () => navigation.navigate('UploadJSON'),
+                    onPress: () => uploadGuides(),
                 },
             ],
             { cancelable: false }
         );
+    };
+
+    const uploadGuides = async () => {
+        setUploading(true);
+        try {
+            const guidesCollection = collection(db, 'guides');
+
+            for (const guide of guidesData.guides) {
+                const processedTestTypes = guide.testTypes.map((testType) => ({
+                    ...testType,
+                    ageGroups: testType.ageGroups.map((ageGroup) => {
+                        const { geometricMean, standardDeviation, minValue, maxValue } = ageGroup;
+                        return {
+                            ...ageGroup,
+                            referenceMin: geometricMean && standardDeviation
+                                ? geometricMean - standardDeviation
+                                : minValue,
+                            referenceMax: geometricMean && standardDeviation
+                                ? geometricMean + standardDeviation
+                                : maxValue,
+                        };
+                    }),
+                }));
+
+                await addDoc(guidesCollection, {
+                    name: guide.name,
+                    description: guide.description,
+                    unit: guide.unit,
+                    type: guide.type,
+                    testTypes: processedTestTypes,
+                });
+            }
+
+            Alert.alert('Başarılı', 'Kılavuzlar başarıyla yüklendi.');
+            fetchGuides();
+        } catch (error) {
+            console.error('Firestore yüklenirken hata oluştu:', error);
+            Alert.alert('Hata', 'Kılavuzlar yüklenirken bir hata oluştu.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const renderGuides = () => {
@@ -75,12 +120,28 @@ const GuideManagementScreen = ({ navigation }) => {
         }
 
         return guides.map((guide) => (
-            <GuideItem
+            <List.Item
                 key={guide.id}
-                guide={guide}
-                onDelete={() => handleDeleteGuide(guide.id)}
-                onEdit={() => navigation.navigate('EditGuide', { guideId: guide.id })}
-                navigation={navigation}
+                title={guide.name}
+                description={`Birim: ${guide.unit} | Tip: ${guide.type}`}
+                onPress={() => navigation.navigate('GuideDetail', { guideId: guide.id })}
+                left={() => <List.Icon icon="folder" />} // Folder icon added here
+                right={() => (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton
+                            icon="pencil"
+                            size={20}
+                            onPress={() =>
+                                navigation.navigate('EditGuide', { guideId: guide.id })
+                            }
+                        />
+                        <IconButton
+                            icon="delete"
+                            size={20}
+                            onPress={() => handleDeleteGuide(guide.id)}
+                        />
+                    </View>
+                )}
             />
         ));
     };
@@ -104,10 +165,21 @@ const GuideManagementScreen = ({ navigation }) => {
                 />
             </View>
 
+            {/* Yükleniyor Göstergesi */}
+            {uploading && (
+                <View style={{ alignItems: 'center', marginBottom: 10 }}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text>Yükleniyor...</Text>
+                </View>
+            )}
+
             {/* Kılavuz Listesi */}
-            <ScrollView>{renderGuides()}</ScrollView>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {renderGuides()}
+            </ScrollView>
         </View>
     );
+
 };
 
 export default GuideManagementScreen;
