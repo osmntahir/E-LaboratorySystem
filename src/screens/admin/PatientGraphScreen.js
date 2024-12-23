@@ -8,6 +8,7 @@ import { VictoryChart, VictoryScatter, VictoryAxis, VictoryTooltip, VictoryConta
 import { useFocusEffect } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
+const widthPerDataPoint = 50; // Her veri noktası için ayrılacak genişlik (px)
 
 const STATUS_COLORS = {
     Normal: 'green',
@@ -128,105 +129,109 @@ const PatientGraphScreen = ({ route }) => {
                 <Text style={styles.noDataText}>Grafik verisi bulunamadı.</Text>
             )}
 
-            {Object.entries(groupedData).map(([testName, dataArray]) => (
-                <Card style={styles.card} key={testName}>
-                    <Card.Title
-                        title={testName}
-                        titleStyle={styles.cardTitle}
-                        left={(props) => <IconButton {...props} icon="chart-line" />}
-                    />
-                    <Card.Content>
-                        <Divider style={{ marginBottom: 10 }} />
+            {Object.entries(groupedData).map(([testName, dataArray]) => {
+                // Dinamik olarak grafiğin genişliğini hesapla
+                const chartWidth = Math.max(screenWidth, dataArray.length * widthPerDataPoint);
 
-                        {/* Tarih / Değer / Status listesi */}
-                        {dataArray.map((item, idx) => (
-                            <View key={idx} style={styles.valueRow}>
-                                <Text style={styles.valueText}>Tarih: {item.x}</Text>
-                                <Text style={styles.valueText}>Değer: {item.y.toFixed(2)}</Text>
-                                <Text style={[styles.statusText, { color: getColorForStatus(item.status) }]}>
-                                    {item.status}
-                                </Text>
-                            </View>
-                        ))}
-                        <Divider style={{ marginVertical: 10 }} />
+                return (
+                    <Card style={styles.card} key={testName}>
+                        <Card.Title
+                            title={testName}
+                            titleStyle={styles.cardTitle}
+                            left={(props) => <IconButton {...props} icon="chart-line" />}
+                        />
+                        <Card.Content>
+                            <Divider style={{ marginBottom: 10 }} />
 
-                        {/* Grafiği yatay kaydırmak için yatay ScrollView kullanalım */}
-                        <ScrollView horizontal>
-                            {/* VictoryChart alanını geniş yapıyoruz ki scroll edilebilsin */}
-                            <View style={{ width: 600, height: 300 }}>
-                                <VictoryChart
-                                    width={600}
-                                    height={300}
-                                    domainPadding={{ x: 50, y: 20 }}
-                                    containerComponent={<VictoryContainer />} // VictoryContainer kullanarak uyarıyı giderdik
-                                >
-                                    {/* X Eksenine Tarih + Saat */}
-                                    <VictoryAxis
-                                        tickFormat={(t) => {
-                                            // t formatı "YYYY-MM-DD HH:mm"
-                                            const d = new Date(t);
-                                            if (isNaN(d.getTime())) return t; // Geçersiz tarihse orijinali dön
-                                            const day = String(d.getDate()).padStart(2, '0');
-                                            const month = String(d.getMonth() + 1).padStart(2, '0');
-                                            const hour = String(d.getHours()).padStart(2, '0');
-                                            const minute = String(d.getMinutes()).padStart(2, '0');
-                                            return `${day}/${month}\n${hour}:${minute}`;
-                                        }}
-                                        style={{
-                                            tickLabels: {
-                                                fontSize: 10,
-                                                padding: 5,
-                                                dy: 10, // x ekseni etiketlerini biraz aşağı kaydır
-                                            },
-                                        }}
-                                    />
-                                    {/* Y Eksenine 2 basamak kısaltma */}
-                                    <VictoryAxis
-                                        dependentAxis
-                                        tickFormat={(t) => t.toFixed(2)}
-                                        style={{
-                                            tickLabels: { fontSize: 10 },
-                                        }}
-                                    />
+                            {/* Tarih / Değer / Status listesi */}
+                            {dataArray.map((item, idx) => (
+                                <View key={idx} style={styles.valueRow}>
+                                    <Text style={styles.valueText}>Tarih: {item.x}</Text>
+                                    <Text style={styles.valueText}>Değer: {item.y.toFixed(2)}</Text>
+                                    <Text style={[styles.statusText, { color: getColorForStatus(item.status) }]}>
+                                        {item.status}
+                                    </Text>
+                                </View>
+                            ))}
+                            <Divider style={{ marginVertical: 10 }} />
 
-                                    <VictoryScatter
-                                        // Veriyi 2 basamağa indiriyoruz
-                                        data={dataArray.map((d) => ({
-                                            ...d,
-                                            y: parseFloat(d.y.toFixed(2)),
-                                        }))}
-                                        x="x"
-                                        y="y"
-                                        size={5}
-                                        labels={({ datum }) => {
-                                            // Tooltip yazısı
-                                            const dateObj = new Date(datum.x);
-                                            const day = String(dateObj.getDate()).padStart(2, '0');
-                                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                                            const hour = String(dateObj.getHours()).padStart(2, '0');
-                                            const minute = String(dateObj.getMinutes()).padStart(2, '0');
-                                            return `Tarih: ${day}/${month} ${hour}:${minute}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
-                                        }}
-                                        labelComponent={
-                                            <VictoryTooltip
-                                                renderInPortal={false} // Uyarıyı önlemek için portal kullanımını devre dışı bıraktık
-                                                flyoutWidth={140}
-                                                flyoutHeight={80}
-                                                style={{ fontSize: 10 }}
-                                            />
-                                        }
-                                        style={{
-                                            data: {
-                                                fill: ({ datum }) => getColorForStatus(datum.status),
-                                            },
-                                        }}
-                                    />
-                                </VictoryChart>
-                            </View>
-                        </ScrollView>
-                    </Card.Content>
-                </Card>
-            ))}
+                            {/* Grafiği yatay kaydırmak için dinamik ScrollView */}
+                            <ScrollView horizontal={chartWidth > screenWidth}>
+                                <View style={{ width: chartWidth, height: 300 }}>
+                                    <VictoryChart
+                                        width={chartWidth}
+                                        height={300}
+                                        domainPadding={{ x: 50, y: 20 }}
+                                        containerComponent={<VictoryContainer />} // VictoryContainer kullanarak uyarıyı giderdik
+                                    >
+                                        {/* X Eksenine Tarih + Saat */}
+                                        <VictoryAxis
+                                            tickFormat={(t) => {
+                                                // t formatı "YYYY-MM-DD HH:mm"
+                                                const d = new Date(t);
+                                                if (isNaN(d.getTime())) return t; // Geçersiz tarihse orijinali dön
+                                                const day = String(d.getDate()).padStart(2, '0');
+                                                const month = String(d.getMonth() + 1).padStart(2, '0');
+                                                const hour = String(d.getHours()).padStart(2, '0');
+                                                const minute = String(d.getMinutes()).padStart(2, '0');
+                                                return `${day}/${month}\n${hour}:${minute}`;
+                                            }}
+                                            style={{
+                                                tickLabels: {
+                                                    fontSize: 10,
+                                                    padding: 5,
+                                                    dy: 10, // x ekseni etiketlerini biraz aşağı kaydır
+                                                },
+                                            }}
+                                        />
+                                        {/* Y Eksenine 2 basamak kısaltma */}
+                                        <VictoryAxis
+                                            dependentAxis
+                                            tickFormat={(t) => t.toFixed(2)}
+                                            style={{
+                                                tickLabels: { fontSize: 10 },
+                                            }}
+                                        />
+
+                                        <VictoryScatter
+                                            // Veriyi 2 basamağa indiriyoruz
+                                            data={dataArray.map((d) => ({
+                                                ...d,
+                                                y: parseFloat(d.y.toFixed(2)),
+                                            }))}
+                                            x="x"
+                                            y="y"
+                                            size={5}
+                                            labels={({ datum }) => {
+                                                // Tooltip yazısı
+                                                const dateObj = new Date(datum.x);
+                                                const day = String(dateObj.getDate()).padStart(2, '0');
+                                                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                                const hour = String(dateObj.getHours()).padStart(2, '0');
+                                                const minute = String(dateObj.getMinutes()).padStart(2, '0');
+                                                return `Tarih: ${day}/${month} ${hour}:${minute}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
+                                            }}
+                                            labelComponent={
+                                                <VictoryTooltip
+                                                    renderInPortal={false} // Uyarıyı önlemek için portal kullanımını devre dışı bıraktık
+                                                    flyoutWidth={140}
+                                                    flyoutHeight={80}
+                                                    style={{ fontSize: 10 }}
+                                                />
+                                            }
+                                            style={{
+                                                data: {
+                                                    fill: ({ datum }) => getColorForStatus(datum.status),
+                                                },
+                                            }}
+                                        />
+                                    </VictoryChart>
+                                </View>
+                            </ScrollView>
+                        </Card.Content>
+                    </Card>
+                );
+            })}
         </ScrollView>
     );
 };
