@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from "react-native";
-import { ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, TouchableOpacity, Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { Text, ActivityIndicator } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from "../../context/AuthContext";
@@ -10,7 +10,6 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 const screenWidth = Dimensions.get('window').width;
 
-// Yardımcı fonksiyon: Kullanıcının tahlil sayısını anlık dinle
 const subscribeToUserTestCount = (userTcNo, callback) => {
     const testQuery = query(collection(db, "testResults"), where("patientTc", "==", userTcNo));
     const unsubscribe = onSnapshot(testQuery, (snapshot) => {
@@ -69,7 +68,7 @@ const UserHomeScreen = ({ navigation }) => {
     const renderSideMenu = () => (
         <Animated.View style={[styles.sideMenuAnimatedContainer, { transform: [{ translateX }] }]}>
             <LinearGradient
-                colors={['#00695C', '#004D40']} // Daha koyu yeşil degrade
+                colors={['#00695C', '#004D40']}
                 style={styles.sideMenuContainer}
             >
                 <View>
@@ -84,6 +83,11 @@ const UserHomeScreen = ({ navigation }) => {
                         <Icon name="account" size={24} style={styles.menuIcon} color="#fff" />
                         <Text style={styles.menuItemText}>Profil</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate("ChangePassword")}>
+                        <Icon name="lock" size={24} style={styles.menuIcon} color="#fff" />
+                        <Text style={styles.menuItemText}>Şifre Değiştir</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.logoutContainer}>
@@ -94,47 +98,62 @@ const UserHomeScreen = ({ navigation }) => {
     );
 
     return (
-        <View style={styles.mainContainer}>
-            {/* Header */}
-            <LinearGradient
-                colors={['#42A5F5', '#4DB6AC', '#81C784']} // Mavi-yeşil degrade
-                style={styles.headerContainer}
-            >
-                <View style={styles.headerRow}>
-                    <TouchableOpacity onPress={toggleMenu} style={styles.headerButton}>
-                        <Icon name="menu" size={28} color="#fff" />
-                    </TouchableOpacity>
-                </View>
-                <Text style={styles.greeting}>Hoş Geldiniz, {user?.name || "Kullanıcı"}!</Text>
-                <Text style={styles.headerSubtitle}>Bugünün Tahlil Detayları</Text>
-            </LinearGradient>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.mainContainer}>
+                    <LinearGradient
+                        colors={['#42A5F5', '#4DB6AC', '#81C784']}
+                        style={styles.headerContainer}
+                    >
+                        <View style={styles.headerRow}>
+                            <TouchableOpacity onPress={toggleMenu} style={styles.headerButton}>
+                                <Icon name="menu" size={28} color="#fff" />
+                            </TouchableOpacity>
 
-            {menuOpen && (
-                <TouchableOpacity style={styles.overlay} onPress={closeMenu} activeOpacity={1} />
-            )}
-            {renderSideMenu()}
-
-            <View style={styles.contentContainer}>
-                {loading ? (
-                    <ActivityIndicator size="large" color="#3f51b5" />
-                ) : (
-                    <>
-                        <Text style={styles.infoText}>
-                            Şu ana kadar verdiğiniz tahlil sayısı:
-                        </Text>
-                        <View style={styles.statItem}>
-                            <Icon name="test-tube" size={48} color="#42A5F5" style={styles.statIcon} />
-                            <Text style={styles.statValue}>{testCount}</Text>
-                            <Text style={styles.statLabel}>Tahlil</Text>
                         </View>
-                    </>
-                )}
-            </View>
-        </View>
+                        <Text style={styles.greeting}>Hoş Geldiniz, {user?.name || "Kullanıcı"}!</Text>
+
+                    </LinearGradient>
+
+                    {menuOpen && (
+                        <TouchableOpacity style={styles.overlay} onPress={closeMenu} activeOpacity={1} />
+                    )}
+                    {renderSideMenu()}
+
+                    <View style={styles.contentContainer}>
+                        {loading ? (
+                            <ActivityIndicator size="large" color="#3f51b5" />
+                        ) : (
+                            <>
+                                <Text style={styles.infoText}>
+                                    Şu ana kadar verdiğiniz tahlil sayısı:
+                                </Text>
+                                <View style={styles.statItem}>
+                                    <Icon name="test-tube" size={48} color="#42A5F5" style={styles.statIcon} />
+                                    <Text style={styles.statValue}>{testCount}</Text>
+                                    <Text style={styles.statLabel}>Tahlil</Text>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FAFAFA',
+    },
+    scrollContainer: {
+        flexGrow: 1,
+    },
     mainContainer: {
         flex: 1,
         backgroundColor: '#FAFAFA',
@@ -150,8 +169,9 @@ const styles = StyleSheet.create({
     },
     headerRow: {
         flexDirection: "row",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         width: '100%',
+        alignItems: 'center',
     },
     headerButton: {
         padding: 5,
