@@ -5,22 +5,17 @@ import { AuthContext } from "../context/AuthContext";
 import AuthNavigator from "./AuthNavigator";
 import AdminNavigator from "./AdminNavigator";
 import UserNavigator from "./UserNavigator";
-import { View, ActivityIndicator, Text } from "react-native";
+import SplashScreen from "../screens/SplashScreen";
 
 const AppNavigator = () => {
     const { user, loading } = useContext(AuthContext);
 
-    // Uygulama ilk açıldığında loading true ise => Splash veya basit loader
+    // Uygulama ilk açıldığında loading true ise => Splash ekranı göster
     if (loading) {
-        return (
-            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                <ActivityIndicator size="large" color="#000" />
-                <Text>Yükleniyor...</Text>
-            </View>
-        );
+        return <SplashScreen />;
     }
 
-    // Eger user yoksa => AuthNavigator
+    // Eğer user yoksa => AuthNavigator
     if (!user) {
         return (
             <NavigationContainer>
@@ -29,7 +24,7 @@ const AppNavigator = () => {
         );
     }
 
-    // user var => rol tespiti
+    // Kullanıcı var => rol tespiti yap ve doğru navigasyonu göster
     const userRole = user.role; // Firestore'dan user doc içinde "role" geliyordu
     // role = "admin" ya da "patient"
 
