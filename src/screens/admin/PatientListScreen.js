@@ -1,6 +1,6 @@
 // src/screens/admin/PatientListScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert } from 'react-native';
+import { View, StyleSheet, FlatList, Alert, Dimensions } from 'react-native';
 import { collection, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import {
@@ -15,6 +15,9 @@ import {
     Button,
 } from 'react-native-paper';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
+
+const screenWidth = Dimensions.get('window').width;
+const widthPerDataPoint = 50; // Her veri noktası için ayrılacak genişlik (px)
 
 const PatientListScreen = ({ navigation }) => {
     const [patients, setPatients] = useState([]);

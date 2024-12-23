@@ -1,6 +1,4 @@
 // src/screens/admin/AddPatientScreen.js
-// TODO: fix the code below hasta eklendigi zaman otomatik giris yapmaya calisiyor !!
-
 import React, { useState } from 'react';
 import {
     View,
@@ -12,7 +10,7 @@ import {
 } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { db, auth } from '../../../firebaseConfig';
+import { db, secondaryAuth } from '../../../firebaseConfig'; // Dikkat: secondaryAuth
 import {
     doc,
     setDoc,
@@ -22,8 +20,8 @@ import {
     getDocs,
     serverTimestamp,
 } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const AddPatientScreen = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -41,7 +39,6 @@ const AddPatientScreen = ({ navigation }) => {
         }
     };
 
-    // Email ve TC kontrolü için Firestore sorguları
     const checkExistingEmailOrTC = async (emailValue, tcNoValue) => {
         const usersRef = collection(db, 'users');
         const emailQuery = query(usersRef, where('email', '==', emailValue));
@@ -56,34 +53,29 @@ const AddPatientScreen = ({ navigation }) => {
         };
     };
 
-    // Basit email format kontrolü (arkadaşınız da kullanıyor olabilir)
     const validateEmail = (emailString) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(emailString);
     };
 
     const handleAddPatient = async () => {
-        // Form boşluk kontrolü
         if (!name || !surname || !email || !password || !tcNo) {
             Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');
             return;
         }
 
-        // Email format kontrolü
         if (!validateEmail(email)) {
             Alert.alert('Hata', 'Geçerli bir email adresi giriniz.');
             return;
         }
 
-        // Şifre uzunluk kontrolü (6 veya 8 karakter gibi)
         if (password.length < 6) {
             Alert.alert('Hata', 'Şifre en az 6 karakter olmalıdır.');
             return;
         }
 
-        // TC no 11 hane kontrolü
         if (tcNo.length !== 11 || isNaN(tcNo)) {
-            Alert.alert('Hata', 'Geçerli bir TC Kimlik Numarası giriniz (11 haneli).');
+            Alert.alert('Hata', 'TC Kimlik Numarası 11 haneli olmalıdır.');
             return;
         }
 
@@ -99,22 +91,24 @@ const AddPatientScreen = ({ navigation }) => {
                 return;
             }
 
-            // Hasta olarak yeni kullanıcı oluştur
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            // 1) Secondary Auth ile yeni kullanıcı oluştur => otomatik login olmaz
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
             const newUser = userCredential.user;
 
-            // Firestore’a yazalım
+            // 2) Firestore'a ekle
             await setDoc(doc(db, 'users', newUser.uid), {
                 name,
                 surname,
                 email,
                 tcNo,
-                birthDate: birthDate.toISOString().split('T')[0], // YYYY-MM-DD format
+                birthDate: birthDate.toISOString().split('T')[0],
+                ageInMonths: calculateAgeInMonths(birthDate),
                 role: 'patient',
                 createdAt: serverTimestamp(),
             });
 
-            Alert.alert("Başarılı", "Hasta başarıyla eklendi.");
+            Alert.alert("Başarılı", "Yeni hasta başarıyla eklendi.");
+            // 3) Hasta listesine geri dön
             navigation.goBack();
         } catch (error) {
             console.log('AddPatient Error:', error);
