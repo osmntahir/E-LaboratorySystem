@@ -1,6 +1,6 @@
 // src/screens/RegisterScreen.js
 import React, { useState, useContext } from 'react';
-import { View, Alert, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { View, Alert, StyleSheet, Platform, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Text, TextInput, Button, Title, Card, Subheading } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { register } from '../../services/authService';
@@ -84,6 +84,8 @@ const RegisterScreen = ({ navigation }) => {
             });
 
             setUser({ ...user, role: 'patient' });
+            Alert.alert('Başarılı', 'Kayıt başarılı oldu.');
+            navigation.navigate('Login');
         } catch (error) {
             console.log('Register Error:', error);
             Alert.alert('Hata', 'Kayıt sırasında bir sorun oluştu. Lütfen tekrar deneyin.');
@@ -98,98 +100,102 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Title style={styles.title}>E-Lab</Title>
-                <Subheading style={styles.subtitle}>Yeni Hesap Oluşturun</Subheading>
-            </View>
-            <Card style={styles.card}>
-                <Card.Content>
-                    <Text style={styles.formTitle}>Kayıt Ol</Text>
-                    <TextInput
-                        mode="outlined"
-                        label="Ad"
-                        value={name}
-                        onChangeText={setName}
-                        style={styles.input}
-                    />
-                    <TextInput
-                        mode="outlined"
-                        label="Soyad"
-                        value={surname}
-                        onChangeText={setSurname}
-                        style={styles.input}
-                    />
-
-                    <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-                        <Text style={styles.dateText}>Doğum Tarihi Seç: {birthDate.toISOString().split('T')[0]}</Text>
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={birthDate}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                            onChange={handleDateChange}
+        <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: '#f2f6ff' }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.headerContainer}>
+                    <Title style={styles.title}>E-Lab</Title>
+                    <Subheading style={styles.subtitle}>Yeni Hesap Oluşturun</Subheading>
+                </View>
+                <Card style={styles.card}>
+                    <Card.Content>
+                        <Text style={styles.formTitle}>Kayıt Ol</Text>
+                        <TextInput
+                            mode="outlined"
+                            label="Ad"
+                            value={name}
+                            onChangeText={setName}
+                            style={styles.input}
                         />
-                    )}
+                        <TextInput
+                            mode="outlined"
+                            label="Soyad"
+                            value={surname}
+                            onChangeText={setSurname}
+                            style={styles.input}
+                        />
 
-                    <TextInput
-                        mode="outlined"
-                        label="TC Kimlik No"
-                        value={tcNo}
-                        onChangeText={setTcNo}
-                        keyboardType="numeric"
-                        style={styles.input}
-                        maxLength={11}
-                    />
-                    <TextInput
-                        mode="outlined"
-                        label="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        style={styles.input}
-                    />
-                    <TextInput
-                        mode="outlined"
-                        label="Şifre"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        style={styles.input}
-                    />
-                    <TextInput
-                        mode="outlined"
-                        label="Şifreyi Onayla"
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                        secureTextEntry
-                        style={styles.input}
-                    />
+                        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+                            <Text style={styles.dateText}>Doğum Tarihi Seç: {birthDate.toISOString().split('T')[0]}</Text>
+                        </TouchableOpacity>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={birthDate}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                                onChange={handleDateChange}
+                            />
+                        )}
 
-                    <Button mode="contained" onPress={handleRegister} style={styles.button}>
-                        Kayıt Ol
-                    </Button>
-                    <Button onPress={() => navigation.navigate('Login')} style={styles.linkButton}>
-                        Zaten hesabınız var mı? Giriş Yapın
-                    </Button>
-                </Card.Content>
-            </Card>
-        </View>
+                        <TextInput
+                            mode="outlined"
+                            label="TC Kimlik No"
+                            value={tcNo}
+                            onChangeText={setTcNo}
+                            keyboardType="numeric"
+                            style={styles.input}
+                            maxLength={11}
+                        />
+                        <TextInput
+                            mode="outlined"
+                            label="Email"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            style={styles.input}
+                        />
+                        <TextInput
+                            mode="outlined"
+                            label="Şifre"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            style={styles.input}
+                        />
+                        <TextInput
+                            mode="outlined"
+                            label="Şifreyi Onayla"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry
+                            style={styles.input}
+                        />
+
+                        <Button mode="contained" onPress={handleRegister} style={styles.button}>
+                            Kayıt Ol
+                        </Button>
+                        <Button onPress={() => navigation.navigate('Login')} style={styles.linkButton}>
+                            Zaten hesabınız var mı? Giriş Yapın
+                        </Button>
+                    </Card.Content>
+                </Card>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#f2f6ff',
         padding: 20,
+        paddingBottom: 40,
     },
     headerContainer: {
-        paddingTop: 60,
-        paddingBottom: 30,
         alignItems: 'center',
+        marginBottom: 20,
     },
     title: {
         fontSize: 32,
