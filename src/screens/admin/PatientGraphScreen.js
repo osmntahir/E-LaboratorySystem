@@ -4,7 +4,14 @@ import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Card, Text, ActivityIndicator, IconButton, Divider } from 'react-native-paper';
-import { VictoryChart, VictoryScatter, VictoryAxis, VictoryTooltip, VictoryContainer } from 'victory-native';
+import {
+    VictoryChart,
+    VictoryScatter,
+    VictoryAxis,
+    VictoryTooltip,
+    VictoryContainer,
+    VictoryLine
+} from 'victory-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
@@ -48,8 +55,6 @@ const PatientGraphScreen = ({ route }) => {
         }, [])
     );
 
-    // useEffect kaldırıldı: Otomatik olarak ScrollView'u sona kaydıran kısım silindi.
-
     const fetchTestResults = async () => {
         if (!patient || !patient.tcNo) return;
         setLoading(true);
@@ -73,9 +78,11 @@ const PatientGraphScreen = ({ route }) => {
                     const { testName, testValue, guideEvaluations } = testItem;
                     const majority = getMajorityStatus(guideEvaluations);
                     if (!tempGrouped[testName]) tempGrouped[testName] = [];
+                    // Y değerini 2 basamağa yuvarlıyoruz
+                    const yVal = parseFloat(testValue.toFixed(2)) || 0;
                     tempGrouped[testName].push({
                         x: testDate,
-                        y: parseFloat(testValue.toFixed(2)) || 0, // Y değeri 2 basamağa yuvarlanmış
+                        y: yVal,
                         status: majority,
                     });
                 });
@@ -113,7 +120,7 @@ const PatientGraphScreen = ({ route }) => {
         <ScrollView
             style={styles.container}
             contentContainerStyle={{ paddingBottom: 20 }}
-            ref={scrollViewRef} // ScrollView'a referans ata
+            ref={scrollViewRef}
             horizontal={false}
         >
             <Text style={styles.title}>Hasta Grafik Ekranı</Text>
@@ -130,7 +137,7 @@ const PatientGraphScreen = ({ route }) => {
                 const needsScroll = dataArray.length > 5;
 
                 // Calculate chart width: if needsScroll, chartWidth increases, else screenWidth
-                const chartWidth = needsScroll ? dataArray.length * widthPerDataPoint : screenWidth - 40; // 40 for padding/margin
+                const chartWidth = needsScroll ? dataArray.length * widthPerDataPoint : screenWidth - 40;
 
                 return (
                     <Card style={styles.card} key={testName}>
@@ -163,12 +170,11 @@ const PatientGraphScreen = ({ route }) => {
                                             domainPadding={{ x: 50, y: 20 }}
                                             containerComponent={<VictoryContainer />}
                                         >
-                                            {/* X Eksenine Tarih + Saat */}
                                             <VictoryAxis
                                                 tickFormat={(t) => {
                                                     // t formatı "YYYY-MM-DD HH:mm"
                                                     const d = new Date(t);
-                                                    if (isNaN(d.getTime())) return t; // Geçersiz tarihse orijinali dön
+                                                    if (isNaN(d.getTime())) return t;
                                                     const day = String(d.getDate()).padStart(2, '0');
                                                     const month = String(d.getMonth() + 1).padStart(2, '0');
                                                     const hour = String(d.getHours()).padStart(2, '0');
@@ -179,11 +185,10 @@ const PatientGraphScreen = ({ route }) => {
                                                     tickLabels: {
                                                         fontSize: 10,
                                                         padding: 5,
-                                                        dy: 10, // x ekseni etiketlerini biraz aşağı kaydır
+                                                        dy: 10,
                                                     },
                                                 }}
                                             />
-                                            {/* Y Eksenine 2 basamak kısaltma */}
                                             <VictoryAxis
                                                 dependentAxis
                                                 tickFormat={(t) => t.toFixed(2)}
@@ -192,8 +197,24 @@ const PatientGraphScreen = ({ route }) => {
                                                 }}
                                             />
 
+                                            {/* VictoryLine (smooth changes) */}
+                                            <VictoryLine
+                                                interpolation="monotoneX"
+                                                style={{
+                                                    data: {
+                                                        stroke: '#3f51b5',
+                                                        strokeWidth: 2,
+                                                    },
+                                                }}
+                                                data={dataArray.map((d) => ({
+                                                    x: d.x,
+                                                    y: d.y,
+                                                }))}
+                                                x="x"
+                                                y="y"
+                                            />
+
                                             <VictoryScatter
-                                                // Veriyi 2 basamağa indiriyoruz
                                                 data={dataArray.map((d) => ({
                                                     ...d,
                                                     y: parseFloat(d.y.toFixed(2)),
@@ -202,7 +223,6 @@ const PatientGraphScreen = ({ route }) => {
                                                 y="y"
                                                 size={5}
                                                 labels={({ datum }) => {
-                                                    // Tooltip yazısı
                                                     const dateObj = new Date(datum.x);
                                                     const day = String(dateObj.getDate()).padStart(2, '0');
                                                     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -212,7 +232,7 @@ const PatientGraphScreen = ({ route }) => {
                                                 }}
                                                 labelComponent={
                                                     <VictoryTooltip
-                                                        renderInPortal={false} // Uyarıyı önlemek için portal kullanımını devre dışı bıraktık
+                                                        renderInPortal={false}
                                                         flyoutWidth={140}
                                                         flyoutHeight={80}
                                                         style={{ fontSize: 10 }}
@@ -235,12 +255,10 @@ const PatientGraphScreen = ({ route }) => {
                                         domainPadding={{ x: 50, y: 20 }}
                                         containerComponent={<VictoryContainer />}
                                     >
-                                        {/* X Eksenine Tarih + Saat */}
                                         <VictoryAxis
                                             tickFormat={(t) => {
-                                                // t formatı "YYYY-MM-DD HH:mm"
                                                 const d = new Date(t);
-                                                if (isNaN(d.getTime())) return t; // Geçersiz tarihse orijinali dön
+                                                if (isNaN(d.getTime())) return t;
                                                 const day = String(d.getDate()).padStart(2, '0');
                                                 const month = String(d.getMonth() + 1).padStart(2, '0');
                                                 const hour = String(d.getHours()).padStart(2, '0');
@@ -251,11 +269,10 @@ const PatientGraphScreen = ({ route }) => {
                                                 tickLabels: {
                                                     fontSize: 10,
                                                     padding: 5,
-                                                    dy: 10, // x ekseni etiketlerini biraz aşağı kaydır
+                                                    dy: 10,
                                                 },
                                             }}
                                         />
-                                        {/* Y Eksenine 2 basamak kısaltma */}
                                         <VictoryAxis
                                             dependentAxis
                                             tickFormat={(t) => t.toFixed(2)}
@@ -264,8 +281,24 @@ const PatientGraphScreen = ({ route }) => {
                                             }}
                                         />
 
+                                        {/* VictoryLine */}
+                                        <VictoryLine
+                                            interpolation="monotoneX"
+                                            style={{
+                                                data: {
+                                                    stroke: '#3f51b5',
+                                                    strokeWidth: 2,
+                                                },
+                                            }}
+                                            data={dataArray.map((d) => ({
+                                                x: d.x,
+                                                y: d.y,
+                                            }))}
+                                            x="x"
+                                            y="y"
+                                        />
+
                                         <VictoryScatter
-                                            // Veriyi 2 basamağa indiriyoruz
                                             data={dataArray.map((d) => ({
                                                 ...d,
                                                 y: parseFloat(d.y.toFixed(2)),
@@ -274,7 +307,6 @@ const PatientGraphScreen = ({ route }) => {
                                             y="y"
                                             size={5}
                                             labels={({ datum }) => {
-                                                // Tooltip yazısı
                                                 const dateObj = new Date(datum.x);
                                                 const day = String(dateObj.getDate()).padStart(2, '0');
                                                 const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -284,7 +316,7 @@ const PatientGraphScreen = ({ route }) => {
                                             }}
                                             labelComponent={
                                                 <VictoryTooltip
-                                                    renderInPortal={false} // Uyarıyı önlemek için portal kullanımını devre dışı bıraktık
+                                                    renderInPortal={false}
                                                     flyoutWidth={140}
                                                     flyoutHeight={80}
                                                     style={{ fontSize: 10 }}
@@ -336,7 +368,7 @@ const styles = StyleSheet.create({
     valueText: {
         fontSize: 14,
         color: '#333',
-        flex: 1, // To ensure text doesn't overflow
+        flex: 1,
     },
     statusText: {
         fontSize: 14,
@@ -364,6 +396,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     graphScroll: {
-        // Optional: Add any additional styling if needed
+        // Optionally, any styling for the horizontal ScrollView
     },
 });
