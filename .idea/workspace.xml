@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="" />
+    <list default="true" id="19806c35-c928-4dfa-a61c-79adc91aa7ed" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/screens/admin/AdminHomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/admin/AdminHomeScreen.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +108,7 @@
       <workItem from="1734791238166" duration="3225000" />
       <workItem from="1734862324395" duration="8294000" />
       <workItem from="1734949475937" duration="7723000" />
-      <workItem from="1735047029550" duration="2619000" />
+      <workItem from="1735047029550" duration="3029000" />
     </task>
     <servers />
   </component>

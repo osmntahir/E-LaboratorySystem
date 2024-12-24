@@ -4,19 +4,27 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Card, Text, ActivityIndicator, Divider } from 'react-native-paper';
-import { VictoryChart, VictoryScatter, VictoryAxis, VictoryTooltip, VictoryContainer } from 'victory-native';
+import {
+    VictoryChart,
+    VictoryScatter,
+    VictoryAxis,
+    VictoryTooltip,
+    VictoryContainer,
+    VictoryLine
+} from 'victory-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
 
-/** Renk tablosu: Normal = Yeşil, Yüksek = Kırmızı, Düşük = Turuncu, N/A = Gri */
+/** Durum-renk eşleşmesi */
 const STATUS_COLORS = {
     Normal: 'green',
     Yüksek: 'red',
     Düşük: 'orange',
-    N_A: 'gray',
+    'N/A': 'gray',
 };
 
-/** Majority rule: guideEvaluations içindeki status değerlerini sayar,
+/**
+ * Majority rule: guideEvaluations içindeki status değerlerini sayar,
  * en çok tekrar eden status'ü döndürür.
  */
 const getMajorityStatus = (guideEvaluations) => {
@@ -41,26 +49,12 @@ const getMajorityStatus = (guideEvaluations) => {
 };
 
 /**
- * Hasta hangi tetkik türlerinden tahlil vermişse,
- * testName bazında gruplayacak ve her testName için ayrı Card + Grafik gösterecek.
+ * Kullanıcı tahlillerini, testName bazında gruplayıp Card + VictoryLine + VictoryScatter şeklinde gösterir.
  */
 const UserGraphScreen = () => {
     const { user } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [groupedData, setGroupedData] = useState({});
-    /**
-     * groupedData örnek:
-     *  {
-     *    "Glukoz": [
-     *      { x: "2024-05-10 10:30", y: 120, status: "Normal" },
-     *      { x: "2024-06-02 09:15", y: 150, status: "Yüksek" },
-     *    ],
-     *    "Üre": [
-     *      { x: "...", y: ..., status: ... },
-     *    ],
-     *    ...
-     *  }
-     */
 
     useFocusEffect(
         React.useCallback(() => {
@@ -76,14 +70,15 @@ const UserGraphScreen = () => {
         setLoading(true);
 
         try {
+            // Firestore: Bu kullanıcıya ait tahlil sonuçlarını çek
             const q = query(collection(db, 'testResults'), where('patientTc', '==', user.tcNo));
             const querySnapshot = await getDocs(q);
 
-            let tempGrouped = {}; // testName bazında gruplanacak
+            let tempGrouped = {}; // testName bazında verileri tutacağımız obje
 
             querySnapshot.forEach((docSnap) => {
                 const result = docSnap.data();
-                const testDate = result?.testDate || ''; // "YYYY-MM-DD HH:mm"
+                const testDate = result?.testDate || ''; // Tarih formatı: "YYYY-MM-DD HH:mm"
 
                 if (Array.isArray(result.tests)) {
                     result.tests.forEach((testItem) => {
@@ -102,7 +97,7 @@ const UserGraphScreen = () => {
                 }
             });
 
-            // Her testName içindeki verileri tarih bazında sıralayalım
+            // Tarih bazında sıralama
             Object.keys(tempGrouped).forEach((testName) => {
                 tempGrouped[testName].sort((a, b) => {
                     const dateA = new Date(a.x);
@@ -131,7 +126,7 @@ const UserGraphScreen = () => {
         );
     }
 
-    // Eğer hiç doküman yoksa
+    // Eğer hiç sonuç yoksa
     if (Object.keys(groupedData).length === 0) {
         return (
             <View style={styles.noDataContainer}>
@@ -169,13 +164,13 @@ const UserGraphScreen = () => {
                                 width={350}
                                 height={250}
                                 domainPadding={{ x: 40, y: 20 }}
-                                containerComponent={<VictoryContainer />} // Uyarıyı gidermek için VictoryContainer kullanıyoruz
+                                containerComponent={<VictoryContainer />}
                             >
                                 <VictoryAxis
                                     tickFormat={(t) => {
-                                        // t = "YYYY-MM-DD HH:mm"
+                                        // t: "YYYY-MM-DD HH:mm"
                                         const d = new Date(t);
-                                        if (isNaN(d)) return t;
+                                        if (isNaN(d)) return t; // Geçersiz tarih ise orijinal string
                                         const month = String(d.getMonth() + 1).padStart(2, '0');
                                         const day = String(d.getDate()).padStart(2, '0');
                                         return `${month}/${day}`;
@@ -191,8 +186,30 @@ const UserGraphScreen = () => {
                                         tickLabels: { fontSize: 10 },
                                     }}
                                 />
+
+                                {/* VictoryLine - Parabolik/Lineer Trend */}
+                                <VictoryLine
+                                    interpolation="monotoneX"
+                                    style={{
+                                        data: {
+                                            stroke: '#3f51b5',
+                                            strokeWidth: 2,
+                                        },
+                                    }}
+                                    data={dataArray.map((d) => ({
+                                        x: d.x,
+                                        y: d.y,
+                                    }))}
+                                    x="x"
+                                    y="y"
+                                />
+
+                                {/* VictoryScatter - Noktalar */}
                                 <VictoryScatter
-                                    data={dataArray}
+                                    data={dataArray.map((d) => ({
+                                        ...d,
+                                        y: parseFloat(d.y.toFixed(2)), // 2 basamak
+                                    }))}
                                     x="x"
                                     y="y"
                                     size={5}
@@ -201,12 +218,20 @@ const UserGraphScreen = () => {
                                             fill: ({ datum }) => getColorForStatus(datum.status),
                                         },
                                     }}
-                                    labels={({ datum }) => `${datum.x}\nDeğer: ${datum.y}\n${datum.status}`}
+                                    labels={({ datum }) => {
+                                        // Tooltip içeriği
+                                        const dateObj = new Date(datum.x);
+                                        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                        const dd = String(dateObj.getDate()).padStart(2, '0');
+                                        const hh = String(dateObj.getHours()).padStart(2, '0');
+                                        const min = String(dateObj.getMinutes()).padStart(2, '0');
+                                        return `Tarih: ${mm}/${dd} ${hh}:${min}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
+                                    }}
                                     labelComponent={
                                         <VictoryTooltip
-                                            renderInPortal={false} // "renderInPortal" uyarısını önlemek için
+                                            renderInPortal={false}
                                             flyoutWidth={140}
-                                            flyoutHeight={70}
+                                            flyoutHeight={80}
                                             style={{ fontSize: 10 }}
                                         />
                                     }
