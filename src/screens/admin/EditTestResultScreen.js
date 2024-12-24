@@ -1,6 +1,6 @@
 // src/screens/admin/EditTestResultScreen.js
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, ScrollView,ActivityIndicator  } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 
@@ -8,7 +8,17 @@ import { calculateAgeInMonths } from '../../utils/ageCalculator';
 import { isAgeInRange } from '../../utils/ageRangeEvaluator';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, TextInput, Button, Card, IconButton, Subheading, Portal, Modal } from 'react-native-paper';
+import {
+    Text,
+    TextInput,
+    Button,
+    Card,
+    IconButton,
+    Subheading,
+    ActivityIndicator,
+    Portal,
+    Modal,
+} from 'react-native-paper';
 import { updateTestResult } from '../../services/testResultService';
 
 const EditTestResultScreen = ({ route, navigation }) => {
@@ -18,11 +28,8 @@ const EditTestResultScreen = ({ route, navigation }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
-    const [tests, setTests] = useState([]); // All test types (IgA, IgM, ...)
-    const [allTestTypes, setAllTestTypes] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    // Loading indicator state
+    const [tests, setTests] = useState([]); // Tüm test türleri (IgA, IgG vs.)
+    const [allTestTypes, setAllTestTypes] = useState([]); // Rehberlerden toplanan testName'ler
     const [isLoadingModalVisible, setIsLoadingModalVisible] = useState(false);
 
     useEffect(() => {
@@ -37,7 +44,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
                 const guideData = guideDoc.data();
                 if (Array.isArray(guideData.testTypes)) {
                     guideData.testTypes.forEach((t) => {
-                        if (t.name) { // Ensure t has name
+                        if (t.name) {
                             testNameSet.add(t.name);
                         }
                     });
@@ -49,7 +56,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
         }
     };
 
-    // Parse and set the existing test date
+    // Parse existing date
     useEffect(() => {
         if (testResult) {
             const parsedDate = parseDate(testResult.testDate);
@@ -57,16 +64,18 @@ const EditTestResultScreen = ({ route, navigation }) => {
         }
     }, [testResult]);
 
-    // Initialize test values based on all test types and existing test results
+    // Initialize test values
     useEffect(() => {
         if (allTestTypes.length > 0 && testResult) {
-            const initialTests = allTestTypes.map((testName) => {
-                const existing = testResult.tests.find((t) => t.testName === testName);
-                return {
-                    testName,
-                    testValue: existing ? existing.testValue.toString() : '',
-                };
+            const existingMap = {};
+            (testResult.tests || []).forEach((t) => {
+                existingMap[t.testName] = t.testValue.toString();
             });
+
+            const initialTests = allTestTypes.map((testName) => ({
+                testName,
+                testValue: existingMap[testName] || '',
+            }));
             setTests(initialTests);
         }
     }, [allTestTypes, testResult]);
@@ -74,9 +83,8 @@ const EditTestResultScreen = ({ route, navigation }) => {
     const parseDate = (dateStr) => {
         if (!dateStr || typeof dateStr !== 'string') {
             console.error('Invalid date string:', dateStr);
-            return new Date(0); // Return epoch start for invalid dates
+            return new Date(0);
         }
-
         const [datePart, timePart] = dateStr.split(' ');
         if (!datePart) {
             console.error('Invalid date format:', dateStr);
@@ -135,7 +143,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
     };
 
     const handleUpdate = async () => {
-        // Check if at least one test value is entered
         const hasValues = tests.some((t) => t.testValue.trim() !== '');
         if (!hasValues) {
             Alert.alert('Hata', 'En az bir tetkik değeri girmelisiniz.');
@@ -146,16 +153,15 @@ const EditTestResultScreen = ({ route, navigation }) => {
         try {
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
 
-            // Gather updated tests with evaluations
             const updatedTests = [];
             for (const t of tests) {
-                const tvTrim = t.testValue.trim();
-                if (tvTrim === '') {
-                    // Skip tests with empty values
+                const trimmedVal = t.testValue.trim();
+                if (trimmedVal === '') {
+                    // Skip empty tests
                     continue;
                 }
 
-                const val = parseFloat(tvTrim);
+                const val = parseFloat(trimmedVal);
                 if (isNaN(val)) {
                     Alert.alert('Hata', `${t.testName} için geçerli bir sayı giriniz.`);
                     setIsLoadingModalVisible(false);
@@ -182,7 +188,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
             Alert.alert('Başarılı', 'Tahlil sonucu güncellendi.');
             setIsLoadingModalVisible(false);
 
-            // Navigate back to PatientDetail screen
             navigation.navigate('PatientDetail', { patient });
         } catch (error) {
             console.error('Error updating test result:', error);
@@ -191,10 +196,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
         }
     };
 
-    /**
-     *  GUIDE SCHEMA IMPLEMENTATION:
-     *  guides -> guideData.testTypes -> test -> ageGroups -> referenceMin/referenceMax
-     */
     const evaluateTestValueAcrossGuides = async (testName, testValue, ageInMonths) => {
         const guideEvaluations = [];
         try {
@@ -202,23 +203,18 @@ const EditTestResultScreen = ({ route, navigation }) => {
 
             guidesSnapshot.forEach((guideDoc) => {
                 const guideData = guideDoc.data();
-                // Ensure guideData.testTypes exists and is an array
+                // testTypes array check
                 if (!Array.isArray(guideData.testTypes)) return;
 
-                // Find the test in guide's testTypes
                 const foundTest = guideData.testTypes.find((t) => t.name === testName);
                 if (!foundTest) return;
 
-                // Iterate through ageGroups
                 if (!Array.isArray(foundTest.ageGroups)) return;
 
                 foundTest.ageGroups.forEach((ageGroup) => {
-                    // ageGroup.ageRange => "0-1", "2-5", ...
                     if (isAgeInRange(ageInMonths, ageGroup.ageRange)) {
                         let adjustedValue = testValue;
-                        // Unit conversion if necessary
                         if (guideData.unit === 'mg/L') {
-                            // Convert from g/L to mg/L
                             adjustedValue = testValue * 1000;
                         }
 
@@ -233,8 +229,8 @@ const EditTestResultScreen = ({ route, navigation }) => {
                             guideName: guideData.name || 'N/A',
                             unit: guideData.unit || 'N/A',
                             type: guideData.type || 'N/A',
-                            minValue: minVal !== undefined ? minVal : 'N/A',
-                            maxValue: maxVal !== undefined ? maxVal : 'N/A',
+                            minValue: minVal,
+                            maxValue: maxVal,
                             status,
                         });
                     }
@@ -256,6 +252,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
                     </View>
                 </Modal>
             </Portal>
+
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Card style={styles.card}>
                     <Card.Title
@@ -301,7 +298,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
                             />
                         )}
 
-                        <Subheading style={styles.sectionTitle}>Test Değerleri (Opsiyonel)</Subheading>
+
                         {tests.map((t, index) => (
                             <View key={index} style={styles.testTypeContainer}>
                                 <Text style={styles.testName}>{t.testName}</Text>
@@ -321,7 +318,6 @@ const EditTestResultScreen = ({ route, navigation }) => {
                             mode="contained"
                             onPress={handleUpdate}
                             style={styles.saveButton}
-                            disabled={tests.every((test) => test.testValue.trim() === '')}
                         >
                             Güncelle
                         </Button>
@@ -332,6 +328,7 @@ const EditTestResultScreen = ({ route, navigation }) => {
     );
 };
 
+export default EditTestResultScreen;
 
 const styles = StyleSheet.create({
     container: {
@@ -397,5 +394,3 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 });
-
-export default EditTestResultScreen;

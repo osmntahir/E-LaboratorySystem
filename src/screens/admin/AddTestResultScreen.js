@@ -1,19 +1,37 @@
 // src/screens/admin/AddTestResultScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    ScrollView,
+    Platform,
+    Alert
+} from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
+
 import { addTestResult } from '../../services/testResultService';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
 import { isAgeInRange } from '../../utils/ageRangeEvaluator';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, TextInput, Button, Card, IconButton, Subheading, ActivityIndicator, Portal, Modal } from 'react-native-paper';
+import {
+    Text,
+    TextInput,
+    Button,
+    Card,
+    IconButton,
+    Subheading,
+    ActivityIndicator,
+    Portal,
+    Modal
+} from 'react-native-paper';
 
 const AddTestResultScreen = ({ route, navigation }) => {
     const { patient } = route.params;
-    const [testTypes, setTestTypes] = useState([]);
-    const [selectedTests, setSelectedTests] = useState([]);
-    const [testValues, setTestValues] = useState({});
+
+    const [testTypes, setTestTypes] = useState([]);   // Tüm test isimleri
+    const [testValues, setTestValues] = useState({}); // { testName: "değer(string)" }
 
     const [testDate, setTestDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -21,7 +39,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    // 1) Tüm kılavuzları al, içindeki testTypes'ları toplayıp testTypes'e at.
+    // 1) Tüm klavuzları al, içindeki testTypes'ları toplayıp `testTypes` state'ine at.
     useEffect(() => {
         const fetchTestTypes = async () => {
             try {
@@ -37,7 +55,6 @@ const AddTestResultScreen = ({ route, navigation }) => {
                         });
                     }
                 });
-
                 setTestTypes(Array.from(testNameSet));
             } catch (error) {
                 console.error('Error fetching test types: ', error);
@@ -46,26 +63,19 @@ const AddTestResultScreen = ({ route, navigation }) => {
         fetchTestTypes();
     }, []);
 
-    const toggleTestSelection = (testName) => {
-        if (selectedTests.includes(testName)) {
-            setSelectedTests(selectedTests.filter((name) => name !== testName));
-            const newTestValues = { ...testValues };
-            delete newTestValues[testName];
-            setTestValues(newTestValues);
-        } else {
-            setSelectedTests([...selectedTests, testName]);
-        }
-    };
-
     const handleValueChange = (testName, value) => {
-        setTestValues({ ...testValues, [testName]: value });
+        setTestValues((prev) => ({ ...prev, [testName]: value }));
     };
 
     const handleDateChange = (event, selectedDate) => {
         setShowDatePicker(false);
         if (selectedDate) {
             const currentDate = new Date(testDate);
-            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+            currentDate.setFullYear(
+                selectedDate.getFullYear(),
+                selectedDate.getMonth(),
+                selectedDate.getDate()
+            );
             setTestDate(currentDate);
         }
     };
@@ -89,10 +99,15 @@ const AddTestResultScreen = ({ route, navigation }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
-    // 2) "Kaydet" butonuna basıldığında
+    // Kaydet (2)
     const handleSave = async () => {
-        if (selectedTests.length === 0 || selectedTests.every((tn) => !testValues[tn] || testValues[tn].trim() === '')) {
-            Alert.alert('Uyarı', 'En az bir tahlil seçimi yapıp geçerli bir değer giriniz.');
+        // Filtrele: gerçekten değer girilen testleri al
+        const filledTests = Object.keys(testValues).filter(
+            (testName) => testValues[testName] && testValues[testName].trim() !== ''
+        );
+
+        if (filledTests.length === 0) {
+            Alert.alert('Uyarı', 'En az bir tahlil için geçerli bir değer giriniz.');
             return;
         }
 
@@ -100,10 +115,11 @@ const AddTestResultScreen = ({ route, navigation }) => {
             setIsLoading(true);
             const ageInMonths = calculateAgeInMonths(patient.birthDate);
 
-            // Her test için testValue al, sonra evaluateTestValueAcrossGuides ile rehber kontrolü yap.
+            // Her test için testValue al, sonra rehber kontrolü yap.
             const tests = [];
-            for (const testName of selectedTests) {
-                const testValue = parseFloat(testValues[testName]);
+            for (const testName of filledTests) {
+                const valueStr = testValues[testName];
+                const testValue = parseFloat(valueStr);
                 if (isNaN(testValue)) {
                     Alert.alert('Hata', `${testName} için geçerli bir sayı giriniz.`);
                     setIsLoading(false);
@@ -127,7 +143,6 @@ const AddTestResultScreen = ({ route, navigation }) => {
             };
 
             await addTestResult(testResult);
-
             Alert.alert('Başarılı', 'Test sonuçları başarıyla kaydedildi.');
             navigation.goBack();
         } catch (error) {
@@ -138,7 +153,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
         }
     };
 
-    // 3) Kılavuz Şemasına Göre Değer Kontrol Fonksiyonu
+    // (3) Rehber Tarama (Dinamik)
     const evaluateTestValueAcrossGuides = async (testName, testValue, ageInMonths) => {
         const guideEvaluations = [];
         try {
@@ -146,20 +161,22 @@ const AddTestResultScreen = ({ route, navigation }) => {
 
             guidesSnapshot.forEach((guideDoc) => {
                 const guideData = guideDoc.data();
+                console.log('evaluateTestValueAcrossGuides -> GuideDoc ID:', guideDoc.id, 'Data:', guideData);
+
                 // Her guide'da testTypes array var.
                 const foundTest = (guideData.testTypes || []).find((t) => t.name === testName);
-                if (!foundTest) return; // Bu guide'da ilgili test yoksa geç
+                if (!foundTest) {
+                    return;
+                }
 
-                // Her testin ageGroups dizisini gez
+
                 if (!Array.isArray(foundTest.ageGroups)) return;
 
                 foundTest.ageGroups.forEach((ageGroup) => {
-                    // ageGroup.ageRange => "0-1", "2-5", ...
                     if (isAgeInRange(ageInMonths, ageGroup.ageRange)) {
                         let adjustedValue = testValue;
-                        // unit kontrolü
+                        // Unit kontrolü
                         if (guideData.unit === 'mg/L') {
-                            // Giriş değeri g/L ise mg/L'ye çevirmek için 1000 ile çarp
                             adjustedValue *= 1000;
                         }
 
@@ -197,6 +214,7 @@ const AddTestResultScreen = ({ route, navigation }) => {
                     </View>
                 </Modal>
             </Portal>
+
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Card style={styles.card}>
                     <Card.Title
@@ -213,7 +231,9 @@ const AddTestResultScreen = ({ route, navigation }) => {
                                 Saat Seç
                             </Button>
                         </View>
-                        <Text style={styles.selectedDate}>Seçilen Tarih ve Saat: {formatDate(testDate)}</Text>
+                        <Text style={styles.selectedDate}>
+                            Seçilen Tarih ve Saat: {formatDate(testDate)}
+                        </Text>
 
                         {showDatePicker && (
                             <DateTimePicker
@@ -235,23 +255,16 @@ const AddTestResultScreen = ({ route, navigation }) => {
                         <Subheading style={styles.sectionTitle}>Testler</Subheading>
                         {testTypes.map((testName, index) => (
                             <View key={index} style={styles.testTypeContainer}>
-                                <TouchableOpacity onPress={() => toggleTestSelection(testName)}>
-                                    <Text style={styles.testName}>
-                                        {selectedTests.includes(testName) ? '☑ ' : '☐ '}
-                                        {testName}
-                                    </Text>
-                                </TouchableOpacity>
-                                {selectedTests.includes(testName) && (
-                                    <TextInput
-                                        mode="outlined"
-                                        label={`${testName} Değeri (g/L)`}
-                                        placeholder="Değer giriniz"
-                                        keyboardType="numeric"
-                                        value={testValues[testName] || ''}
-                                        onChangeText={(value) => handleValueChange(testName, value)}
-                                        style={styles.input}
-                                    />
-                                )}
+                                <Text style={styles.testName}>{testName}</Text>
+                                <TextInput
+                                    mode="outlined"
+                                    label={`${testName} Değeri (g/L)`}
+                                    placeholder="Değer giriniz"
+                                    keyboardType="numeric"
+                                    value={testValues[testName] || ''}
+                                    onChangeText={(value) => handleValueChange(testName, value)}
+                                    style={styles.input}
+                                />
                             </View>
                         ))}
 
@@ -259,10 +272,6 @@ const AddTestResultScreen = ({ route, navigation }) => {
                             mode="contained"
                             onPress={handleSave}
                             style={styles.saveButton}
-                            disabled={
-                                selectedTests.length === 0 ||
-                                selectedTests.every((testName) => !testValues[testName] || testValues[testName].trim() === '')
-                            }
                         >
                             Kaydet
                         </Button>
@@ -271,8 +280,9 @@ const AddTestResultScreen = ({ route, navigation }) => {
             </ScrollView>
         </View>
     );
-
 };
+
+export default AddTestResultScreen;
 
 const styles = StyleSheet.create({
     container: {
@@ -338,5 +348,3 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 });
-
-export default AddTestResultScreen;
