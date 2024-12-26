@@ -1,5 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    ActivityIndicator,
+} from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
@@ -21,99 +29,252 @@ const getStatusInfo = (status) => {
 const TestResultsScreen = () => {
     const { user } = useContext(AuthContext);
     const [testResults, setTestResults] = useState([]);
+    const [groupedResults, setGroupedResults] = useState({});
     const [filterText, setFilterText] = useState('');
-    const [filteredResults, setFilteredResults] = useState([]);
+    const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchTestResults = async () => {
-            if (!user || !user.uid) return;
+            if (!user || !user.uid) {
+                setLoading(false);
+                return;
+            }
 
-            const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
-            let patientTc = null;
-            userDoc.forEach((docSnap) => {
-                if (docSnap.exists()) {
-                    patientTc = docSnap.data().tcNo;
-                }
-            });
-
-            if (!patientTc) return;
-
-            const q = query(collection(db, 'testResults'), where('patientTc', '==', patientTc));
-            const querySnapshot = await getDocs(q);
-            const resultsData = querySnapshot.docs.map(doc => doc.data());
-
-            let allTests = [];
-            resultsData.forEach(result => {
-                result.tests.forEach(t => {
-                    allTests.push({
-                        testName: t.testName,
-                        testValue: t.testValue,
-                        testDate: result.testDate,
-                        guideEvaluations: t.guideEvaluations || [],
-                    });
+            try {
+                const userQuery = query(
+                    collection(db, 'users'),
+                    where('email', '==', user.email)
+                );
+                const userSnapshot = await getDocs(userQuery);
+                let patientTc = null;
+                userSnapshot.forEach((docSnap) => {
+                    if (docSnap.exists()) {
+                        patientTc = docSnap.data().tcNo;
+                    }
                 });
-            });
 
-            setTestResults(allTests);
-            setFilteredResults(allTests);
+                if (!patientTc) {
+                    setLoading(false);
+                    return;
+                }
+
+                const testResultsQuery = query(
+                    collection(db, 'testResults'),
+                    where('patientTc', '==', patientTc)
+                );
+                const testResultsSnapshot = await getDocs(testResultsQuery);
+                const resultsData = testResultsSnapshot.docs.map((doc) => doc.data());
+
+                let allEvaluations = [];
+                resultsData.forEach((result) => {
+                    const testDate = result.testDate;
+                    if (result.tests && Array.isArray(result.tests)) {
+                        result.tests.forEach((t) => {
+                            if (t.guideEvaluations && Array.isArray(t.guideEvaluations) && t.guideEvaluations.length > 0) {
+                                t.guideEvaluations.forEach((evaluation) => {
+                                    allEvaluations.push({
+                                        testDate: testDate || 'N/A',
+                                        testName: t.testName || 'N/A',
+                                        testValue: t.testValue || 'N/A',
+                                        guideName: evaluation.guideName || 'N/A',
+                                        minValue: evaluation.minValue || 'N/A',
+                                        maxValue: evaluation.maxValue || 'N/A',
+                                        status: evaluation.status || 'N/A',
+                                    });
+                                });
+                            } else {
+                                allEvaluations.push({
+                                    testDate: testDate || 'N/A',
+                                    testName: t.testName || 'N/A',
+                                    testValue: t.testValue || 'N/A',
+                                    guideName: 'N/A',
+                                    minValue: 'N/A',
+                                    maxValue: 'N/A',
+                                    status: 'N/A',
+                                });
+                            }
+                        });
+                    }
+                });
+
+                setTestResults(allEvaluations);
+            } catch (error) {
+                console.error('Error fetching test results:', error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchTestResults();
     }, [user]);
 
     useEffect(() => {
-        if (filterText.trim() === '') {
-            setFilteredResults(testResults);
-        } else {
-            const filtered = testResults.filter(item =>
-                item.testName.toLowerCase().includes(filterText.toLowerCase())
-            );
-            setFilteredResults(filtered);
-        }
-    }, [filterText, testResults]);
+        const groupByDateAndTest = (data) => {
+            const grouped = data.reduce((acc, item) => {
+                const date = item.testDate;
+                const test = item.testName;
+                if (!acc[date]) {
+                    acc[date] = {};
+                }
+                if (!acc[date][test]) {
+                    acc[date][test] = {
+                        testValue: item.testValue,
+                        evaluations: [],
+                    };
+                }
+                acc[date][test].evaluations.push({
+                    guideName: item.guideName,
+                    minValue: item.minValue,
+                    maxValue: item.maxValue,
+                    status: item.status,
+                });
+                return acc;
+            }, {});
+            return grouped;
+        };
 
-    const renderItem = ({ item }) => {
+        const grouped = groupByDateAndTest(testResults);
+        setGroupedResults(grouped);
+    }, [testResults]);
+
+    const filteredGroupedResults = useMemo(() => {
+        if (filterText.trim() === '') {
+            // No filter, return sorted groupedResults
+            const sortedDates = Object.keys(groupedResults).sort((a, b) => {
+                const dateA = new Date(a);
+                const dateB = new Date(b);
+                return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+            const sortedGrouped = {};
+            sortedDates.forEach((date) => {
+                sortedGrouped[date] = groupedResults[date];
+            });
+            return sortedGrouped;
+        }
+
+        const lowerFilter = filterText.toLowerCase();
+        const grouped = {};
+
+        Object.keys(groupedResults).forEach((date) => {
+            const filteredTests = Object.keys(groupedResults[date]).filter((test) => {
+                const testNameMatch = test.toLowerCase().includes(lowerFilter);
+                const dateMatch = date.toLowerCase().includes(lowerFilter);
+                const evaluationsMatch = groupedResults[date][test].evaluations.some(evaluation =>
+                    evaluation.guideName.toLowerCase().includes(lowerFilter)
+                );
+                return testNameMatch || dateMatch || evaluationsMatch;
+            });
+
+            if (filteredTests.length > 0) {
+                grouped[date] = {};
+                filteredTests.forEach((test) => {
+                    grouped[date][test] = groupedResults[date][test];
+                });
+            }
+        });
+
+        // Sort dates
+        const sortedDates = Object.keys(grouped).sort((a, b) => {
+            const dateA = new Date(a);
+            const dateB = new Date(b);
+            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+
+        const sortedGrouped = {};
+        sortedDates.forEach((date) => {
+            sortedGrouped[date] = grouped[date];
+        });
+
+        return sortedGrouped;
+    }, [filterText, groupedResults, sortOrder]);
+
+    const toggleSortOrder = () => {
+        setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    };
+
+    const renderEvaluationItem = (evaluation, index) => {
+        const { icon, color } = getStatusInfo(evaluation.status);
         return (
-            <Card style={styles.resultItem}>
+            <View key={index} style={styles.evaluationItem}>
+                <Text style={[styles.evaluationStatus, { color: color }]}>
+                    Durum: {evaluation.status} {icon}
+                </Text>
+                <Text style={styles.guideName}>Kılavuz: {evaluation.guideName}</Text>
+                <Text style={styles.reference}>
+                    Referans: {evaluation.minValue} - {evaluation.maxValue}
+                </Text>
+                <Divider style={{ marginVertical: 5 }} />
+            </View>
+        );
+    };
+
+    const renderTestItem = (test, testName) => {
+        return (
+            <View key={testName} style={styles.testItem}>
+                <Text style={styles.testName}>{testName}</Text>
+                <Text style={styles.testValue}>Değer: {test.testValue}</Text>
+                {test.evaluations && Array.isArray(test.evaluations) && test.evaluations.length > 0 ? (
+                    test.evaluations.map((evaluation, idx) =>
+                        renderEvaluationItem(evaluation, idx)
+                    )
+                ) : (
+                    <Text style={styles.noEvaluationText}>Değerlendirme bulunamadı.</Text>
+                )}
+            </View>
+        );
+    };
+
+    const renderCard = ({ item: date }) => {
+        return (
+            <Card style={styles.resultCard}>
                 <Card.Content>
-                    <Text style={styles.resultDate}>{item.testDate}</Text>
+                    <Text style={styles.resultDate}>{date}</Text>
                     <Divider style={{ marginVertical: 10 }} />
-                    <Text style={styles.testName}>{item.testName}</Text>
-                    <Text style={styles.testValue}>Değer: {item.testValue}</Text>
-                    <Divider style={{ marginVertical: 10 }} />
-                    {item.guideEvaluations.map((evaluation, idx) => {
-                        const { icon, color } = getStatusInfo(evaluation.status);
-                        return (
-                            <View key={idx} style={styles.evaluationContainer}>
-                                <Text style={styles.guideName}>Kılavuz: {evaluation.guideName || 'N/A'}</Text>
-                                <Text style={styles.reference}>Referans: {evaluation.minValue || 'N/A'} - {evaluation.maxValue || 'N/A'}</Text>
-                                <Text style={[styles.evaluationStatus, { color: color }]}>
-                                    Durum: {evaluation.status} {icon}
-                                </Text>
-                                <Divider style={{ marginVertical: 5 }} />
-                            </View>
-                        );
-                    })}
+                    {filteredGroupedResults[date] && Object.keys(filteredGroupedResults[date]).length > 0 ? (
+                        Object.keys(filteredGroupedResults[date]).map((testName) =>
+                            renderTestItem(filteredGroupedResults[date][testName], testName)
+                        )
+                    ) : (
+                        <Text style={styles.noEvaluationText}>Bu tarihte hiç tetkik sonucu bulunmamaktadır.</Text>
+                    )}
                 </Card.Content>
             </Card>
         );
     };
+
+    const sortedDateKeys = Object.keys(filteredGroupedResults);
 
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Tahlil Sonuçları</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Tetkik türü ara (örn: IgA, IgM...)"
+                placeholder="Tetkik veya Tarih ara (örn: IgA, 2024-12-25)"
                 value={filterText}
                 onChangeText={setFilterText}
             />
-            <FlatList
-                data={filteredResults}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                ListEmptyComponent={<Text style={styles.noDataText}>Sonuç bulunamadı.</Text>}
-            />
+            <View style={styles.sortContainer}>
+                <Text style={styles.sortLabel}>Tarihe Göre Sırala:</Text>
+                <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
+                    <Text style={styles.sortButtonText}>
+                        {sortOrder === 'asc' ? 'Artan' : 'Azalan'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            {loading ? (
+                <ActivityIndicator size="large" color="#3f51b5" style={{ marginTop: 20 }} />
+            ) : sortedDateKeys.length > 0 ? (
+                <FlatList
+                    data={sortedDateKeys}
+                    keyExtractor={(item) => item}
+                    renderItem={renderCard}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+                />
+            ) : (
+                <Text style={styles.noDataText}>Sonuç bulunamadı.</Text>
+            )}
         </View>
     );
 };
@@ -139,43 +300,75 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         fontSize: 16,
     },
+    sortContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    sortLabel: {
+        fontSize: 16,
+        marginRight: 10,
+    },
+    sortButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        backgroundColor: '#3f51b5',
+        borderRadius: 5,
+    },
+    sortButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
     noDataText: {
         textAlign: 'center',
         marginTop: 20,
         fontSize: 16,
         color: '#777',
     },
-    resultItem: {
+    resultCard: {
         backgroundColor: '#f2f6ff',
         padding: 15,
         borderRadius: 5,
-        marginBottom: 10,
     },
     resultDate: {
-        fontSize: 14,
-        marginBottom: 5,
+        fontSize: 16,
+        marginBottom: 10,
         color: '#555',
         fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    testItem: {
+        marginBottom: 10,
     },
     testName: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: '#3f51b5',
     },
     testValue: {
         fontSize: 16,
-        marginVertical: 5,
+        marginVertical: 2,
     },
-    evaluationContainer: {
-        marginVertical: 5,
+    evaluationItem: {
+        marginLeft: 10,
+        marginBottom: 5,
+    },
+    evaluationStatus: {
+        fontSize: 16,
+        marginVertical: 2,
     },
     guideName: {
         fontSize: 14,
+        color: '#333',
     },
     reference: {
         fontSize: 14,
+        color: '#333',
     },
-    evaluationStatus: {
+    noEvaluationText: {
         fontSize: 14,
+        color: '#777',
+        marginTop: 5,
     },
 });
 
