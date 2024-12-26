@@ -1,6 +1,6 @@
 // src/screens/users/UserGraphScreen.js
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { db } from '../../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Card, Text, ActivityIndicator, Divider } from 'react-native-paper';
@@ -90,7 +90,7 @@ const UserGraphScreen = () => {
                         }
                         tempGrouped[testName].push({
                             x: testDate,
-                            y: testValue || 0,
+                            y: parseFloat(testValue.toFixed(2)) || 0,
                             status: majority,
                         });
                     });
@@ -142,166 +142,271 @@ const UserGraphScreen = () => {
                 {user?.name} {user?.surname} (TC: {user?.tcNo})
             </Text>
 
-            {Object.entries(groupedData).map(([testName, dataArray]) => (
-                <Card style={styles.card} key={testName}>
-                    <Card.Title title={testName} titleStyle={styles.cardTitle} />
-                    <Card.Content>
-                        {/* Liste Bölümü */}
-                        {dataArray.map((item, idx) => (
-                            <View key={idx} style={styles.resultRow}>
-                                <Text style={styles.resultText}>Tarih: {item.x}</Text>
-                                <Text style={styles.resultText}>Değer: {item.y}</Text>
-                                <Text style={[styles.statusText, { color: getColorForStatus(item.status) }]}>
-                                    {item.status}
-                                </Text>
-                                <Divider style={{ marginVertical: 6 }} />
-                            </View>
-                        ))}
+            {Object.entries(groupedData).map(([testName, dataArray]) => {
+                // Determine if horizontal scrolling is needed
+                const needsScroll = dataArray.length > 5;
 
-                        {/* Grafik Bölümü */}
-                        <View style={styles.graphContainer}>
-                            <VictoryChart
-                                width={350}
-                                height={250}
-                                domainPadding={{ x: 40, y: 20 }}
-                                containerComponent={<VictoryContainer />}
-                            >
-                                <VictoryAxis
-                                    tickFormat={(t) => {
-                                        // t: "YYYY-MM-DD HH:mm"
-                                        const d = new Date(t);
-                                        if (isNaN(d)) return t; // Geçersiz tarih ise orijinal string
-                                        const month = String(d.getMonth() + 1).padStart(2, '0');
-                                        const day = String(d.getDate()).padStart(2, '0');
-                                        return `${month}/${day}`;
-                                    }}
-                                    style={{
-                                        tickLabels: { fontSize: 10, angle: 45 },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    dependentAxis
-                                    tickFormat={(t) => t.toFixed(1)}
-                                    style={{
-                                        tickLabels: { fontSize: 10 },
-                                    }}
-                                />
+                // Calculate chart width: if needsScroll, chartWidth increases, else screenWidth - 40
+                const screenWidth = Dimensions.get('window').width;
+                const widthPerDataPoint = 70; // Genişlik artırıldı for better spacing
+                const chartWidth = needsScroll ? dataArray.length * widthPerDataPoint : screenWidth - 40;
 
-                                {/* VictoryLine - Parabolik/Lineer Trend */}
-                                <VictoryLine
-                                    interpolation="monotoneX"
-                                    style={{
-                                        data: {
-                                            stroke: '#3f51b5',
-                                            strokeWidth: 2,
-                                        },
-                                    }}
-                                    data={dataArray.map((d) => ({
-                                        x: d.x,
-                                        y: d.y,
-                                    }))}
-                                    x="x"
-                                    y="y"
-                                />
+                return (
+                    <Card style={styles.card} key={testName}>
+                        <Card.Title title={testName} titleStyle={styles.cardTitle} />
+                        <Card.Content>
+                            {/* Liste Bölümü */}
+                            {dataArray.map((item, idx) => (
+                                <View key={idx} style={styles.resultRow}>
+                                    <Text style={styles.resultText}>Tarih: {item.x}</Text>
+                                    <Text style={styles.resultText}>Değer: {item.y.toFixed(2)}</Text>
+                                    <Text style={[styles.statusText, { color: getColorForStatus(item.status) }]}>
+                                        {item.status}
+                                    </Text>
+                                    <Divider style={{ marginVertical: 6 }} />
+                                </View>
+                            ))}
 
-                                {/* VictoryScatter - Noktalar */}
-                                <VictoryScatter
-                                    data={dataArray.map((d) => ({
-                                        ...d,
-                                        y: parseFloat(d.y.toFixed(2)), // 2 basamak
-                                    }))}
-                                    x="x"
-                                    y="y"
-                                    size={5}
-                                    style={{
-                                        data: {
-                                            fill: ({ datum }) => getColorForStatus(datum.status),
-                                        },
-                                    }}
-                                    labels={({ datum }) => {
-                                        // Tooltip içeriği
-                                        const dateObj = new Date(datum.x);
-                                        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-                                        const dd = String(dateObj.getDate()).padStart(2, '0');
-                                        const hh = String(dateObj.getHours()).padStart(2, '0');
-                                        const min = String(dateObj.getMinutes()).padStart(2, '0');
-                                        return `Tarih: ${mm}/${dd} ${hh}:${min}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
-                                    }}
-                                    labelComponent={
-                                        <VictoryTooltip
-                                            renderInPortal={false}
-                                            flyoutWidth={140}
-                                            flyoutHeight={80}
-                                            style={{ fontSize: 10 }}
+                            {/* Grafik Bölümü */}
+                            {needsScroll ? (
+                                <ScrollView horizontal={true} style={styles.graphScroll}>
+                                    <View style={{ width: chartWidth, height: 300 }}>
+                                        <VictoryChart
+                                            width={chartWidth}
+                                            height={300}
+                                            domainPadding={{ x: 50, y: 20 }}
+                                            containerComponent={<VictoryContainer />}
+                                        >
+                                            <VictoryAxis
+                                                tickFormat={(t) => {
+                                                    // t formatı "YYYY-MM-DD HH:mm"
+                                                    const d = new Date(t);
+                                                    if (isNaN(d.getTime())) return t;
+                                                    const day = String(d.getDate()).padStart(2, '0');
+                                                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                                                    const hour = String(d.getHours()).padStart(2, '0');
+                                                    const minute = String(d.getMinutes()).padStart(2, '0');
+                                                    return `${day}/${month}\n${hour}:${minute}`;
+                                                }}
+                                                style={{
+                                                    tickLabels: {
+                                                        fontSize: 10,
+                                                        padding: 5,
+                                                        dy: 10,
+                                                    },
+                                                }}
+                                            />
+                                            <VictoryAxis
+                                                dependentAxis
+                                                tickFormat={(t) => t.toFixed(2)}
+                                                style={{
+                                                    tickLabels: { fontSize: 10 },
+                                                }}
+                                            />
+
+                                            {/* VictoryLine (smooth changes) */}
+                                            <VictoryLine
+                                                interpolation="monotoneX"
+                                                style={{
+                                                    data: {
+                                                        stroke: '#3f51b5',
+                                                        strokeWidth: 2,
+                                                    },
+                                                }}
+                                                data={dataArray.map((d) => ({
+                                                    x: d.x,
+                                                    y: d.y,
+                                                }))}
+                                                x="x"
+                                                y="y"
+                                            />
+
+                                            <VictoryScatter
+                                                data={dataArray.map((d) => ({
+                                                    ...d,
+                                                    y: parseFloat(d.y.toFixed(2)),
+                                                }))}
+                                                x="x"
+                                                y="y"
+                                                size={5}
+                                                labels={({ datum }) => {
+                                                    const dateObj = new Date(datum.x);
+                                                    const day = String(dateObj.getDate()).padStart(2, '0');
+                                                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                                    const hour = String(dateObj.getHours()).padStart(2, '0');
+                                                    const minute = String(dateObj.getMinutes()).padStart(2, '0');
+                                                    return `Tarih: ${day}/${month} ${hour}:${minute}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
+                                                }}
+                                                labelComponent={
+                                                    <VictoryTooltip
+                                                        renderInPortal={false}
+                                                        flyoutWidth={140}
+                                                        flyoutHeight={80}
+                                                        style={{ fontSize: 10 }}
+                                                    />
+                                                }
+                                                style={{
+                                                    data: {
+                                                        fill: ({ datum }) => getColorForStatus(datum.status),
+                                                    },
+                                                }}
+                                            />
+                                        </VictoryChart>
+                                    </View>
+                                </ScrollView>
+                            ) : (
+                                <View style={{ width: screenWidth - 40, height: 300 }}>
+                                    <VictoryChart
+                                        width={screenWidth - 40}
+                                        height={300}
+                                        domainPadding={{ x: 50, y: 20 }}
+                                        containerComponent={<VictoryContainer />}
+                                    >
+                                        <VictoryAxis
+                                            tickFormat={(t) => {
+                                                const d = new Date(t);
+                                                if (isNaN(d.getTime())) return t;
+                                                const day = String(d.getDate()).padStart(2, '0');
+                                                const month = String(d.getMonth() + 1).padStart(2, '0');
+                                                const hour = String(d.getHours()).padStart(2, '0');
+                                                const minute = String(d.getMinutes()).padStart(2, '0');
+                                                return `${day}/${month}\n${hour}:${minute}`;
+                                            }}
+                                            style={{
+                                                tickLabels: {
+                                                    fontSize: 10,
+                                                    padding: 5,
+                                                    dy: 10,
+                                                },
+                                            }}
                                         />
-                                    }
-                                />
-                            </VictoryChart>
-                        </View>
-                    </Card.Content>
-                </Card>
-            ))}
+                                        <VictoryAxis
+                                            dependentAxis
+                                            tickFormat={(t) => t.toFixed(2)}
+                                            style={{
+                                                tickLabels: { fontSize: 10 },
+                                            }}
+                                        />
+
+                                        {/* VictoryLine */}
+                                        <VictoryLine
+                                            interpolation="monotoneX"
+                                            style={{
+                                                data: {
+                                                    stroke: '#3f51b5',
+                                                    strokeWidth: 2,
+                                                },
+                                            }}
+                                            data={dataArray.map((d) => ({
+                                                x: d.x,
+                                                y: d.y,
+                                            }))}
+                                            x="x"
+                                            y="y"
+                                        />
+
+                                        <VictoryScatter
+                                            data={dataArray.map((d) => ({
+                                                ...d,
+                                                y: parseFloat(d.y.toFixed(2)),
+                                            }))}
+                                            x="x"
+                                            y="y"
+                                            size={5}
+                                            labels={({ datum }) => {
+                                                const dateObj = new Date(datum.x);
+                                                const day = String(dateObj.getDate()).padStart(2, '0');
+                                                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                                const hour = String(dateObj.getHours()).padStart(2, '0');
+                                                const minute = String(dateObj.getMinutes()).padStart(2, '0');
+                                                return `Tarih: ${day}/${month} ${hour}:${minute}\nDeğer: ${datum.y}\nDurum: ${datum.status}`;
+                                            }}
+                                            labelComponent={
+                                                <VictoryTooltip
+                                                    renderInPortal={false}
+                                                    flyoutWidth={140}
+                                                    flyoutHeight={80}
+                                                    style={{ fontSize: 10 }}
+                                                />
+                                            }
+                                            style={{
+                                                data: {
+                                                    fill: ({ datum }) => getColorForStatus(datum.status),
+                                                },
+                                            }}
+                                        />
+                                    </VictoryChart>
+                                </View>
+                            )}
+                        </Card.Content>
+                    </Card>
+                );
+            })}
         </ScrollView>
     );
 };
 
-export default UserGraphScreen;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f2f6ff',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    noDataContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    noDataText: {
-        fontSize: 16,
-        color: '#777',
-    },
-    title: {
-        fontSize: 22,
-        color: '#3f51b5',
-        fontWeight: 'bold',
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    subTitle: {
-        fontSize: 14,
-        color: '#333',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    card: {
-        marginHorizontal: 10,
-        marginBottom: 20,
-        borderRadius: 10,
-    },
-    cardTitle: {
-        fontSize: 18,
-        color: '#3f51b5',
-    },
-    resultRow: {
-        marginVertical: 6,
-    },
-    resultText: {
-        fontSize: 14,
-        color: '#333',
-    },
-    statusText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginTop: 5,
-    },
-    graphContainer: {
-        alignItems: 'center',
-        marginTop: 10,
-    },
-});
+    export default UserGraphScreen;
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: '#f2f6ff',
+        },
+        loadingContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        noDataContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        noDataText: {
+            fontSize: 16,
+            color: '#777',
+        },
+        title: {
+            fontSize: 22,
+            color: '#3f51b5',
+            fontWeight: 'bold',
+            marginTop: 10,
+            textAlign: 'center',
+        },
+        subTitle: {
+            fontSize: 14,
+            color: '#333',
+            marginBottom: 20,
+            textAlign: 'center',
+        },
+        card: {
+            marginHorizontal: 10,
+            marginBottom: 20,
+            borderRadius: 10,
+        },
+        cardTitle: {
+            fontSize: 18,
+            color: '#3f51b5',
+        },
+        resultRow: {
+            marginVertical: 6,
+        },
+        resultText: {
+            fontSize: 14,
+            color: '#333',
+        },
+        statusText: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            marginTop: 5,
+        },
+        graphContainer: {
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        graphScroll: {
+            // Optionally, any styling for the horizontal ScrollView
+        },
+    });
