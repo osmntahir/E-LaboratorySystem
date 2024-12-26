@@ -71,8 +71,8 @@ App.js                    # Ana uygulama dosyası
 
 1. Depoyu klonlayın:
    ```bash
-   git clone https://github.com/ornek/e-lab.git
-   cd e-lab
+   git clone https://github.com/osmntahir/E-LaboratorySystem.git
+   cd E-LaboratorySystem
    ```
 
 2. Bağımlılıkları yükleyin:
