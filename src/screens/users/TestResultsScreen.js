@@ -71,7 +71,11 @@ const TestResultsScreen = () => {
                     const testDate = result.testDate;
                     if (result.tests && Array.isArray(result.tests)) {
                         result.tests.forEach((t) => {
-                            if (t.guideEvaluations && Array.isArray(t.guideEvaluations) && t.guideEvaluations.length > 0) {
+                            if (
+                                t.guideEvaluations &&
+                                Array.isArray(t.guideEvaluations) &&
+                                t.guideEvaluations.length > 0
+                            ) {
                                 t.guideEvaluations.forEach((evaluation) => {
                                     allEvaluations.push({
                                         testDate: testDate || 'N/A',
@@ -81,6 +85,7 @@ const TestResultsScreen = () => {
                                         minValue: evaluation.minValue || 'N/A',
                                         maxValue: evaluation.maxValue || 'N/A',
                                         status: evaluation.status || 'N/A',
+                                        unit: evaluation.unit || '', // Assuming unit is part of evaluation
                                     });
                                 });
                             } else {
@@ -92,6 +97,7 @@ const TestResultsScreen = () => {
                                     minValue: 'N/A',
                                     maxValue: 'N/A',
                                     status: 'N/A',
+                                    unit: t.unit || '', // Assuming unit might be part of test if not in evaluation
                                 });
                             }
                         });
@@ -120,6 +126,7 @@ const TestResultsScreen = () => {
                 if (!acc[date][test]) {
                     acc[date][test] = {
                         testValue: item.testValue,
+                        unit: item.unit, // Store unit at test level
                         evaluations: [],
                     };
                 }
@@ -128,6 +135,7 @@ const TestResultsScreen = () => {
                     minValue: item.minValue,
                     maxValue: item.maxValue,
                     status: item.status,
+                    unit: item.unit, // Store unit at evaluation level
                 });
                 return acc;
             }, {});
@@ -160,7 +168,7 @@ const TestResultsScreen = () => {
             const filteredTests = Object.keys(groupedResults[date]).filter((test) => {
                 const testNameMatch = test.toLowerCase().includes(lowerFilter);
                 const dateMatch = date.toLowerCase().includes(lowerFilter);
-                const evaluationsMatch = groupedResults[date][test].evaluations.some(evaluation =>
+                const evaluationsMatch = groupedResults[date][test].evaluations.some((evaluation) =>
                     evaluation.guideName.toLowerCase().includes(lowerFilter)
                 );
                 return testNameMatch || dateMatch || evaluationsMatch;
@@ -202,7 +210,7 @@ const TestResultsScreen = () => {
                 </Text>
                 <Text style={styles.guideName}>Kılavuz: {evaluation.guideName}</Text>
                 <Text style={styles.reference}>
-                    Referans: {evaluation.minValue} - {evaluation.maxValue}
+                    Referans: {evaluation.minValue.toFixed(2)} {evaluation.unit} - {evaluation.maxValue} {evaluation.unit}
                 </Text>
                 <Divider style={{ marginVertical: 5 }} />
             </View>
@@ -210,10 +218,18 @@ const TestResultsScreen = () => {
     };
 
     const renderTestItem = (test, testName) => {
+        let testValueDisplay = 'N/A';
+        if (test.testValue !== 'N/A') {
+            const testValueNumber = parseFloat(test.testValue);
+            if (!isNaN(testValueNumber)) {
+                testValueDisplay = `${test.testValue} g/l       ${(testValueNumber * 1000).toFixed(2)} mg/l`;
+            }
+        }
+
         return (
             <View key={testName} style={styles.testItem}>
                 <Text style={styles.testName}>{testName}</Text>
-                <Text style={styles.testValue}>Değer: {test.testValue}</Text>
+                <Text style={styles.testValue}>Değer: {testValueDisplay}</Text>
                 {test.evaluations && Array.isArray(test.evaluations) && test.evaluations.length > 0 ? (
                     test.evaluations.map((evaluation, idx) =>
                         renderEvaluationItem(evaluation, idx)
