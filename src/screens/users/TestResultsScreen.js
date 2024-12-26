@@ -210,7 +210,7 @@ const TestResultsScreen = () => {
                 </Text>
                 <Text style={styles.guideName}>Kılavuz: {evaluation.guideName}</Text>
                 <Text style={styles.reference}>
-                    Referans: {evaluation.minValue.toFixed(2)} {evaluation.unit} - {evaluation.maxValue} {evaluation.unit}
+                    Referans: {evaluation.minValue.toFixed(2)} {evaluation.unit} - {evaluation.maxValue.toFixed(2)} {evaluation.unit}
                 </Text>
                 <Divider style={{ marginVertical: 5 }} />
             </View>

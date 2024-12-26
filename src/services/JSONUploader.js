@@ -16,10 +16,10 @@ class JSONUploader {
                         return {
                             ...ageGroup,
                             referenceMin: geometricMean && standardDeviation
-                                ? geometricMean - standardDeviation
+                                ? (geometricMean - standardDeviation).toFixed(2)
                                 : minValue,
                             referenceMax: geometricMean && standardDeviation
-                                ? geometricMean + standardDeviation
+                                ? (geometricMean + standardDeviation).toFixed(2)
                                 : maxValue,
                         };
                     }),
