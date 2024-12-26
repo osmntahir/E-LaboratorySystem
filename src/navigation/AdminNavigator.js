@@ -125,7 +125,7 @@ const AdminNavigator = () => {
             <Stack.Screen
                 name="TestAnalysis"
                 component={TestAnalysisScreen}
-                options={{ title: 'Tetkik Analizi' }}
+                options={{ title: 'Hızlı Test Sorgu Ekranı' }}
             />
                 <Stack.Screen
                     name="AddPatient"

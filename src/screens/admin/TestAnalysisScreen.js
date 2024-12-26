@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -22,6 +22,7 @@ import {
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { calculateAgeInMonths } from '../../utils/ageCalculator';
+import TEST_TYPES from '../../constants/testTypes'; // Adjust the path as necessary
 
 const STATUS_COLORS = {
     Normal: '#52c41a',
@@ -44,39 +45,13 @@ const getStatusIcon = (status) => {
 };
 
 const TestAnalysisScreen = () => {
-    const [testTypes, setTestTypes] = useState([]);
+    const [testTypes] = useState(TEST_TYPES);
     const [testValues, setTestValues] = useState({});
     const [birthDate, setBirthDate] = useState(null);
     const [ageInMonths, setAgeInMonths] = useState(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [results, setResults] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        fetchAllTestTypes();
-    }, []);
-
-    const fetchAllTestTypes = async () => {
-        try {
-            const guidesSnapshot = await getDocs(collection(db, 'guides'));
-            const testNameSet = new Set();
-
-            guidesSnapshot.forEach((guideDoc) => {
-                const guideData = guideDoc.data();
-                if (Array.isArray(guideData.testTypes)) {
-                    guideData.testTypes.forEach((test) => {
-                        if (test.name) {
-                            testNameSet.add(test.name);
-                        }
-                    });
-                }
-            });
-
-            setTestTypes(Array.from(testNameSet).sort());
-        } catch (error) {
-            console.error('Error fetching test types:', error);
-        }
-    };
 
     const handleValueChange = (testName, value) => {
         setTestValues((prev) => ({ ...prev, [testName]: value }));
@@ -144,7 +119,7 @@ const TestAnalysisScreen = () => {
                             if (!tempResults[testName]) {
                                 tempResults[testName] = {
                                     enteredValue: testValue,
-                                    unit: 'g/L', // Always g/L as per requirement
+                                    unit: 'g/L',
                                     equivalents: [],
                                 };
                             }
@@ -187,15 +162,17 @@ const TestAnalysisScreen = () => {
             <Card style={styles.headerCard}>
                 <Card.Title
                     title="Test Analizi"
-                    subtitle="Doğum tarihinizi ve tetkik değerlerinizi girerek sonuçları görüntüleyin."
-                    left={(props) => <IconButton {...props} icon="stethoscope" />}
+                    subtitle="Sağlığınızı Yakından Takip Edin"
+                    left={(props) => <IconButton {...props} icon="test-tube" color="#fff" />}
+                    titleStyle={styles.headerTitle}
+                    subtitleStyle={styles.headerSubtitle}
                 />
             </Card>
 
             <Card style={styles.inputCard}>
                 <Card.Content>
                     <TouchableRipple onPress={showDatePickerModal} style={styles.datePicker}>
-                        <View>
+                        <View style={styles.datePickerContainer}>
                             <Text style={styles.datePickerLabel}>Doğum Tarihi</Text>
                             <Text style={styles.datePickerText}>
                                 {birthDate ? birthDate.toLocaleDateString() : 'Tarih Seçiniz'}
@@ -206,22 +183,25 @@ const TestAnalysisScreen = () => {
                         <DateTimePicker
                             value={birthDate || new Date()}
                             mode="date"
-                            display="default"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                             onChange={onDateChange}
                             maximumDate={new Date()}
+                            style={styles.dateTimePicker}
                         />
                     )}
-                    {testTypes.map((testName) => (
-                        <TextInput
-                            key={testName}
-                            mode="outlined"
-                            label={`${testName} Değeri (g/L)`}
-                            style={styles.input}
-                            keyboardType="numeric"
-                            value={testValues[testName] || ''}
-                            onChangeText={(value) => handleValueChange(testName, value)}
-                        />
-                    ))}
+                    <View style={styles.inputsContainer}>
+                        {testTypes.map((test) => (
+                            <TextInput
+                                key={test.id}
+                                mode="outlined"
+                                label={`${test.name} Değeri (g/L)`}
+                                style={styles.input}
+                                keyboardType="numeric"
+                                value={testValues[test.name] || ''}
+                                onChangeText={(value) => handleValueChange(test.name, value)}
+                            />
+                        ))}
+                    </View>
                     <Button mode="contained" onPress={handleSearch} style={styles.button}>
                         Sonuç Hesapla
                     </Button>
@@ -252,7 +232,7 @@ const TestAnalysisScreen = () => {
                                     <View style={{ marginLeft: 10 }}>
                                         <Text style={styles.resultTestName}>{testName}</Text>
                                         <Text style={styles.resultEnteredValue}>
-                                            Değer: {test.enteredValue} g/L    ({test.enteredValue * 1000} mg/L)
+                                            Değer: {test.enteredValue} g/L     {test.enteredValue * 1000} mg/L
                                         </Text>
                                     </View>
                                 </View>
@@ -271,7 +251,7 @@ const TestAnalysisScreen = () => {
                                                 <Text style={styles.equivalentGuideName}>{equiv.guideName}</Text>
                                             </View>
                                             <Text style={styles.equivalentReference}>
-                                                Referans: {equiv.minValue}{equiv.unit} - {equiv.maxValue} {equiv.unit}
+                                                Referans: {equiv.minValue} {equiv.unit} - {equiv.maxValue} {equiv.unit}
                                             </Text>
                                             <View style={styles.statusRow}>
                                                 <Avatar.Icon
@@ -315,9 +295,44 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#3f51b5',
     },
+    headerTitle: {
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    headerSubtitle: {
+        color: '#fff',
+        fontSize: 14,
+    },
     inputCard: {
         marginBottom: 20,
         borderRadius: 10,
+    },
+    datePicker: {
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        backgroundColor: '#fff',
+    },
+    datePickerContainer: {
+        flexDirection: 'column',
+    },
+    datePickerLabel: {
+        fontSize: 16,
+        color: '#555',
+    },
+    datePickerText: {
+        fontSize: 18,
+        color: '#000',
+        marginTop: 5,
+    },
+    dateTimePicker: {
+        backgroundColor: '#fff',
+    },
+    inputsContainer: {
+        marginTop: 15, // Added margin to increase spacing
     },
     input: {
         marginBottom: 10,
@@ -329,9 +344,12 @@ const styles = StyleSheet.create({
     resultHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#fff',
         marginBottom: 10,
         textAlign: 'center',
+        backgroundColor: '#3f51b5',
+        padding: 10,
+        borderRadius: 5,
     },
     noResultText: {
         textAlign: 'center',
@@ -397,17 +415,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: '#fff',
         fontSize: 16,
-    },
-    datePicker: {
-        paddingVertical: 10,
-    },
-    datePickerLabel: {
-        fontSize: 16,
-        color: '#555',
-    },
-    datePickerText: {
-        fontSize: 18,
-        color: '#000',
     },
 });
 
