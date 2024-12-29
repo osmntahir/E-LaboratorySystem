@@ -1,3 +1,4 @@
+// TestResultsScreen.js
 import React, { useEffect, useState, useContext, useMemo } from 'react';
 import {
     View,
@@ -8,21 +9,22 @@ import {
     TouchableOpacity,
     ActivityIndicator,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { Card, Divider } from 'react-native-paper';
 
-const getStatusInfo = (status) => {
+const getStatusIcon = (status) => {
     switch (status) {
         case 'Yüksek':
-            return { icon: '↑', color: '#ff4d4f' };
+            return { name: 'arrow-up-circle', color: '#ff4d4f' };
         case 'Düşük':
-            return { icon: '↓', color: '#faad14' };
+            return { name: 'arrow-down-circle', color: '#faad14' };
         case 'Normal':
-            return { icon: '→', color: '#52c41a' };
+            return { name: 'arrow-forward-circle', color: '#52c41a' };
         default:
-            return { icon: '', color: '#000' };
+            return { name: 'help-circle', color: '#000' };
     }
 };
 
@@ -42,6 +44,7 @@ const TestResultsScreen = () => {
             }
 
             try {
+                // Kullanıcıya ait tcNo'yu çekelim
                 const userQuery = query(
                     collection(db, 'users'),
                     where('email', '==', user.email)
@@ -59,6 +62,7 @@ const TestResultsScreen = () => {
                     return;
                 }
 
+                // testResults koleksiyonundan bu tcNo'ya ait kayıtları al
                 const testResultsQuery = query(
                     collection(db, 'testResults'),
                     where('patientTc', '==', patientTc)
@@ -76,6 +80,7 @@ const TestResultsScreen = () => {
                                 Array.isArray(t.guideEvaluations) &&
                                 t.guideEvaluations.length > 0
                             ) {
+                                // Her guideEvaluation'ı ayrı item olarak pushluyoruz
                                 t.guideEvaluations.forEach((evaluation) => {
                                     allEvaluations.push({
                                         testDate: testDate || 'N/A',
@@ -85,10 +90,11 @@ const TestResultsScreen = () => {
                                         minValue: evaluation.minValue || 'N/A',
                                         maxValue: evaluation.maxValue || 'N/A',
                                         status: evaluation.status || 'N/A',
-                                        unit: evaluation.unit || '', // Assuming unit is part of evaluation
+                                        unit: evaluation.unit || '',
                                     });
                                 });
                             } else {
+                                // guideEvaluations yoksa da yine push
                                 allEvaluations.push({
                                     testDate: testDate || 'N/A',
                                     testName: t.testName || 'N/A',
@@ -97,7 +103,7 @@ const TestResultsScreen = () => {
                                     minValue: 'N/A',
                                     maxValue: 'N/A',
                                     status: 'N/A',
-                                    unit: t.unit || '', // Assuming unit might be part of test if not in evaluation
+                                    unit: t.unit || '',
                                 });
                             }
                         });
@@ -115,6 +121,7 @@ const TestResultsScreen = () => {
         fetchTestResults();
     }, [user]);
 
+    // testResults değiştiğinde, tarih ve test adına göre grupluyoruz
     useEffect(() => {
         const groupByDateAndTest = (data) => {
             const grouped = data.reduce((acc, item) => {
@@ -135,7 +142,7 @@ const TestResultsScreen = () => {
                     minValue: item.minValue,
                     maxValue: item.maxValue,
                     status: item.status,
-                    unit: item.unit, // Store unit at evaluation level
+                    unit: item.unit,
                 });
                 return acc;
             }, {});
@@ -146,9 +153,10 @@ const TestResultsScreen = () => {
         setGroupedResults(grouped);
     }, [testResults]);
 
+    // Filtreleme + Tarih sıralama
     const filteredGroupedResults = useMemo(() => {
+        // Eğer arama kutusu boşsa => sadece tarih sıralaması
         if (filterText.trim() === '') {
-            // No filter, return sorted groupedResults
             const sortedDates = Object.keys(groupedResults).sort((a, b) => {
                 const dateA = new Date(a);
                 const dateB = new Date(b);
@@ -161,15 +169,18 @@ const TestResultsScreen = () => {
             return sortedGrouped;
         }
 
+        // Arama metni varsa:
         const lowerFilter = filterText.toLowerCase();
         const grouped = {};
 
+        // Tarih bazlı gruplanan veriden filtreye uyan kayıtları seç
         Object.keys(groupedResults).forEach((date) => {
             const filteredTests = Object.keys(groupedResults[date]).filter((test) => {
                 const testNameMatch = test.toLowerCase().includes(lowerFilter);
                 const dateMatch = date.toLowerCase().includes(lowerFilter);
-                const evaluationsMatch = groupedResults[date][test].evaluations.some((evaluation) =>
-                    evaluation.guideName.toLowerCase().includes(lowerFilter)
+                const evaluationsMatch = groupedResults[date][test].evaluations.some(
+                    (evaluation) =>
+                        evaluation.guideName.toLowerCase().includes(lowerFilter)
                 );
                 return testNameMatch || dateMatch || evaluationsMatch;
             });
@@ -182,7 +193,7 @@ const TestResultsScreen = () => {
             }
         });
 
-        // Sort dates
+        // Tarihleri sıralıyoruz
         const sortedDates = Object.keys(grouped).sort((a, b) => {
             const dateA = new Date(a);
             const dateB = new Date(b);
@@ -201,35 +212,61 @@ const TestResultsScreen = () => {
         setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     };
 
+    // Değerlendirme öğesini render
     const renderEvaluationItem = (evaluation, index) => {
-        const { icon, color } = getStatusInfo(evaluation.status);
+        const iconData = getStatusIcon(evaluation.status);
         return (
             <View key={index} style={styles.evaluationItem}>
-                <Text style={[styles.evaluationStatus, { color: color }]}>
-                    Durum: {evaluation.status} {icon}
+                <View style={styles.statusRow}>
+                    <Ionicons
+                        name={iconData.name}
+                        size={18}
+                        color={iconData.color}
+                        style={{ marginRight: 6 }}
+                    />
+                    <Text style={[styles.evaluationStatus, { color: iconData.color }]}>
+                        {evaluation.status}
+                    </Text>
+                </View>
+                <Text style={styles.guideName}>
+                    <Ionicons name="book" size={14} color="#333" /> {`Kılavuz: ${evaluation.guideName}`}
                 </Text>
-                <Text style={styles.guideName}>Kılavuz: {evaluation.guideName}</Text>
-                <Text style={styles.reference}>
-                    Referans: {evaluation.minValue.toFixed(2)} {evaluation.unit} - {evaluation.maxValue.toFixed(2)} {evaluation.unit}
-                </Text>
-                <Divider style={{ marginVertical: 5 }} />
+                {(evaluation.minValue !== 'N/A' && evaluation.maxValue !== 'N/A') ? (
+                    <Text style={styles.reference}>
+                        <Ionicons name="analytics" size={14} color="#333" /> Referans Aralığı: {parseFloat(evaluation.minValue).toFixed(2)} {evaluation.unit} - {parseFloat(evaluation.maxValue).toFixed(2)} {evaluation.unit}
+                    </Text>
+                ) : (
+                    <Text style={styles.reference}>
+                        <Ionicons name="analytics" size={14} color="#ccc" /> Referans Aralığı: N/A
+                    </Text>
+                )}
+                <Divider style={{ marginVertical: 8 }} />
             </View>
         );
     };
 
+    // Bir testin bilgisini render
     const renderTestItem = (test, testName) => {
         let testValueDisplay = 'N/A';
+
         if (test.testValue !== 'N/A') {
             const testValueNumber = parseFloat(test.testValue);
             if (!isNaN(testValueNumber)) {
-                testValueDisplay = `${test.testValue} g/l       ${(testValueNumber * 1000).toFixed(2)} mg/l`;
+                testValueDisplay = `${test.testValue} g/L   (${(testValueNumber * 1000).toFixed(2)} mg/L)`;
             }
         }
 
         return (
             <View key={testName} style={styles.testItem}>
-                <Text style={styles.testName}>{testName}</Text>
-                <Text style={styles.testValue}>Değer: {testValueDisplay}</Text>
+                <View style={styles.testNameRow}>
+                    <Ionicons name="flask" size={18} color="#3f51b5" style={{ marginRight: 6 }}/>
+                    <Text style={styles.testName}>{testName}</Text>
+                </View>
+
+                <Text style={styles.testValue}>
+                    <Ionicons name="thermometer" size={16} color="#666" /> {` Değer: ${testValueDisplay}`}
+                </Text>
+
                 {test.evaluations && Array.isArray(test.evaluations) && test.evaluations.length > 0 ? (
                     test.evaluations.map((evaluation, idx) =>
                         renderEvaluationItem(evaluation, idx)
@@ -241,13 +278,18 @@ const TestResultsScreen = () => {
         );
     };
 
+    // Tarih bazında Card
     const renderCard = ({ item: date }) => {
         return (
             <Card style={styles.resultCard}>
                 <Card.Content>
-                    <Text style={styles.resultDate}>{date}</Text>
+                    <View style={styles.dateHeader}>
+                        <Ionicons name="calendar" size={18} color="#555" style={{ marginRight: 6 }}/>
+                        <Text style={styles.resultDate}>{date}</Text>
+                    </View>
                     <Divider style={{ marginVertical: 10 }} />
-                    {filteredGroupedResults[date] && Object.keys(filteredGroupedResults[date]).length > 0 ? (
+                    {filteredGroupedResults[date] &&
+                    Object.keys(filteredGroupedResults[date]).length > 0 ? (
                         Object.keys(filteredGroupedResults[date]).map((testName) =>
                             renderTestItem(filteredGroupedResults[date][testName], testName)
                         )
@@ -264,20 +306,36 @@ const TestResultsScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Tahlil Sonuçları</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Tetkik veya Tarih ara (örn: IgA, 2024-12-25)"
-                value={filterText}
-                onChangeText={setFilterText}
-            />
+
+            <View style={styles.searchRow}>
+                <Ionicons name="search" size={20} color="#999" style={{ marginRight: 8 }} />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Tetkik veya Tarih ara (örn: IgA, 2024-12-25)"
+                    value={filterText}
+                    onChangeText={setFilterText}
+                />
+            </View>
+
             <View style={styles.sortContainer}>
-                <Text style={styles.sortLabel}>Tarihe Göre Sırala:</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="timer" size={18} color="#3f51b5" style={{ marginRight: 6 }} />
+                    <Text style={styles.sortLabel}>Tarihe Göre Sırala:</Text>
+                </View>
+
                 <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
+                    <Ionicons
+                        name={sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'}
+                        size={16}
+                        color="#fff"
+                        style={{ marginRight: 5 }}
+                    />
                     <Text style={styles.sortButtonText}>
                         {sortOrder === 'asc' ? 'Artan' : 'Azalan'}
                     </Text>
                 </TouchableOpacity>
             </View>
+
             {loading ? (
                 <ActivityIndicator size="large" color="#3f51b5" style={{ marginTop: 20 }} />
             ) : sortedDateKeys.length > 0 ? (
@@ -295,97 +353,130 @@ const TestResultsScreen = () => {
     );
 };
 
+export default TestResultsScreen;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
+        padding: 16,
+        backgroundColor: '#f2f6ff',
     },
     header: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
         color: '#3f51b5',
+        marginBottom: 16,
+        textAlign: 'center',
     },
-    input: {
+    searchRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        marginBottom: 10,
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 8,
-        marginBottom: 15,
-        fontSize: 16,
+    },
+    input: {
+        flex: 1,
+        height: 40,
+        fontSize: 15,
     },
     sortContainer: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     sortLabel: {
         fontSize: 16,
-        marginRight: 10,
+        color: '#333',
     },
     sortButton: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#3f51b5',
-        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
     },
     sortButtonText: {
+        fontSize: 14,
         color: '#fff',
-        fontSize: 16,
-    },
-    noDataText: {
-        textAlign: 'center',
-        marginTop: 20,
-        fontSize: 16,
-        color: '#777',
     },
     resultCard: {
-        backgroundColor: '#f2f6ff',
-        padding: 15,
-        borderRadius: 5,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        elevation: 2,
+        overflow: 'hidden',
+    },
+    dateHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'center',
+        marginBottom: 5,
     },
     resultDate: {
         fontSize: 16,
-        marginBottom: 10,
-        color: '#555',
         fontWeight: 'bold',
-        textAlign: 'center',
+        color: '#555',
     },
     testItem: {
-        marginBottom: 10,
+        marginBottom: 12,
+    },
+    testNameRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
     },
     testName: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: 'bold',
         color: '#3f51b5',
     },
     testValue: {
-        fontSize: 16,
-        marginVertical: 2,
+        fontSize: 15,
+        color: '#444',
+        marginBottom: 8,
+        marginLeft: 24, // biraz içeri itelim
     },
     evaluationItem: {
-        marginLeft: 10,
+        marginLeft: 24, // testValue altında sıralansın
         marginBottom: 5,
+        borderLeftWidth: 2,
+        borderLeftColor: '#e0e0e0',
+        paddingLeft: 8,
+    },
+    statusRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     evaluationStatus: {
-        fontSize: 16,
+        fontSize: 15,
+        fontWeight: 'bold',
         marginVertical: 2,
     },
     guideName: {
         fontSize: 14,
         color: '#333',
+        marginTop: 2,
     },
     reference: {
         fontSize: 14,
         color: '#333',
+        marginTop: 2,
     },
     noEvaluationText: {
         fontSize: 14,
-        color: '#777',
+        color: '#888',
+        marginLeft: 24,
         marginTop: 5,
     },
+    noDataText: {
+        textAlign: 'center',
+        marginTop: 30,
+        fontSize: 16,
+        color: '#777',
+    },
 });
-
-export default TestResultsScreen;
