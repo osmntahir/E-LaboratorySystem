@@ -1,3 +1,4 @@
+// AdminHomeScreen.js
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Alert, ActivityIndicator } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
@@ -92,9 +93,10 @@ const AdminHomeScreen = ({ navigation }) => {
                         <Text style={styles.menuItemText}>Hasta Listesi</Text>
                     </TouchableOpacity>
 
+                    {/* Hızlı Tahlil Sorgulama Menü Item */}
                     <TouchableOpacity style={styles.menuItem} onPress={() => { closeMenu(); navigation.navigate("TestAnalysis"); }}>
-                        <Icon name="magnify" size={24} style={styles.menuIcon} color="#fff" />
-                        <Text style={styles.menuItemText}>Tetkik Arama</Text>
+                        <Icon name="flash" size={24} style={styles.menuIcon} color="#fff" />
+                        <Text style={styles.menuItemText}>Hızlı Tahlil Sorgulama</Text>
                     </TouchableOpacity>
                 </View>
 
