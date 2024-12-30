@@ -1,11 +1,11 @@
 // UserGraphScreen.js
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import {
     View,
     StyleSheet,
     ScrollView,
     Dimensions,
-    TouchableOpacity
+    ActivityIndicator
 } from 'react-native';
 
 import { db } from '../../../firebaseConfig';
@@ -13,7 +13,6 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import {
     Card,
     Text,
-    ActivityIndicator,
     Divider
 } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,49 +26,9 @@ import { LineChart } from 'react-native-chart-kit';
 
 /** Durum-renk eşleşmesi */
 const STATUS_COLORS = {
-    Normal: 'green',
-    Yüksek: 'red',
-    Düşük: 'orange',
-    'N/A': 'gray',
-};
-
-/** guide.status'e göre ikon seçimi */
-const getStatusIcon = (status) => {
-    switch (status) {
-        case 'Yüksek':
-            return { name: 'arrow-up-circle', color: 'red' };
-        case 'Düşük':
-            return { name: 'arrow-down-circle', color: 'orange' };
-        case 'Normal':
-            return { name: 'arrow-forward-circle', color: 'green' };
-        default:
-            return { name: 'remove-circle', color: 'gray' };
-    }
-};
-
-/**
- * Majority rule: guideEvaluations içindeki status değerlerini sayar,
- * en çok tekrar eden status'ü döndürür.
- */
-const getMajorityStatus = (guideEvaluations) => {
-    if (!guideEvaluations || guideEvaluations.length === 0) return 'N/A';
-
-    const statusCount = {};
-    guideEvaluations.forEach((evaluation) => {
-        const s = evaluation.status || 'N/A';
-        statusCount[s] = (statusCount[s] || 0) + 1;
-    });
-
-    let majorityStatus = null;
-    let maxCount = 0;
-    Object.keys(statusCount).forEach((key) => {
-        if (statusCount[key] > maxCount) {
-            maxCount = statusCount[key];
-            majorityStatus = key;
-        }
-    });
-
-    return majorityStatus || 'N/A';
+    Artış: 'red',
+    Azalış: 'green',
+    'Değişmeme': 'gray',
 };
 
 /**
@@ -78,20 +37,16 @@ const getMajorityStatus = (guideEvaluations) => {
  */
 const getTrendIcon = (currentValue, previousValue) => {
     if (previousValue == null || currentValue == null) {
-        return { iconName: 'remove', color: 'gray' }; // veri yok
+        return { iconName: 'remove-circle', color: 'gray' }; // Veri yok
     }
 
     if (currentValue > previousValue) {
-        return { iconName: 'arrow-up-circle', color: 'red' }; // artma
+        return { iconName: 'arrow-up-circle', color: 'red' }; // Artış
     } else if (currentValue < previousValue) {
-        return { iconName: 'arrow-down-circle', color: 'green' }; // azalma
+        return { iconName: 'arrow-down-circle', color: 'green' }; // Azalış
     } else {
-        return { iconName: 'remove', color: 'gray' }; // değişmeme
+        return { iconName: 'remove-circle', color: 'gray' }; // Değişmeme
     }
-};
-
-const getColorForStatus = (status) => {
-    return STATUS_COLORS[status] || 'gray';
 };
 
 const UserGraphScreen = () => {
@@ -99,8 +54,11 @@ const UserGraphScreen = () => {
     const [loading, setLoading] = useState(true);
     const [groupedData, setGroupedData] = useState({});
 
+    // Ekran genişliği
+    const screenWidth = Dimensions.get('window').width;
+
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             fetchTestResults();
         }, [])
     );
@@ -125,11 +83,8 @@ const UserGraphScreen = () => {
 
                 if (Array.isArray(result.tests)) {
                     result.tests.forEach((testItem) => {
-                        const { testName, testValue, guideEvaluations } = testItem;
-                        // --> majority'e göre statü
-                        const majority = getMajorityStatus(guideEvaluations);
+                        const { testName, testValue } = testItem;
 
-                        // Bu testName daha önce kaydedilmediyse dizisini oluştur
                         if (!tempGrouped[testName]) {
                             tempGrouped[testName] = [];
                         }
@@ -137,8 +92,6 @@ const UserGraphScreen = () => {
                         tempGrouped[testName].push({
                             x: testDate,
                             y: parseFloat(testValue.toFixed(2)) || 0,
-                            status: majority,  // <-- majority
-                            guideEvaluations: guideEvaluations || [], // Klavuz bilgilerini de sakla
                         });
                     });
                 }
@@ -164,7 +117,7 @@ const UserGraphScreen = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator animating={true} size="large" />
+                <ActivityIndicator animating={true} size="large" color="#3f51b5" />
             </View>
         );
     }
@@ -180,18 +133,18 @@ const UserGraphScreen = () => {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
-            <Text style={styles.title}>Tahlil Geçmişi</Text>
+            {/* Başlık */}
+            <View style={styles.header}>
+                <Ionicons name="bar-chart" size={30} color="#3f51b5" />
+                <Text style={styles.title}>Tahlil Geçmişi</Text>
+            </View>
             <Text style={styles.subTitle}>
                 {user?.name} {user?.surname} (TC: {user?.tcNo})
             </Text>
 
             {Object.entries(groupedData).map(([testName, dataArray]) => {
 
-                // Ekran genişliği
-                const screenWidth = Dimensions.get('window').width;
-
                 // Grafikte hangi tarihleri ve değerleri göstereceğiz?
-                // Label olarak tarih (gg/aa), data olarak y.
                 const labels = dataArray.map((item) => {
                     const d = new Date(item.x);
                     if (isNaN(d.getTime())) return item.x;
@@ -213,8 +166,8 @@ const UserGraphScreen = () => {
                 if (prevValue != null && lastValue != null) {
                     const fark = lastValue - prevValue;
                     // + ve - işaretiyle gösterelim
-                    const sign = fark > 0 ? '+' : fark < 0 ? '' : '';
-                    degisimText = `${sign}${fark.toFixed(2)}`;
+                    const sign = fark > 0 ? '+' : fark < 0 ? '-' : '';
+                    degisimText = `${sign}${Math.abs(fark).toFixed(2)}`;
                 }
 
                 // Son tahlil kaydı
@@ -226,6 +179,8 @@ const UserGraphScreen = () => {
                     datasets: [
                         {
                             data: chartValues,
+                            color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // çizgi rengi
+                            strokeWidth: 2, // çizgi kalınlığı
                         },
                     ],
                 };
@@ -236,10 +191,13 @@ const UserGraphScreen = () => {
                         <Card.Title
                             title={testName}
                             titleStyle={styles.cardTitle}
+                            left={() => (
+                                <Ionicons name="flask" size={24} color="#3f51b5" style={{ marginRight: 8 }} />
+                            )}
                             // Sağ tarafta trend oku gösterelim
                             right={() => (
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={styles.diffText}>{degisimText}</Text>
+                                    <Text style={[styles.diffText, { color: trend.color }]}>{degisimText}</Text>
                                     <Ionicons
                                         name={trend.iconName}
                                         size={24}
@@ -251,59 +209,29 @@ const UserGraphScreen = () => {
                         />
 
                         <Card.Content>
-                            {/* Son tahlil tarihi */}
-                            <Text style={styles.infoText}>
-                                <Ionicons name="calendar" size={16} color="#333" />{' '}
-                                Tarih: {lastRecord?.x}
-                            </Text>
-
-                            {/* Son girilen değer */}
-                            <Text style={styles.infoText}>
-                                <Ionicons name="flask" size={16} color="#333" />{' '}
-                                Girilen Değer: {lastRecord?.y.toFixed(2)} g/L
-                                {'  '}({(lastRecord?.y * 1000).toFixed(2)} mg/L)
-                            </Text>
+                            {/* Tahlil Sonuçları Listesi */}
+                            <View style={styles.resultsList}>
+                                {dataArray.map((item, index) => (
+                                    <View key={index} style={styles.resultItem}>
+                                        <View style={styles.resultInfo}>
+                                            <Ionicons name="calendar" size={16} color="#555" style={styles.iconStyle} />
+                                            <Text style={styles.resultText}>Tarih: {item.x}</Text>
+                                        </View>
+                                        <View style={styles.resultInfo}>
+                                            <Ionicons name="flask" size={16} color="#555" style={styles.iconStyle} />
+                                            <Text style={styles.resultText}>
+                                                Değer: {item.y.toFixed(2)} g/L {'  '}
+                                                ({(item.y * 1000).toFixed(2)} mg/L)
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </View>
 
                             <Divider style={styles.divider} />
 
-                            {/* guideEvaluations detayları (son kayda ait) */}
-                            {lastRecord?.guideEvaluations && lastRecord.guideEvaluations.length > 0 ? (
-                                lastRecord.guideEvaluations.map((guide, idx) => {
-                                    // Her bir klavuzun statüsüne göre farklı ok
-                                    const iconData = getStatusIcon(guide.status);
-
-                                    return (
-                                        <View key={idx} style={{ marginBottom: 10 }}>
-                                            <Text style={styles.guideText}>
-                                                <Ionicons name="book" size={14} color="#333" /> Klavuz Adı: {guide.guideName}
-                                            </Text>
-                                            <Text style={styles.guideText}>
-                                                Referans Aralığı:{' '}
-                                                {(guide.minValue || 0).toFixed(2)} {guide.unit} - {(guide.maxValue || 0).toFixed(2)} {guide.unit}
-                                            </Text>
-
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text style={[styles.statusText, { color: getColorForStatus(guide.status) }]}>
-                                                    Statü: {guide.status}
-                                                </Text>
-                                                {/* Renklendirilmiş bir ok ikonu */}
-                                                <Ionicons
-                                                    name={iconData.name}
-                                                    size={16}
-                                                    color={iconData.color}
-                                                    style={{ marginLeft: 8 }}
-                                                />
-                                            </View>
-                                            <Divider style={styles.smallDivider} />
-                                        </View>
-                                    );
-                                })
-                            ) : (
-                                <Text style={styles.guideText}>Klavuz bilgisi bulunamadı.</Text>
-                            )}
-
-                            {/* ARTIK GRAFİK */}
-                            <ScrollView horizontal={true}>
+                            {/* Grafik */}
+                            <ScrollView horizontal={true} style={styles.graphScroll}>
                                 {/* Chart genişliği: veri sayısına göre ya da en az ekran genişliği kadar. */}
                                 <View style={{ width: Math.max(labels.length * 60, screenWidth - 40) }}>
                                     <LineChart
@@ -323,7 +251,7 @@ const UserGraphScreen = () => {
                                                 borderRadius: 16,
                                             },
                                             propsForDots: {
-                                                r: '4',
+                                                r: '4', // Düğümlerin yarıçapı
                                                 strokeWidth: '2',
                                                 stroke: '#3f51b5',
                                             },
@@ -332,32 +260,6 @@ const UserGraphScreen = () => {
                                         style={{
                                             marginVertical: 8,
                                             borderRadius: 16,
-                                        }}
-                                        // Düğümleri majority statüsüne göre boyar
-                                        renderDotContent={({ x, y, index }) => {
-                                            // Grafiğin her noktası için dataArray[index] kaydını al
-                                            const item = dataArray[index];
-                                            if (!item) return null;
-                                            // item.status = majority statü
-                                            const dotColor = getColorForStatus(item.status);
-                                            return (
-                                                <View
-                                                    key={index}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        width: 16,
-                                                        height: 16,
-                                                        borderRadius: 8,
-                                                        left: x - 8,
-                                                        top: y - 8,
-                                                        backgroundColor: dotColor,
-                                                        borderWidth: 1,
-                                                        borderColor: '#fff',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                />
-                                            );
                                         }}
                                     />
                                 </View>
@@ -376,6 +278,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f2f6ff',
+        padding: 15,
     },
     loadingContainer: {
         flex: 1,
@@ -388,39 +291,56 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     noDataText: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#777',
+        fontWeight: '600',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 15,
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         color: '#3f51b5',
-        fontWeight: 'bold',
-        marginTop: 10,
-        textAlign: 'center',
+        fontWeight: '700',
+        marginLeft: 10,
     },
     subTitle: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#333',
-        marginBottom: 20,
+        marginBottom: 25,
         textAlign: 'center',
+        fontWeight: '500',
     },
     card: {
-        marginHorizontal: 10,
-        marginBottom: 20,
-        borderRadius: 10,
+        marginHorizontal: 5,
+        marginBottom: 25,
+        borderRadius: 12,
+        backgroundColor: '#fff',
+        elevation: 3,
+        overflow: 'hidden',
     },
     cardTitle: {
-        fontSize: 18,
+        fontSize: 20,
         color: '#3f51b5',
+        fontWeight: '700',
+    },
+    diffText: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '600',
     },
     infoText: {
-        fontSize: 14,
+        fontSize: 16,
         marginVertical: 4,
         color: '#333',
-        fontWeight: 'bold',
+        fontWeight: '500',
     },
     divider: {
-        marginVertical: 8,
+        marginVertical: 10,
+        backgroundColor: '#e0e0e0',
     },
     smallDivider: {
         marginVertical: 4,
@@ -433,8 +353,25 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    diffText: {
-        fontSize: 14,
-        color: '#333',
+    graphScroll: {
+        marginTop: 15,
+    },
+    resultsList: {
+        marginBottom: 12,
+    },
+    resultItem: {
+        marginBottom: 10,
+    },
+    resultInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    resultText: {
+        fontSize: 16,
+        color: '#555',
+        fontWeight: '400',
+    },
+    iconStyle: {
+        marginRight: 8,
     },
 });

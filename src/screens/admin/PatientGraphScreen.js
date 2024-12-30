@@ -19,67 +19,26 @@ import { LineChart } from 'react-native-chart-kit';
 // Ekran genişliği
 const screenWidth = Dimensions.get('window').width;
 
-// Trend oku bulma (son 2 değeri kıyasla)
+/**
+ * Son iki değeri kıyaslayarak artış, azalış veya değişmeme ikonunu döndürür.
+ * Değer yoksa null döner.
+ */
 const getTrendIcon = (currentValue, previousValue) => {
     if (previousValue == null || currentValue == null) {
-        return { iconName: 'remove', color: 'gray' }; // veri yok
+        return { iconName: 'remove-circle', color: 'gray' }; // Veri yok
     }
+
     if (currentValue > previousValue) {
-        return { iconName: 'arrow-up-circle', color: 'red' }; // artma
+        return { iconName: 'arrow-up-circle', color: 'red' }; // Artma
     } else if (currentValue < previousValue) {
-        return { iconName: 'arrow-down-circle', color: 'orange' }; // azalma
+        return { iconName: 'arrow-down-circle', color: 'orange' }; // Azalma
     } else {
-        return { iconName: 'remove-circle', color: 'gray' }; // değişmeme
+        return { iconName: 'remove-circle', color: 'gray' }; // Değişmeme
     }
-};
-
-// Status => Renk eşleşmesi
-const STATUS_COLORS = {
-    Normal: 'green',
-    Yüksek: 'red',
-    Düşük: 'orange',
-    'N/A': 'gray',
-};
-
-// guide.status'e göre ikon seçimi
-const getStatusIcon = (status) => {
-    switch (status) {
-        case 'Yüksek':
-            return { name: 'arrow-up-circle', color: 'red' };
-        case 'Düşük':
-            return { name: 'arrow-down-circle', color: 'orange' };
-        case 'Normal':
-            return { name: 'arrow-forward-circle', color: 'green' };
-        default:
-            return { name: 'remove-circle', color: 'gray' };
-    }
-};
-
-// Majority rule: guideEvaluations içindeki status değerlerini sayar, en çok tekrar edeni döndürür
-const getMajorityStatus = (guideEvaluations) => {
-    if (!guideEvaluations || guideEvaluations.length === 0) return 'N/A';
-    const statusCount = {};
-    guideEvaluations.forEach((evaluation) => {
-        const s = evaluation.status || 'N/A';
-        statusCount[s] = (statusCount[s] || 0) + 1;
-    });
-    let majorityStatus = null;
-    let maxCount = 0;
-    Object.keys(statusCount).forEach((key) => {
-        if (statusCount[key] > maxCount) {
-            maxCount = statusCount[key];
-            majorityStatus = key;
-        }
-    });
-    return majorityStatus || 'N/A';
-};
-
-const getColorForStatus = (status) => {
-    return STATUS_COLORS[status] || 'gray';
 };
 
 const PatientGraphScreen = ({ route }) => {
-    const { patient } = route.params; // route ile gelen hasta bilgisi
+    const { patient } = route.params; // Route ile gelen hasta bilgisi
     const [loading, setLoading] = useState(true);
     const [groupedData, setGroupedData] = useState({});
 
@@ -97,7 +56,7 @@ const PatientGraphScreen = ({ route }) => {
         setLoading(true);
 
         try {
-            // Firestore: bu hastaya ait testResults
+            // Firestore: Bu hastaya ait testResults
             const q = query(
                 collection(db, 'testResults'),
                 where('patientTc', '==', patient.tcNo)
@@ -112,9 +71,7 @@ const PatientGraphScreen = ({ route }) => {
 
                 if (Array.isArray(result.tests)) {
                     result.tests.forEach((testItem) => {
-                        const { testName, testValue, guideEvaluations } = testItem;
-                        // çoğunluk statüsü
-                        const majority = getMajorityStatus(guideEvaluations);
+                        const { testName, testValue } = testItem;
 
                         if (!tempGrouped[testName]) {
                             tempGrouped[testName] = [];
@@ -122,8 +79,6 @@ const PatientGraphScreen = ({ route }) => {
                         tempGrouped[testName].push({
                             x: testDate,
                             y: parseFloat(testValue.toFixed(2)) || 0,
-                            status: majority,
-                            guideEvaluations: guideEvaluations || [],
                         });
                     });
                 }
@@ -153,8 +108,6 @@ const PatientGraphScreen = ({ route }) => {
         );
     }
 
-    const screenWidthAdjusted = Dimensions.get('window').width;
-
     // Hiç sonuç yoksa
     if (Object.keys(groupedData).length === 0) {
         return (
@@ -167,7 +120,10 @@ const PatientGraphScreen = ({ route }) => {
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
             {/* Başlık */}
-            <Text style={styles.title}>Hasta Grafik Ekranı</Text>
+            <View style={styles.header}>
+                <Ionicons name="flask" size={30} color="#3f51b5" />
+                <Text style={styles.title}>Hasta Grafik Ekranı</Text>
+            </View>
             <Text style={styles.subTitle}>
                 <Ionicons name="person" size={16} color="#333" />{' '}
                 {patient?.name} {patient?.surname} (TC: {patient?.tcNo})
@@ -175,7 +131,7 @@ const PatientGraphScreen = ({ route }) => {
 
             {/* Her testName için bir Card render ediyoruz */}
             {Object.entries(groupedData).map(([testName, dataArray]) => {
-                // (1) Son iki değere bakarak trend oku
+                // Son iki değere bakarak trend oku
                 const lastValue = dataArray[dataArray.length - 1]?.y || null;
                 const prevValue = dataArray.length > 1
                     ? dataArray[dataArray.length - 2]?.y
@@ -214,82 +170,44 @@ const PatientGraphScreen = ({ route }) => {
                     <Card style={styles.card} key={testName}>
                         {/* Kart Başlık */}
                         <Card.Title
-                            title={testName}
-                            titleStyle={styles.cardTitle}
-                            right={() => (
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            title={
+                                <View style={styles.cardTitleContainer}>
+                                    <Ionicons name="flask" size={20} color="#3f51b5" style={{ marginRight: 8 }} />
+                                    <Text style={styles.cardTitle}>{testName}</Text>
                                     <Text style={[styles.diffText, { color: trend.color }]}>
                                         {degisimText}
                                     </Text>
                                     <Ionicons
                                         name={trend.iconName}
-                                        size={24}
+                                        size={20}
                                         color={trend.color}
-                                        style={{ marginRight: 10, marginLeft: 5 }}
+                                        style={{ marginLeft: 5 }}
                                     />
                                 </View>
-                            )}
+                            }
                         />
 
                         <Card.Content>
-                            {/* Son tahlil tarihi */}
-                            <View style={styles.infoRow}>
-                                <Ionicons name="calendar" size={16} color="#333" style={styles.iconStyle} />
-                                <Text style={styles.infoText}>Tarih: {lastRecord?.x}</Text>
-                            </View>
-
-                            {/* Son girilen değer */}
-                            <View style={styles.infoRow}>
-                                <Ionicons name="flask" size={16} color="#333" style={styles.iconStyle} />
-                                <Text style={styles.infoText}>
-                                    Girilen Değer: {lastRecord?.y.toFixed(2)} g/L{'  '}
-                                    ({(lastRecord?.y * 1000).toFixed(2)} mg/L)
-                                </Text>
+                            {/* Tahlil Sonuçları Listesi */}
+                            <View style={styles.resultsList}>
+                                {dataArray.map((item, index) => (
+                                    <View key={index} style={styles.resultItem}>
+                                        <View style={styles.resultInfo}>
+                                            <Ionicons name="calendar" size={16} color="#555" style={styles.iconStyle} />
+                                            <Text style={styles.resultText}>Tarih: {item.x}</Text>
+                                        </View>
+                                        <View style={styles.resultInfo}>
+                                            <Ionicons name="flask" size={16} color="#555" style={styles.iconStyle} />
+                                            <Text style={styles.resultText}>
+                                                Değer: {item.y.toFixed(2)} g/L {'  '}
+                                                ({(item.y * 1000).toFixed(2)} mg/L)
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
 
                             <Divider style={styles.divider} />
-
-                            {/* guideEvaluations detayları */}
-                            {lastRecord?.guideEvaluations && lastRecord.guideEvaluations.length > 0 ? (
-                                lastRecord.guideEvaluations.map((guide, idx) => {
-                                    const iconData = getStatusIcon(guide.status);
-                                    return (
-                                        <View key={idx} style={styles.guideContainer}>
-                                            {/* Kılavuz ismi */}
-                                            <View style={styles.guideRow}>
-                                                <Ionicons name="book" size={14} color="#333" style={styles.iconStyle} />
-                                                <Text style={styles.guideText}>
-                                                    Kılavuz Adı: {guide.guideName}
-                                                </Text>
-                                            </View>
-
-                                            {/* Referans aralığı */}
-                                            <View style={styles.guideRow}>
-                                                <Ionicons name="analytics" size={14} color="#333" style={styles.iconStyle} />
-                                                <Text style={styles.guideText}>
-                                                    Referans Aralığı: {(guide.minValue || 0).toFixed(2)} {guide.unit} - {(guide.maxValue || 0).toFixed(2)} {guide.unit}
-                                                </Text>
-                                            </View>
-
-                                            {/* Statü ve renkli ok */}
-                                            <View style={styles.statusRow}>
-                                                <Text style={[styles.statusText, { color: getColorForStatus(guide.status) }]}>
-                                                    Statü: {guide.status}
-                                                </Text>
-                                                <Ionicons
-                                                    name={iconData.name}
-                                                    size={16}
-                                                    color={iconData.color}
-                                                    style={{ marginLeft: 8 }}
-                                                />
-                                            </View>
-                                            {idx !== lastRecord.guideEvaluations.length - 1 && <Divider style={styles.smallDivider} />}
-                                        </View>
-                                    );
-                                })
-                            ) : (
-                                <Text style={styles.guideText}>Klavuz bilgisi bulunamadı.</Text>
-                            )}
 
                             {/* Grafik */}
                             <ScrollView horizontal={true} style={styles.graphScroll}>
@@ -329,12 +247,11 @@ const PatientGraphScreen = ({ route }) => {
                         </Card.Content>
                     </Card>
                 );
-            }
-            )}
+            })}
         </ScrollView>
     );
-};
 
+};
 
 export default PatientGraphScreen;
 
@@ -342,6 +259,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f2f6ff',
+        padding: 15,
     },
     loadingContainer: {
         flex: 1,
@@ -354,83 +272,85 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     noDataText: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#777',
+        fontWeight: '600',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 15,
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         color: '#3f51b5',
-        fontWeight: 'bold',
-        marginTop: 10,
-        textAlign: 'center',
+        fontWeight: '700',
+        marginLeft: 10,
     },
     subTitle: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#333',
-        marginBottom: 20,
+        marginBottom: 25,
         textAlign: 'center',
+        fontWeight: '500',
     },
     card: {
-        marginHorizontal: 10,
-        marginBottom: 20,
-        borderRadius: 10,
+        marginHorizontal: 5,
+        marginBottom: 25,
+        borderRadius: 12,
         backgroundColor: '#fff',
-        elevation: 2,
+        elevation: 3,
         overflow: 'hidden',
     },
+    cardTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
     cardTitle: {
-        fontSize: 18,
+        fontSize: 20,
         color: '#3f51b5',
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
     diffText: {
-        fontSize: 14,
-        color: '#333',
-        marginRight: 5,
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 10,
     },
     infoRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 2,
-    },
-    iconStyle: {
-        marginRight: 6,
-    },
-    infoText: {
-        fontSize: 14,
-        color: '#333',
-        fontWeight: 'bold',
-    },
-    divider: {
-        marginVertical: 8,
-    },
-    smallDivider: {
         marginVertical: 4,
     },
-    guideContainer: {
-        marginBottom: 10,
+    iconStyle: {
+        marginRight: 8,
     },
-    guideRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 2,
+    infoText: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '500',
     },
-    guideText: {
-        fontSize: 14,
-        color: '#444',
-    },
-    statusRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 2,
-    },
-    statusText: {
-        fontSize: 14,
-        fontWeight: 'bold',
+    divider: {
+        marginVertical: 10,
+        backgroundColor: '#e0e0e0',
     },
     graphScroll: {
-        marginTop: 10,
+        marginTop: 15,
+    },
+    resultsList: {
+        marginBottom: 12,
+    },
+    resultItem: {
+        marginBottom: 10,
+    },
+    resultInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    resultText: {
+        fontSize: 16,
+        color: '#555',
+        fontWeight: '400',
     },
 });
-
-
