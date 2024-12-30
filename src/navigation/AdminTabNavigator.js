@@ -20,7 +20,7 @@ const AdminTabNavigator = () => {
                     let iconName;
 
                     switch (route.name) {
-                        case 'HomeTab':
+                        case 'Home':
                             iconName = 'home';
                             break;
                         case 'GuideManagementTab':
@@ -50,7 +50,7 @@ const AdminTabNavigator = () => {
             })}
         >
             <Tab.Screen
-                name="HomeTab"
+                name="Home"
                 component={AdminHomeScreen}
                 options={{ title: 'Home' }}
             />

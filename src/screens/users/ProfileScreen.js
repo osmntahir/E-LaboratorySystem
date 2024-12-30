@@ -7,7 +7,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { db } from '../../../firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => { // navigation prop'u eklendi
     const { user } = useContext(AuthContext);
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
@@ -67,6 +67,10 @@ const ProfileScreen = () => {
             console.error('Error updating profile:', error);
             Alert.alert('Hata', 'Profil güncellenirken bir hata oluştu.');
         }
+    };
+
+    const handleChangePassword = () => {
+        navigation.navigate('ChangePassword'); // ChangePassword ekranına yönlendirme
     };
 
     if (loading) {
@@ -130,6 +134,16 @@ const ProfileScreen = () => {
                     <Button mode="contained" onPress={handleSave} style={styles.button}>
                         Kaydet
                     </Button>
+
+                    {/* Şifre Değiştir Butonu Ekleniyor */}
+                    <Button
+                        mode="outlined"
+                        onPress={handleChangePassword}
+                        style={styles.changePasswordButton}
+                        contentStyle={styles.changePasswordContent}
+                    >
+                        Şifre Değiştir
+                    </Button>
                 </Card.Content>
             </Card>
         </View>
@@ -158,7 +172,7 @@ const styles = StyleSheet.create({
         color: '#3f51b5',
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#333',
         marginTop: 5,
     },
@@ -174,6 +188,13 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 5,
         backgroundColor: '#3f51b5',
+    },
+    changePasswordButton: {
+        marginTop: 15,
+        borderColor: '#3f51b5',
+    },
+    changePasswordContent: {
+        height: 50,
     },
     dateButton: {
         marginBottom: 15,
