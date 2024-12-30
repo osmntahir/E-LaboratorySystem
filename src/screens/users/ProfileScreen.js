@@ -1,4 +1,4 @@
-// ./src/screens/users/ProfileScreen.js
+// src/screens/users/ProfileScreen.js
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Alert, Platform, TouchableOpacity } from 'react-native';
 import { Text, TextInput, Button, Title, Card, Subheading } from 'react-native-paper';
@@ -7,8 +7,8 @@ import { AuthContext } from '../../context/AuthContext';
 import { db } from '../../../firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
-const ProfileScreen = () => {
-    const { user } = useContext(AuthContext);
+const ProfileScreen = ({ navigation }) => { // navigation prop remains
+    const { user, setUser } = useContext(AuthContext); // Destructure setUser from AuthContext
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [birthDate, setBirthDate] = useState(new Date());
@@ -62,11 +62,30 @@ const ProfileScreen = () => {
                 birthDate: birthDate.toISOString().split('T')[0],
                 // email burada güncellenmiyor, isterseniz email güncellemeyi de ekleyebilirsiniz.
             });
+
+            // Fetch the updated user data
+            const updatedUserSnap = await getDoc(userRef);
+            if (updatedUserSnap.exists()) {
+                const updatedUserData = updatedUserSnap.data();
+                // Update the AuthContext user state
+                setUser({
+                    ...user,
+                    name: updatedUserData.name,
+                    surname: updatedUserData.surname,
+                    birthDate: updatedUserData.birthDate,
+                    // Add other fields if necessary
+                });
+            }
+
             Alert.alert('Başarılı', 'Profil bilgileriniz güncellendi.');
         } catch (error) {
             console.error('Error updating profile:', error);
             Alert.alert('Hata', 'Profil güncellenirken bir hata oluştu.');
         }
+    };
+
+    const handleChangePassword = () => {
+        navigation.navigate('ChangePassword'); // ChangePassword ekranına yönlendirme
     };
 
     if (loading) {
@@ -130,6 +149,16 @@ const ProfileScreen = () => {
                     <Button mode="contained" onPress={handleSave} style={styles.button}>
                         Kaydet
                     </Button>
+
+                    {/* Şifre Değiştir Butonu Ekleniyor */}
+                    <Button
+                        mode="outlined"
+                        onPress={handleChangePassword}
+                        style={styles.changePasswordButton}
+                        contentStyle={styles.changePasswordContent}
+                    >
+                        Şifre Değiştir
+                    </Button>
                 </Card.Content>
             </Card>
         </View>
@@ -158,7 +187,7 @@ const styles = StyleSheet.create({
         color: '#3f51b5',
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#333',
         marginTop: 5,
     },
@@ -175,6 +204,13 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#3f51b5',
     },
+    changePasswordButton: {
+        marginTop: 15,
+        borderColor: '#3f51b5',
+    },
+    changePasswordContent: {
+        height: 50,
+    },
     dateButton: {
         marginBottom: 15,
         borderWidth: 1,
@@ -190,3 +226,4 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+

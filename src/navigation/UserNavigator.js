@@ -1,42 +1,31 @@
 // src/navigation/UserNavigator.js
-import React from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import UserHomeScreen from "../screens/users/UserHomeScreen";
-import TestResultsScreen from "../screens/users/TestResultsScreen";
-import ProfileScreen from "../screens/users/ProfileScreen";
-import ChangePasswordScreen from "../screens/users/ChangePasswordScreen";
-import UserGraphScreen from "../screens/users/UserGraphScreen";
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+// Alt tab bar Navigator
+import UserTabNavigator from './UserTabNavigator';
+
+// Detay ekranlarını içe aktarın
+import ChangePasswordScreen from '../screens/users/ChangePasswordScreen';
+
+const Stack = createStackNavigator();
 
 const UserNavigator = () => {
     return (
         <Stack.Navigator>
+            {/** 1) Ana Tab Bar Ekranları **/}
             <Stack.Screen
-                name="UserHome"
-                component={UserHomeScreen}
+                name="MainTabs"
+                component={UserTabNavigator}
                 options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="TestResults"
-                component={TestResultsScreen}
-                options={{ title: "Tahlil Sonuçları" }}
-            />
-            <Stack.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{ title: "Profilim" }}
             />
             <Stack.Screen
                 name="ChangePassword"
                 component={ChangePasswordScreen}
-                options={{ title: "Şifre Değiştir" }}
+                options={{ title: 'Şifre Değiştir' }}
             />
-            <Stack.Screen
-                name="UserGraph"
-                component={UserGraphScreen}
-                options={{ title: "Grafik" }}
-            />
+
+
         </Stack.Navigator>
     );
 };

@@ -5,6 +5,7 @@ import {
     ScrollView,
     ActivityIndicator,
     Platform,
+    Alert,
 } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
@@ -53,23 +54,26 @@ const TestAnalysisScreen = () => {
     const [results, setResults] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
+    // Yeni eklenen state: kontrol butonu için
+    const [isClearing, setIsClearing] = useState(false);
+
     const handleValueChange = (testName, value) => {
         setTestValues((prev) => ({ ...prev, [testName]: value }));
     };
 
     const handleSearch = async () => {
         if (!birthDate) {
-            alert('Lütfen doğum tarihini seçiniz.');
+            Alert.alert('Hata', 'Lütfen doğum tarihini seçiniz.');
             return;
         }
 
         if (isNaN(ageInMonths)) {
-            alert('Geçerli bir doğum tarihi giriniz.');
+            Alert.alert('Hata', 'Geçerli bir doğum tarihi giriniz.');
             return;
         }
 
         if (Object.keys(testValues).length === 0) {
-            alert('Lütfen en az bir test değeri giriniz.');
+            Alert.alert('Hata', 'Lütfen en az bir test değeri giriniz.');
             return;
         }
 
@@ -139,9 +143,31 @@ const TestAnalysisScreen = () => {
             setResults(tempResults);
         } catch (error) {
             console.error('Error searching test in guides:', error);
+            Alert.alert('Hata', 'Sonuçlar alınırken bir hata oluştu.');
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleClear = () => {
+        Alert.alert(
+            'Temizle',
+            'Tüm girişleri ve sonuçları temizlemek istediğinize emin misiniz?',
+            [
+                { text: 'İptal', style: 'cancel' },
+                {
+                    text: 'Evet',
+                    onPress: () => {
+                        setTestValues({});
+                        setBirthDate(null);
+                        setAgeInMonths(null);
+                        setResults({});
+                        setShowDatePicker(false);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
     };
 
     const showDatePickerModal = () => {
@@ -202,9 +228,14 @@ const TestAnalysisScreen = () => {
                             />
                         ))}
                     </View>
-                    <Button mode="contained" onPress={handleSearch} style={styles.button}>
-                        Sonuç Hesapla
-                    </Button>
+                    <View style={styles.buttonContainer}>
+                        <Button mode="contained" onPress={handleSearch} style={styles.button}>
+                            Sonuç Hesapla
+                        </Button>
+                        <Button mode="outlined" onPress={handleClear} style={styles.clearButton}>
+                            Temizle
+                        </Button>
+                    </View>
                 </Card.Content>
             </Card>
 
@@ -337,9 +368,20 @@ const styles = StyleSheet.create({
     input: {
         marginBottom: 10,
     },
-    button: {
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         marginTop: 10,
+    },
+    button: {
+        flex: 1,
+        marginRight: 5,
         backgroundColor: '#3f51b5',
+    },
+    clearButton: {
+        flex: 1,
+        marginLeft: 5,
+        borderColor: '#3f51b5',
     },
     resultHeader: {
         fontSize: 20,
