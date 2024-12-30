@@ -1,11 +1,14 @@
+// PatientDetailScreen.js
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import TestResultItem from '../../components/items/TestResultItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { deleteTestResult } from '../../services/testResultService';
 import { Text, Button, Card, IconButton, FAB, Divider, Menu, Searchbar } from 'react-native-paper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { calculateAgeInMonths } from '../../utils/ageCalculator';
 
 const PatientDetailScreen = ({ route, navigation }) => {
     const { patient } = route.params;
@@ -16,8 +19,8 @@ const PatientDetailScreen = ({ route, navigation }) => {
     const [ageInMonths, setAgeInMonths] = useState(0);
 
     useEffect(() => {
-        setAgeInMonths(patient.age);
-    }, [patient.age]);
+        setAgeInMonths(calculateAgeInMonths(patient.birthDate));
+    }, [patient.birthDate]);
 
     const parseDate = (dateStr) => {
         if (!dateStr || typeof dateStr !== 'string') {
@@ -122,8 +125,16 @@ const PatientDetailScreen = ({ route, navigation }) => {
 
     const filteredResults = testResults.filter(result => {
         if (Array.isArray(result.tests) && result.tests.length > 0) {
+            const queryLower = searchQuery.toLowerCase();
+            const dateQuery = new Date(searchQuery);
+            const isDateValid = !isNaN(dateQuery.getTime());
+
+            if (isDateValid) {
+                return result.testDate.startsWith(searchQuery);
+            }
+
             return result.tests.some(test =>
-                test.testName && test.testName.toLowerCase().includes(searchQuery.toLowerCase())
+                test.testName && test.testName.toLowerCase().includes(queryLower)
             );
         }
         return false;
@@ -153,16 +164,18 @@ const PatientDetailScreen = ({ route, navigation }) => {
 
             <View style={styles.headerActions}>
                 <Searchbar
-                    placeholder="Test türü ara..."
+                    placeholder="Test türü veya tarih ara..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     style={styles.searchbar}
+                    icon={() => <Ionicons name="search" size={20} color="#777" />}
                 />
                 <Menu
                     visible={menuVisible}
                     onDismiss={closeMenu}
                     anchor={
                         <Button mode="outlined" onPress={openMenu} style={styles.menuButton}>
+                            <Ionicons name="filter" size={20} color="#3f51b5" style={{ marginRight: 5 }} />
                             <Text>Sırala</Text>
                         </Button>
                     }
@@ -179,13 +192,19 @@ const PatientDetailScreen = ({ route, navigation }) => {
                     filteredResults.map(item => (
                         <Card key={item.id} style={styles.resultCard}>
                             <Card.Content>
-                                <TestResultItem testResult={item} />
+                                <View style={styles.testHeader}>
+                                    <Ionicons name="flask" size={20} color="#3f51b5" style={{ marginRight: 8 }} />
+                                    <Text style={styles.testName}>{item.tests[0].testName}</Text>
+                                </View>
                                 <Divider style={{ marginVertical: 10 }} />
+                                <TestResultItem testResult={item} />
                                 <View style={styles.actionsContainer}>
                                     <Button mode="text" onPress={() => handleEditTestResult(item)}>
+                                        <Ionicons name="pencil" size={18} color="#3f51b5" style={{ marginRight: 5 }} />
                                         <Text>Düzenle</Text>
                                     </Button>
                                     <Button mode="text" color="red" onPress={() => handleDeleteTestResult(item.id)}>
+                                        <Ionicons name="trash" size={18} color="red" style={{ marginRight: 5 }} />
                                         <Text>Sil</Text>
                                     </Button>
                                 </View>
@@ -203,6 +222,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
             />
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
@@ -213,7 +233,9 @@ const styles = StyleSheet.create({
     },
     patientCard: {
         marginBottom: 20,
-        borderRadius: 10
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        elevation: 3
     },
     cardTitle: {
         fontSize: 20,
@@ -231,10 +253,13 @@ const styles = StyleSheet.create({
     },
     searchbar: {
         flex: 1,
-        marginRight: 10
+        marginRight: 10,
+        height: 40
     },
     menuButton: {
-        height: 40
+        height: 40,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     noDataText: {
         textAlign: 'center',
@@ -244,17 +269,30 @@ const styles = StyleSheet.create({
     },
     resultCard: {
         marginBottom: 15,
-        borderRadius: 10
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        elevation: 2
     },
     actionsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'flex-end',
+        marginTop: 10
     },
     fab: {
         position: 'absolute',
         right: 20,
         bottom: 20,
         backgroundColor: '#3f51b5'
+    },
+    testHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 5
+    },
+    testName: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#3f51b5'
     }
 });
 
