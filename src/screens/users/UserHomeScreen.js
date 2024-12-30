@@ -38,14 +38,31 @@ const UserHomeScreen = () => {
         };
     }, [user]);
 
-    const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            // Oturum kapandıktan sonra yönlendirme işlemi AuthContext veya navigasyon reset ile yapılabilir
-        } catch (error) {
-            console.error('Error signing out: ', error);
-            Alert.alert('Hata', 'Çıkış yaparken bir hata oluştu.');
-        }
+    const handleLogout = () => {
+        Alert.alert(
+            "Çıkış Yap",
+            "Çıkış yapmak istediğinize emin misiniz?",
+            [
+                {
+                    text: "İptal",
+                    onPress: () => {},
+                    style: "cancel"
+                },
+                {
+                    text: "Evet",
+                    onPress: async () => {
+                        try {
+                            await signOut(auth);
+                            // Oturum kapandıktan sonra AuthContext veya navigasyon reset ile yönlendirme yapılabilir
+                        } catch (error) {
+                            console.error('Error signing out: ', error);
+                            Alert.alert('Hata', 'Çıkış yaparken bir hata oluştu.');
+                        }
+                    }
+                }
+            ],
+            { cancelable: true }
+        );
     };
 
     return (
