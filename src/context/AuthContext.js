@@ -2,7 +2,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
@@ -12,45 +12,45 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true); // Uygulama açılırken "splash" / "auth check"
 
     useEffect(() => {
-        let unsubscribe;
+        let unsubscribeAuth = null;
+        let unsubscribeUserDoc = null;
+
         const checkLocalToken = async () => {
             try {
                 // 1) Localde token var mı?
                 const localToken = await AsyncStorage.getItem("userToken");
                 if (localToken) {
-                    // Eger token varsa, onAuthStateChanged devreye girince user setlenecek
-                    // ama yine de "bekleme" olmasın diye userState'i oradan set edebiliriz.
-                    // (Opsiyonel) Sadece loading'i false yaparak onAuthStateChanged'ı bekleyebiliriz.
-                  //  setLoading(false);
+                    // Token mevcut, ancak yine de onAuthStateChanged'ı beklemek daha güvenli
                 }
             } catch (error) {
                 console.log("Local token check error:", error);
             }
 
             // 2) onAuthStateChanged ile firebase auth'u dinle
-            unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
                 if (currentUser) {
                     try {
                         // Firestore'dan kullanıcı bilgileri
                         const userDocRef = doc(db, "users", currentUser.uid);
-                        const userDoc = await getDoc(userDocRef);
+                        // Set up a real-time listener on the user's document
+                        unsubscribeUserDoc = onSnapshot(userDocRef, (userDoc) => {
+                            if (userDoc.exists()) {
+                                const userData = userDoc.data();
+                                const accessToken = currentUser.stsTokenManager?.accessToken || "";
 
-                        if (userDoc.exists()) {
-                            const userData = userDoc.data();
-                            const accessToken = currentUser.stsTokenManager?.accessToken || "";
-
-                            const fullUser = {
-                                ...currentUser,
-                                ...userData,
-                                accessToken,
-                            };
-                            setUser(fullUser);
-                            await AsyncStorage.setItem("userToken", accessToken);
-                        } else {
-                            console.log("Kullanıcı Firestore'da bulunamadı.");
-                            setUser(null);
-                            await AsyncStorage.removeItem("userToken");
-                        }
+                                const fullUser = {
+                                    ...currentUser,
+                                    ...userData,
+                                    accessToken,
+                                };
+                                setUser(fullUser);
+                                AsyncStorage.setItem("userToken", accessToken);
+                            } else {
+                                console.log("Kullanıcı Firestore'da bulunamadı.");
+                                setUser(null);
+                                AsyncStorage.removeItem("userToken");
+                            }
+                        });
                     } catch (error) {
                         console.log("Firestore userDoc error:", error);
                         setUser(null);
@@ -68,7 +68,8 @@ export const AuthProvider = ({ children }) => {
         checkLocalToken();
 
         return () => {
-            if (unsubscribe) unsubscribe();
+            if (unsubscribeAuth) unsubscribeAuth();
+            if (unsubscribeUserDoc) unsubscribeUserDoc();
         };
     }, []);
 

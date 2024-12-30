@@ -1,4 +1,4 @@
-// ./src/screens/users/ProfileScreen.js
+// src/screens/users/ProfileScreen.js
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Alert, Platform, TouchableOpacity } from 'react-native';
 import { Text, TextInput, Button, Title, Card, Subheading } from 'react-native-paper';
@@ -7,8 +7,8 @@ import { AuthContext } from '../../context/AuthContext';
 import { db } from '../../../firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
-const ProfileScreen = ({ navigation }) => { // navigation prop'u eklendi
-    const { user } = useContext(AuthContext);
+const ProfileScreen = ({ navigation }) => { // navigation prop remains
+    const { user, setUser } = useContext(AuthContext); // Destructure setUser from AuthContext
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [birthDate, setBirthDate] = useState(new Date());
@@ -62,6 +62,21 @@ const ProfileScreen = ({ navigation }) => { // navigation prop'u eklendi
                 birthDate: birthDate.toISOString().split('T')[0],
                 // email burada güncellenmiyor, isterseniz email güncellemeyi de ekleyebilirsiniz.
             });
+
+            // Fetch the updated user data
+            const updatedUserSnap = await getDoc(userRef);
+            if (updatedUserSnap.exists()) {
+                const updatedUserData = updatedUserSnap.data();
+                // Update the AuthContext user state
+                setUser({
+                    ...user,
+                    name: updatedUserData.name,
+                    surname: updatedUserData.surname,
+                    birthDate: updatedUserData.birthDate,
+                    // Add other fields if necessary
+                });
+            }
+
             Alert.alert('Başarılı', 'Profil bilgileriniz güncellendi.');
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -211,3 +226,4 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+
