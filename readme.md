@@ -28,6 +28,11 @@ Bu projenin amacı, laboratuvar süreçlerini dijitalleştirerek hızlı, güven
 
 ---
 
+## Ekran Görüntüleri
+
+### Admin Paneli
+
+
 ## Kullanılan Teknolojiler
 
 ### Frontend

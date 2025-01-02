@@ -6,13 +6,13 @@ const SplashScreen = () => {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../../assets/lab-tube.png')} // Lab tüpü simgesi için bir resim ekleyin.
-                style={styles.image}
+                source={{ uri: 'https://www.creativefabrica.com/wp-content/uploads/2018/10/Lab-tube-by-Iconika-580x361.jpg' }}
             />
             <Text style={styles.title}>E-Laboratuvar Sistemi</Text>
         </View>
     );
 };
+
 
 export default SplashScreen;
 
